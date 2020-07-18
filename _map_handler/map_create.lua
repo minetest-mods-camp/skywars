@@ -1,0 +1,3 @@
+--Crea i file delle mappe con world edit e li salva.
+--Le mappe avranno delle proprietà settate per sapere dove siano le chest e fare i refill.
+--Le posizioni delle chest possono essere salvate sulle properties della mappa come faccio per gli spawner sul MOBA.

@@ -1,0 +1,2 @@
+--Registra un nodo chest dedicato in modo tale che se viene rimosso cicla nelle arene e si toglie da
+--sola dalle chests delle properties.
