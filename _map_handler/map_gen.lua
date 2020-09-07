@@ -1,1 +1,0 @@
---Carica il file della mappa quando inizia/finisce la partita, devo ancora decidermi.
