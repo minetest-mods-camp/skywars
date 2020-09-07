@@ -1,0 +1,31 @@
+# version 1.0.0
+# author(s):
+# reviewer(s):
+# textdomain: skywars
+
+Arena not found!=
+Count has to be greater than 0!=
+Rarity has to be greater than 2!=
+@1 doesn't exist!=
+Treasure added!=
+Treasure removed!=
+Treasure not found!=
+TREASURES LIST:=
+The minimum or maximum amount of treasures has to be greater than 0!=
+First arena not found!=
+Second arena not found!=
+@1 treasures have been copied to @2!=
+The arenas must be different!=
+# @n means "newline"
+name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4=
+Chest added!=
+Chest removed!=
+Chest not found!=
+CHEST LIST:=
+ID: @1 - POSITION: @2=
+Position saved!=
+Schematic @1 created! You can use /skywars info @2 to know its folder (see schematic@=PATH)=
+@1 must be disabled!=
+Pos1 or pos2 are not set!=
+@1 was killed by @2=
+@1 is dead=

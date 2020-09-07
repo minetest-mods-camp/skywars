@@ -1,45 +1,17 @@
---Il necessario per impostare dove sono le chest nelle mappe. Vedi MOBA con gli spawner.
+-- This sets the map chests
 local mod = "skywars"
 
-ChatCmdBuilder.new("skywars", function(cmd)
 
-  cmd:sub("addchest :arena", function(sender, arena_name)
-    local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
-    local pos = vector.floor(minetest.get_player_by_name(sender):get_pos())
+local function fill_chest_inv(chest, arena)
 
-    table.insert(arena.chests, pos)
-
-  end)
-
-  cmd:sub("removechest :arena", function(sender, arena_name)
-    local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
-    local pos = vector.floor(minetest.get_player_by_name(sender):get_pos())
-
-    table.remove(arena.chests, pos)
-
-  end)
-
-end)
-
-
-
-function skywars.fill_chests(arena)
-  for chest_pos in arena.chests do
-    fill_chest_inv(chest_pos, arena)
-  end
-end
-
-local function fill_chest_inv(chest_pos, arena)
-  local t_min = 4  -- minimum amount of treasures found in a chest
-  local t_max = 7  -- maximum amount of treasures found in a chest
+  local t_min = chest.min_treasures
+  local t_max = chest.max_treasures
   local treasure_amount = math.ceil(math.random(t_min, t_max))
-
-  local minp = 0 --scale*4		-- minimal preciousness:   0..4
-	local maxp = 10 --scale*4+2.1	-- maximum preciousness: 2.1..6.1
-
+  local minp = chest.min_preciousness
+	local maxp = chest.max_preciousness
+  -- returns an itemstacks table that contains the chosen treasures
   local treasures = skywars.select_random_treasures(treasure_amount, minp, maxp, arena)
-
-  local meta = minetest.get_meta(chest_pos)
+  local meta = minetest.get_meta(chest.pos)
   local inv = meta:get_inventory()
 
   for i=1, #treasures do
@@ -48,8 +20,18 @@ local function fill_chest_inv(chest_pos, arena)
 
 end
 
+
+
+function skywars.fill_chests(arena)
+  for i=1, #arena.chests do
+    fill_chest_inv(arena.chests[i], arena)
+  end
+end
+
+
+
 function skywars.place_chests(arena)
-  for chest_pos in arena.chests do
-    minetest.set_node(chest_pos, "default:chest")
+  for i=1, #arena.chests do
+    minetest.add_node(arena.chests[i].pos, {name="default:chest"})
   end
 end

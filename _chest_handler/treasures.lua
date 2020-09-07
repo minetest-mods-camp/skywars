@@ -1,47 +1,62 @@
---Il necessario per aggiungere items possibili alle chest.
+-- Select the treasures to put in the chests inventory
 local mod = "skywars"
 
-ChatCmdBuilder.new("skywars", function(cmd)
 
-  cmd:sub("addtreasure :treasure :rarity :preciousness :count :arena", function(sender, treasure_name, rarity, preciousness, count, arena_name)
-    local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+local function determine_count(treasure)
+	if(type(treasure.count)=="number") then
+		return treasure.count
+	else
+		local min,max,prob = treasure.count[1], treasure.count[2], treasure.count[3]
+		if(prob == nil) then
+			return(math.floor(min + math.random() * (max-min)))
+		else
+			return(math.floor(min + prob() * (max-min)))
+		end
+	end
+end
 
-    table.insert(arena.treasures, {name = treasure_name, rarity = rarity, count = count, preciousness = preciousness})
 
-  end)
 
-  cmd:sub("removetreasure :treasure :arena", function(sender, treasure_name, arena_name)
-    local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+local function treasure_to_itemstack(treasure)
+	local itemstack = {}
+	itemstack.name = treasure.name
+	itemstack.count = determine_count(treasure)
 
-    table.remove(arena.treasures, {name = treasure_name, rarity, preciousness})
+	return ItemStack(itemstack)
+end
 
-  end)
-
-end)
 
 
 function skywars.select_random_treasures(treasure_amount, min_preciousness, max_preciousness, arena)
-  if #arena.treasures == 0 and treasure_amount >= 1 then
-		minetest.log("info","[treasurer] I was asked to return "..count.." treasure(s) but I can’t return any because no treasure was registered to me.")
+	if #arena.treasures == 0 and treasure_amount >= 1 then
+		minetest.log("info","[treasurer] I was asked to return "..treasure_amount.." treasure(s) but I can’t return any because no treasure was registered to me.")
 		return {}
 	end
-  if treasure_amount == nil then treasure_amount = 1 end
-	local sum = 0
-	local cumulate = {}
-	local randoms = {}
+	if treasure_amount == nil or treasure_amount == 0 then treasure_amount = 1 end
 
-	-- copy treasures into helper table
-	local p_treasures = {}
-
-	for i=1,#arena.treasures do
-		table.insert(p_treasures, #arena.treasures[i])
+	-- sorting the table from the rarest to the least rare treasure, so that if one of them has rarity one 
+	-- and it's at index one it doesn't prevent other treasures from appearing
+	for j=#arena.treasures, 2, -1 do
+		for i=1, #arena.treasures-1 do
+			if arena.treasures[i].rarity < arena.treasures[i+1].rarity then
+				local temp = arena.treasures[i]
+				arena.treasures[i] = arena.treasures[i+ 1] 
+				arena.treasures[i + 1] = temp
+			end
+		end
 	end
 
+	-- helper table
+	local p_treasures = {}
+	-- copying arena.treasures in p_treasures 
+	for i=1, #arena.treasures do
+		table.insert(p_treasures, arena.treasures[i])
+	end
 
-  if(min_preciousness ~= nil) then
+	if(min_preciousness ~= nil) then
 		-- filter out too unprecious treasures
-		for t=#p_treasures,1,-1 do
-			if((p_treasures[t].preciousness) < min_preciousness) then
+		for t=#p_treasures, 1, -1 do
+			if(p_treasures[t].preciousness < min_preciousness) then
 				table.remove(p_treasures,t)
 			end
 		end
@@ -56,20 +71,21 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 		end
 	end
 
-	for t=1,#p_treasures do
-		sum = sum + p_treasures[t].rarity
-		cumulate[t] = sum
-	end
-	for c=1,count do
-		randoms[c] = math.random() * sum
-	end
-
 	local treasures = {}
-	for c=1,count do
-		for t=1,#p_treasures do
-			if randoms[c] < cumulate[t] then
-				table.insert(treasures, p_treasures[t])
-				break
+	
+	-- while the generated treasures are less then the desired amount
+	while #treasures < treasure_amount do
+		for c=1,treasure_amount do
+			-- if there isn't a treasure
+			if treasures[c] == nil then 
+				for t=1,#p_treasures do
+					local random = math.random(1, 1000)
+
+					-- if the random number is a multiple of the item rarity then select it
+					if random % p_treasures[t].rarity == 0 then
+						table.insert(treasures, p_treasures[t])
+					end
+				end
 			end
 		end
 	end
@@ -78,32 +94,8 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 	for i=1,#treasures do
 		itemstacks[i] = treasure_to_itemstack(treasures[i])
 	end
-	if #itemstacks < count then
-		minetest.log("info","[treasurer] I was asked to return "..count.." treasure(s) but I could only return "..(#itemstacks)..".")
+	if #itemstacks < treasure_amount then
+		minetest.log("info","[treasurer] I was asked to return "..treasure_amount.." treasure(s) but I could only return "..(#itemstacks)..".")
 	end
 	return itemstacks
-end
-
-
-
-local function treasure_to_itemstack(treasure)
-	local itemstack = {}
-	itemstack.name = treasure.name
-	itemstack.count = determine_count(treasure)
-
-	return ItemStack(itemstack)
-end
-
-
-local function determine_count(treasure)
-	if(type(treasure.count)=="number") then
-		return treasure.count
-	else
-		local min,max,prob = treasure.count[1], treasure.count[2], treasure.count[3]
-		if(prob == nil) then
-			return(math.floor(min + math.random() * (max-min)))
-		else
-			return(math.floor(min + prob() * (max-min)))
-		end
-	end
 end
