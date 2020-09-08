@@ -39,7 +39,7 @@ count: the item amount
 
 /skywars addchest <arena name> <min_preciousness> <max_preciousness> 
 <min_treasures_amount (min. 1)> <max_treasures_amount>
-to add a chest use this command on the block you want it to spawn, it 
+to add a chest use this command at the position you want it to spawn, it 
 will automatically be filled with the right items when the match 
 starts
 
@@ -62,6 +62,9 @@ remember that the old schematic won't be deleted!
 6) Enabling the arena using
 
 /skywars enable <arena name>
-
+wars to read all the commands
+To modify the game settings
 
 Once you've done this you can click the sign and start playing :)
+You can use /help sky (such as the messages prefix or the
+hub spawn point) you can edit the SETTINGS.lua file

@@ -6,7 +6,10 @@ function(cmd)
     cmd:sub("tutorial", 
     function(sender)
         minetest.chat_send_player(sender, [[
-            
+
+        (If you find it uncomfortable to read the tutorial from the chat
+        you can read it from a file in the mod folder called TUTORIAL.txt)
+        
         These are the steps to follow in order to create and configure an 
         arena:
 
@@ -46,7 +49,7 @@ function(cmd)
 
         /skywars addchest <arena name> <min_preciousness> <max_preciousness> 
         <min_treasures_amount (min. 1)> <max_treasures_amount>
-        to add a chest use this command on the block you want it to spawn, it 
+        to add a chest use this command at the position you want it to spawn, it 
         will automatically be filled with the right items when the match 
         starts
 
@@ -72,6 +75,9 @@ function(cmd)
 
 
         Once you've done this you can click the sign and start playing :)
+        You can use /help skywars to read all the commands
+        To modify the game settings (such as the messages prefix or the
+        hub spawn point) you can edit the SETTINGS.lua file
         ]])
     end)
 
