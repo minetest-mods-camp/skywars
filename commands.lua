@@ -5,11 +5,11 @@ function(cmd)
 
     cmd:sub("tutorial", 
     function(sender)
-        minetest.chat_send_player(sender, [[
+        skywars.print_msg(sender, [[
 
         (If you find it uncomfortable to read the tutorial from the chat
         you can read it from a file in the mod folder called TUTORIAL.txt)
-        
+
         These are the steps to follow in order to create and configure an 
         arena:
 
@@ -165,25 +165,28 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         
         if arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Arena not found!"))
+            skywars.print_error(sender,  skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 must be disabled!", arena_name))
+            skywars.print_error(sender,  skywars.T("@1 must be disabled!", arena_name))
             return
         elseif count <= 0 then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Count has to be greater than 0!"))
+            skywars.print_error(sender,  skywars.T("Count has to be greater than 0!"))
             return
         elseif rarity < 2 then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Rarity has to be greater than 2!"))
+            skywars.print_error(sender,  skywars.T("Rarity has to be greater than 2!"))
+            return
+        elseif rarity > 20 then
+            skywars.print_error(sender,  skywars.T("Rarity has to be smaller than 21!"))
             return
         elseif ItemStack(treasure_name):is_known() == false then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 doesn't exist!", treasure_name))
+            skywars.print_error(sender,  skywars.T("@1 doesn't exist!", treasure_name))
             return
         end
 
         table.insert(arena.treasures, {name = treasure_name, rarity = rarity, count = count, preciousness = preciousness})
 
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Treasure added!"))
+        skywars.print_msg(sender,  skywars.T("Treasure added!"))
     end)
     
 
@@ -193,10 +196,10 @@ function(cmd)
         local found = false
 
         if arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Arena not found!"))
+            skywars.print_error(sender,  skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 must be disabled!", arena_name))
+            skywars.print_error(sender,  skywars.T("@1 must be disabled!", arena_name))
             return
         end
 
@@ -210,8 +213,8 @@ function(cmd)
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
 
-        if found then minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Treasure removed!"))
-        else minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Treasure not found!")) end
+        if found then skywars.print_msg(sender,  skywars.T("Treasure removed!"))
+        else skywars.print_error(sender,  skywars.T("Treasure not found!")) end
     end)
 
 
@@ -222,16 +225,16 @@ function(cmd)
         local found = false
 
         if from_arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("First arena not found!"))
+            skywars.print_error(sender,  skywars.T("First arena not found!"))
             return
         elseif to_arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Second arena not found!"))
+            skywars.print_error(sender,  skywars.T("Second arena not found!"))
             return
         elseif from_arena == to_arena then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("The arenas must be different!"))
+            skywars.print_error(sender,  skywars.T("The arenas must be different!"))
             return
         elseif to_arena.enabled == true then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 must be disabled!", to))
+            skywars.print_error(sender,  skywars.T("@1 must be disabled!", to))
             return
         end
 
@@ -241,7 +244,7 @@ function(cmd)
         end
 
         arena_lib.change_arena_property(sender, "skywars", to, "treasures", to_arena.treasures, false)
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 treasures have been copied to @2!", from, to))
+        skywars.print_msg(sender,  skywars.T("@1 treasures have been copied to @2!", from, to))
     end)
 
 
@@ -251,14 +254,14 @@ function(cmd)
         local found = false
 
         if arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Arena not found!"))
+            skywars.print_error(sender,  skywars.T("Arena not found!"))
             return
         end
 
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("TREASURES LIST:"))
+        skywars.print_msg(sender,  skywars.T("TREASURES LIST:"))
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
-            minetest.chat_send_player(sender, tostring(i) .. ".\n" .. 
+            skywars.print_msg(sender, tostring(i) .. ".\n" .. 
                 skywars.T(
                     "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
                     treasure.name, treasure.rarity, treasure.preciousness, treasure.count
@@ -284,17 +287,17 @@ function(cmd)
         }
 
         if arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Arena not found!"))
+            skywars.print_error(sender,  skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 must be disabled!", arena_name))
+            skywars.print_error(sender,  skywars.T("@1 must be disabled!", arena_name))
             return
         elseif t_min <= 0 or t_max <= 0 then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
+            skywars.print_error(sender,  skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
             return
         end
 
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Chest added!"))
+        skywars.print_msg(sender,  skywars.T("Chest added!"))
         table.insert(arena.chests, chest)
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
     end)
@@ -305,14 +308,14 @@ function(cmd)
         local found = false
 
         if arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Arena not found!"))
+            skywars.print_error(sender,  skywars.T("Arena not found!"))
             return
         end
 
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("CHEST LIST:"))
+        skywars.print_msg(sender,  skywars.T("CHEST LIST:"))
         for i=1, #arena.chests do
             local chest_pos = tostring(arena.chests[i].pos.x) .. " " .. tostring(arena.chests[i].pos.y) .. " " .. tostring(arena.chests[i].pos.z)
-            minetest.chat_send_player(sender, skywars.T("ID: @1 - POSITION: @2", arena.chests[i].id, chest_pos))
+            skywars.print_msg(sender, skywars.T("ID: @1 - POSITION: @2", arena.chests[i].id, chest_pos))
         end
     end)
     
@@ -323,10 +326,10 @@ function(cmd)
         local found = false
 
         if arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Arena not found!"))
+            skywars.print_error(sender,  skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 must be disabled!", arena_name))
+            skywars.print_error(sender,  skywars.T("@1 must be disabled!", arena_name))
             return
         end
 
@@ -340,9 +343,9 @@ function(cmd)
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
 
         if found then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Chest removed!"))
+            skywars.print_msg(sender,  skywars.T("Chest removed!"))
         else
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Chest not found!"))
+            skywars.print_error(sender,  skywars.T("Chest not found!"))
         end
     end)
 
@@ -356,7 +359,7 @@ function(cmd)
         local player = minetest.get_player_by_name(sender)
 
         player:get_meta():set_string("pos1", minetest.serialize(player:get_pos()))
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Position saved!")) 
+        skywars.print_msg(sender,  skywars.T("Position saved!")) 
     end)
 
 
@@ -366,7 +369,7 @@ function(cmd)
 
         player:get_meta():set_string("pos2", minetest.serialize(player:get_pos()))
 
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Position saved!")) 
+        skywars.print_msg(sender,  skywars.T("Position saved!")) 
     end)
 
 
@@ -379,23 +382,23 @@ function(cmd)
         local pos2 = minetest.deserialize(player:get_meta():get_string("pos2")) 
 
         if arena == nil then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Arena not found!"))
+            skywars.print_error(sender,  skywars.T("Arena not found!"))
             return
         end
 
         if arena.enabled == true then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("@1 must be disabled!", arena_name))
+            skywars.print_error(sender,  skywars.T("@1 must be disabled!", arena_name))
             return
         end
 
         if pos1 == "" or pos2 == "" then
-            minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Pos1 or pos2 are not set!"))
+            skywars.print_error(sender,  skywars.T("Pos1 or pos2 are not set!"))
             return
         end
 
         skywars.create_schematic(sender, {x = pos1.x, y = pos1.y, z = pos1.z}, {x = pos2.x, y = pos2.y, z = pos2.z}, name, arena)
 
-        minetest.chat_send_player(sender, skywars_settings.prefix .. skywars.T("Schematic @1 created! You can use /skywars info @2 to know its folder (see schematic=PATH)", name, arena_name)) 
+        skywars.print_msg(sender,  skywars.T("Schematic @1 created! You can use /skywars info @2 to know its folder (see schematic=PATH)", name, arena_name)) 
     end)
 
 
@@ -409,7 +412,7 @@ function(cmd)
         local pos = minetest.get_player_by_name(sender):get_pos()
         local readable_pos = "[X Y Z] " .. round(pos.x, 1) .. " " .. round(pos.y, 1) .. " " .. round(pos.z, 1)
 
-        minetest.chat_send_player(sender, readable_pos)
+        skywars.print_msg(sender, readable_pos)
     end)
 
 end, {
@@ -435,7 +438,7 @@ end, {
 
 
         Skywars commands:
-        - addtreasure <arena name> <item> <rarity (min 2.0, max 1000.0)> 
+        - addtreasure <arena name> <item> <rarity (min 2.0, max 20.0)> 
         <preciousness> <count>
         
         - removetreasure <arena name> <treasure name>

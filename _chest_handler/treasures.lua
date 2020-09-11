@@ -79,7 +79,7 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 			-- if there isn't a treasure
 			if treasures[c] == nil then 
 				for t=1,#p_treasures do
-					local random = math.random(1, 1000)
+					local random = math.random(1, 20)
 
 					-- if the random number is a multiple of the item rarity then select it
 					if random % p_treasures[t].rarity == 0 then

@@ -32,7 +32,7 @@ between 2 and 4
 count: the item amount
 
 /skywars addtreasure <arena name> <item> <rarity (min 2.0, max 
-1000.0)> <preciousness> <count>
+20.0)> <preciousness> <count>
 
 
 4) Setting the chests in the arena using:
@@ -62,9 +62,9 @@ remember that the old schematic won't be deleted!
 6) Enabling the arena using
 
 /skywars enable <arena name>
-wars to read all the commands
-To modify the game settings
+
 
 Once you've done this you can click the sign and start playing :)
-You can use /help sky (such as the messages prefix or the
+You can use /help skywars to read all the commands
+To modify the game settings (such as the messages prefix or the
 hub spawn point) you can edit the SETTINGS.lua file

@@ -36,4 +36,3 @@ skywars_settings.show_minimap = false
 
 -- The players walking speed when ther're playing a match
 skywars_settings.player_speed = 1
-

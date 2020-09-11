@@ -25,6 +25,7 @@ CHEST LIST:=
 ID: @1 - POSITION: @2=
 Position saved!=
 Schematic @1 created! You can use /skywars info @2 to know its folder (see schematic@=PATH)=
+@1 wasn't configured properly!=
 @1 must be disabled!=
 Pos1 or pos2 are not set!=
 @1 was killed by @2=

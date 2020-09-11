@@ -27,6 +27,7 @@ arena_lib.register_minigame("skywars", {
 })
 
 
+
 dofile(minetest.get_modpath("skywars") .. "/chatcmdbuilder.lua")
 dofile(minetest.get_modpath("skywars") .. "/_hud/hud_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/commands.lua")
@@ -37,7 +38,17 @@ dofile(minetest.get_modpath("skywars") .. "/_arena_lib/arena_manager.lua")
 
 
 
-local schematic_manager = minetest.request_insecure_environment()
-function skywars.save_schematic(pos1, pos2, name, arena)
-  minetest.create_schematic(p1, p2, nil, minetest.get_worldpath() .. "\\" .. name, nil)
+---------------
+-- ! UTILS ! --
+---------------
+
+
+function skywars.print_error(player, msg)
+  minetest.chat_send_player(player, minetest.colorize("#e6482e", skywars_settings.prefix .. msg))
+end
+
+
+
+function skywars.print_msg(player, msg)
+  minetest.chat_send_player(player, skywars_settings.prefix .. msg)
 end
