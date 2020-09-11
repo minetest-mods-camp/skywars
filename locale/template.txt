@@ -6,6 +6,7 @@
 Arena not found!=
 Count has to be greater than 0!=
 Rarity has to be greater than 2!=
+Rarity has to be smaller than 21!=
 @1 doesn't exist!=
 Treasure added!=
 Treasure removed!=
