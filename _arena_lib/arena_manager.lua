@@ -13,6 +13,8 @@ end)
 
 
 arena_lib.on_start("skywars", function(arena)
+  arena.match_players = arena.players_amount
+
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 

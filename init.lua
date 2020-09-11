@@ -11,7 +11,8 @@ arena_lib.register_minigame("skywars", {
   loading_time = skywars_settings.loading_time,
   queue_waiting_time = skywars_settings.queue_waiting_time,
   temp_properties = {
-    HUDs = {}
+    HUDs = {},
+    match_players = 0
   },
   properties = {
     chests = {},
