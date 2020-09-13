@@ -19,6 +19,7 @@ arena_lib.on_start("skywars", function(arena)
     local player = minetest.get_player_by_name(pl_name)
 
     skywars.generate_HUD(arena, pl_name)
+    skywars.show_kit_selector(pl_name, arena)
     player:set_physics_override({speed=arena.players[pl_name].speed})
     -- saving original speed
     arena.players[pl_name].speed = player:get_physics_override().speed

@@ -19,7 +19,8 @@ arena_lib.register_minigame("skywars", {
     treasures = {}, -- items to put in the chests
     schematic = "",
     pos1 = {},
-    reset = false
+    reset = false,
+    kits = {}
   },
   player_properties = {
     killstreak = 0,
@@ -30,12 +31,14 @@ arena_lib.register_minigame("skywars", {
 
 
 dofile(minetest.get_modpath("skywars") .. "/chatcmdbuilder.lua")
+dofile(minetest.get_modpath("skywars") .. "/_storage/storage_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/_hud/hud_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/commands.lua")
 dofile(minetest.get_modpath("skywars") .. "/_chest_handler/chest_setter.lua")
 dofile(minetest.get_modpath("skywars") .. "/_chest_handler/treasures.lua")
 dofile(minetest.get_modpath("skywars") .. "/_map_handler/map_create.lua")
 dofile(minetest.get_modpath("skywars") .. "/_arena_lib/arena_manager.lua")
+dofile(minetest.get_modpath("skywars") .. "/_kits/formspec.lua")
 
 
 

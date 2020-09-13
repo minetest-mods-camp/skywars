@@ -36,3 +36,51 @@ skywars_settings.show_minimap = false
 
 -- The players walking speed when ther're playing a match
 skywars_settings.player_speed = 1
+
+
+
+
+-- HUDS SETTINGS --
+
+
+--[[ COORDINATES SYSTEM
+For X and Y, 0.0 and 1.0 represent opposite edges of the game window, for example:
+    * [0.0, 0.0] is the top left corner of the game window
+    * [1.0, 1.0] is the bottom right of the game window
+    * [0.5, 0.5] is the center of the game window
+--]]
+
+
+
+-- The texture background for the kit menu
+skywars_settings.hud__kit_background = "Kits.png"
+
+-- The width of the bacgkround texture in real coordinates,
+-- a unit of measurement which is roughly around 64 pixels, but 
+-- varies based on the screen density and scaling settings of the client
+skywars_settings.background_width = 12
+
+-- The height of the bacgkround texture in real coordinates
+skywars_settings.background_height = 12
+
+-- The x position of the first buttons row
+skywars_settings.starting_x = 2.2
+
+-- The y position of the first buttons row
+skywars_settings.starting_y = 6.5
+
+-- The horizontal distance betweek buttons in real coordinates 
+skywars_settings.distance_x = 3
+
+-- The vertical distance betweek buttons in real coordinates
+skywars_settings.distance_y = 3
+
+-- The amount of buttons in a row
+skywars_settings.buttons_per_row = 3
+
+-- The buttons width in real coordinates
+skywars_settings.buttons_width = 1.7
+
+-- The buttons height in real coordinates
+skywars_settings.buttons_height = 1.7
+

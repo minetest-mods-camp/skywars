@@ -59,7 +59,19 @@ sure to reload the server, so that it can be loaded correctly, and
 remember that the old schematic won't be deleted!
 
 
-6) Enabling the arena using
+6) (Optional) Creating and setting the kits using: 
+
+/skywars createkit <kit name> <texture name>: texture name is the texture
+that the kit button will have in the selector menu at the start of the match,
+it must be a file name that you put in the <SKYWARS MOD FOLDER>/textures folder
+
+/skywars additem <kit name> <item> <count>: with this you can add items to it
+        
+/skywars arenakit add <arena name> <kit name>: each arena has a "kits" property
+that contains the choosable kits, with this command you add one to it
+
+
+7) Enabling the arena using
 
 /skywars enable <arena name>
 
