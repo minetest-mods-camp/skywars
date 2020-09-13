@@ -67,7 +67,7 @@ skywars_settings.background_height = 12
 skywars_settings.starting_x = 2.2
 
 -- The y position of the first buttons row
-skywars_settings.starting_y = 6.5
+skywars_settings.starting_y = 6.8
 
 -- The horizontal distance betweek buttons in real coordinates 
 skywars_settings.distance_x = 3
