@@ -4,14 +4,12 @@ local function select_kit(pl_name, kit_items)
     for i=1, #kit_items do
         player_inv:add_item("main", ItemStack(kit_items[i]))
     end
+    minetest.sound_play("sw_kit_selector", { pos = minetest.get_player_by_name(pl_name):get_pos(), to_player = pl_name })
 end
 
 
 
 local function create_formspec(arena)
-    local width = 5
-    local height = 6
-
     local formspec = {
         "formspec_version[3]",
         "size[12,12]",
@@ -70,7 +68,6 @@ end
 
 function skywars.show_kit_selector(pl_name, arena)
     if #arena.kits == 0 then return end
-
     minetest.show_formspec(pl_name, "skywars:kit_selector", create_formspec(arena))
 end
 

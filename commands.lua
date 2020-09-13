@@ -91,6 +91,8 @@ function(cmd)
         ]])
     end)
 
+
+
     -- create arena
     cmd:sub("create :arena", function(name, arena_name)
         arena_lib.create_arena(name, "skywars", arena_name)
@@ -128,7 +130,7 @@ function(cmd)
     -- this sets the spawns using the player position
     cmd:sub("setspawn :arena", function(name, arena)
         arena_lib.set_spawner(name, "skywars", arena)
-      end)
+    end)
 
 
 
@@ -220,7 +222,6 @@ function(cmd)
                 break
             end 
         end
-
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
 
         if found then skywars.print_msg(sender, skywars.T("@1 removed from @2", treasure_name, arena_name))
@@ -252,8 +253,8 @@ function(cmd)
         for i=1, #from_arena.treasures do
             to_arena.treasures[i] = from_arena.treasures[i]
         end
-
         arena_lib.change_arena_property(sender, "skywars", to, "treasures", to_arena.treasures, false)
+        
         skywars.print_msg(sender, skywars.T("@1 treasures have been copied to @2!", from, to))
     end)
 
