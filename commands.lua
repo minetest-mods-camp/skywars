@@ -581,7 +581,12 @@ function(cmd)
 
     cmd:sub("pos1", function(sender)
         local player = minetest.get_player_by_name(sender)
+        local looking_dir = player:get_look_dir()
 
+        if looking_dir.z <= 0 then
+            skywars.print_error(sender, skywars.T("You have to look to the north!")) 
+            return
+        end
         player:get_meta():set_string("pos1", minetest.serialize(player:get_pos()))
         skywars.print_msg(sender, skywars.T("Position saved!")) 
     end)
@@ -590,9 +595,14 @@ function(cmd)
 
     cmd:sub("pos2", function(sender)
         local player = minetest.get_player_by_name(sender)
+        local looking_dir = player:get_look_dir()
+
+        if looking_dir.z <= 0 then
+            skywars.print_error(sender, skywars.T("You have to look to the north!")) 
+            return
+        end
 
         player:get_meta():set_string("pos2", minetest.serialize(player:get_pos()))
-
         skywars.print_msg(sender, skywars.T("Position saved!")) 
     end)
 
@@ -608,15 +618,14 @@ function(cmd)
         if arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
-        end
-
-        if arena.enabled == true then
+        elseif arena.enabled == true then
             skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
             return
-        end
-
-        if pos1 == "" or pos2 == "" then
+        elseif pos1 == "" or pos2 == "" then
             skywars.print_error(sender, skywars.T("Pos1 or pos2 are not set!"))
+            return
+        elseif pos1.z > pos2.z then
+            skywars.print_error(sender, skywars.T("Pos1 Z has to be smaller than pos2!"))
             return
         end
 
