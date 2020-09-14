@@ -684,8 +684,7 @@ end, {
 
         - pos2
 
-        - createschematic <arena name> <pos1x> <pos1y> <pos1z> <pos2x> <pos2y>
-        <pos2z> <schematic_name>
+        - createschematic <arena name> <schematic_name>
 
         - getpos
 
