@@ -14,6 +14,7 @@ local function fill_chest_inv(chest, arena)
   local meta = minetest.get_meta(chest.pos)
   local inv = meta:get_inventory()
 
+  inv:set_list("main", {})
   for i=1, #treasures do
     inv:set_stack("main", i, treasures[i])
   end

@@ -51,7 +51,7 @@ local function create_formspec(arena)
                 -- if the string is "mod:item" it becomes "item"
                 if string.match(item_name, ":") then
                     local split_name = string.split(item_name, ":")
-                    item_name = split_name[1]
+                    item_name = string.gsub(split_name[2], "_", " ")
                 end
                 kit_items = kit_items .. "x" .. kits[name].items[j].count .. " " .. item_name .. "\n"
             end
