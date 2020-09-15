@@ -23,7 +23,6 @@ arena_lib.register_minigame("skywars", {
     kits = {}
   },
   player_properties = {
-    killstreak = 0,
     speed = skywars_settings.player_speed
   }
 })

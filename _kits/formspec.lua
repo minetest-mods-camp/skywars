@@ -55,10 +55,11 @@ local function create_formspec(arena)
                 end
                 kit_items = kit_items .. "x" .. kits[name].items[j].count .. " " .. item_name .. "\n"
             end
-        end
 
-        table.insert(formspec, "image_button["..x..","..y..";"..skywars_settings.buttons_width..","..skywars_settings.buttons_height..";" ..kits[name].texture.. ";"..name..";]")
-        table.insert(formspec, "tooltip["..name..";"..minetest.formspec_escape(kit_items).."]")
+            table.insert(formspec, "image_button["..x..","..y..";"..skywars_settings.buttons_width..","..skywars_settings.buttons_height..";" ..kits[name].texture.. ";"..name..";]")
+            table.insert(formspec, "tooltip["..name..";"..minetest.formspec_escape(kit_items).."]")
+        end
+        
     end 
 
     return table.concat(formspec, "")
