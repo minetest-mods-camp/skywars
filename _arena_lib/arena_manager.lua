@@ -54,7 +54,6 @@ end)
 
 
 arena_lib.on_death("skywars", function(arena, pl_name, reason)
-  
   if reason.type == "punch" then
     if reason.object ~= nil and reason.object:is_player() then
       local killer = reason.object:get_player_name()
