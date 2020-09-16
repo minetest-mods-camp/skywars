@@ -76,7 +76,9 @@ function(cmd)
         it must be a file name that you put in the <SKYWARS MOD FOLDER>/textures folder.
 
         /skywars additem <kit name> <item> <count>: with this you can add items to it
-        
+        or
+        /skywars additem hand <kit name>
+
         /skywars arenakit add <arena name> <kit name>: each arena has a "kits" property
         that contains the choosable kits, with this command you add one to it
 
@@ -177,7 +179,10 @@ function(cmd)
     function(sender, arena_name, treasure_name, count, rarity, preciousness )
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
@@ -218,9 +223,10 @@ function(cmd)
         local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
         local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
 
-        if treasure_name == nil then
-        else print(treasure_name) end
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -248,8 +254,6 @@ function(cmd)
         skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
             count, treasure_name, arena_name, rarity, preciousness
         ))
-
-        
     end)
 
     
@@ -257,7 +261,10 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
@@ -287,7 +294,10 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local treasure_name = ""
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
@@ -350,7 +360,10 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -372,7 +385,10 @@ function(cmd)
     cmd:sub("searchtreasure :arena :treasure", function(sender, arena_name, treasure_name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -407,7 +423,10 @@ function(cmd)
             id = #arena.chests+1
         }
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -433,7 +452,10 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -451,7 +473,10 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
@@ -519,6 +544,31 @@ function(cmd)
         
         itemstack.name = item_name
         itemstack.count = item_count
+
+        table.insert(kits[kit_name].items, itemstack)
+        skywars.overwrite_kits(kits) 
+        
+        skywars.print_msg(sender, skywars.T("@1 added to @2!", item_name, kit_name))
+    end)
+
+
+
+    cmd:sub("addkit hand :kit", 
+    function(sender, kit_name)
+        local kits = skywars.load_kits()
+        local item_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
+        local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
+
+        if kits[kit_name] == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
+            return
+        elseif treasure_name == "" then
+            skywars.print_error(sender, skywars.T("Your hand is empty!"))
+            return
+        end
+
+        itemstack.name = item_name
+        itemstack.count = count
 
         table.insert(kits[kit_name].items, itemstack)
         skywars.overwrite_kits(kits) 
@@ -611,7 +661,10 @@ function(cmd)
         local kits = skywars.load_kits()
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -641,7 +694,10 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -736,7 +792,10 @@ function(cmd)
         local pos1 = minetest.deserialize(player:get_meta():get_string("pos1")) 
         local pos2 = minetest.deserialize(player:get_meta():get_string("pos2")) 
 
-        if arena == nil then
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         end
@@ -809,6 +868,7 @@ end, {
         - createkit <kit name> <texture name>
         - deletekit <kit name>
         - additem <kit name> <item> <count>
+        - additem hand <kit name>
         - removeitem <kit name> <item>
         - arenakit add <arena> <kit name>
         - arenakit remove <arena> <kit name>

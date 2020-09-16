@@ -94,8 +94,14 @@ end)
 
 
 arena_lib.on_enable("skywars", function(arena, pl_name)
-  if arena.treasures[1] == nil or arena.chests[1] == nil or arena.schematic == "" then
-    skywars.print_error(pl_name, skywars.T("@1 wasn't configured properly!", arena.name))
+  if arena.treasures[1] == nil then
+    skywars.print_error(pl_name, skywars.T("You didn't set the treasures!"))
+    return false
+  elseif arena.chests[1] == nil then
+    skywars.print_error(pl_name, skywars.T("You didn't set the chests!"))
+    return false
+  elseif arena.schematic == "" or arena.pos1.x == nil then
+    skywars.print_error(pl_name, skywars.T("You didn't set the schematic!"))
     return false
   end
 
