@@ -612,12 +612,11 @@ function(cmd)
         for i=1, #kits[kit_name].items do
             if kits[kit_name].items[i].name == item_name then
                 table.remove(kits[kit_name].items, i)
-                skywars.overwrite_kits(kits)
                 found = true 
-                break
             end
         end
-        
+        skywars.overwrite_kits(kits)
+
         if found then 
             skywars.print_msg(sender, skywars.T("@1 removed from @2!!", item_name, kit_name))
         else

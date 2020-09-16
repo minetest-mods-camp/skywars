@@ -34,8 +34,7 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 	end
 	if treasure_amount == nil or treasure_amount == 0 then treasure_amount = 1 end
 
-	-- sorting the table from the rarest to the least rare treasure, so that if one of them has rarity one 
-	-- and it's at index one it doesn't prevent other treasures from appearing
+	-- sorting the table from the rarest to the least rare treasure
 	for j=#arena.treasures, 2, -1 do
 		for i=1, #arena.treasures-1 do
 			if arena.treasures[i].rarity < arena.treasures[i+1].rarity then
@@ -84,6 +83,7 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 					-- if the random number is a multiple of the item rarity then select it
 					if random % p_treasures[t].rarity == 0 then
 						table.insert(treasures, p_treasures[t])
+						break
 					end
 				end
 			end
