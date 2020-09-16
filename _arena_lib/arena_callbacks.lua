@@ -115,5 +115,7 @@ end)
 
 
 arena_lib.on_timeout("skywars", function(arena)
+  arena_lib.load_celebration("skywars", arena, skywars.T("Nobody"))
+
   arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("Time is out, the match is over!"))
 end)

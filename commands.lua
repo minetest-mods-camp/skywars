@@ -39,9 +39,13 @@ function(cmd)
         between 2 and 4
         count: the item amount
 
-        /skywars addtreasure <arena name> <item> <rarity (min 2.0, max 
-        1000.0)> <preciousness> <count>
+        /skywars addtreasure <arena name> <item> <count> <rarity (min 2.0, max 
+        1000.0)> <preciousness>
 
+        You can also use: 
+        /skywars addtreasure hand <arena name> <rarity (min 2.0, max 20.0)> 
+        <preciousness>
+        this will get the item name and count from the one in your hand.
 
         4) Setting the chests in the arena using:
 
@@ -49,7 +53,7 @@ function(cmd)
         <min_treasures_amount (min. 1)> <max_treasures_amount>
         to add a chest use this command at the position you want it to spawn, it 
         will automatically be filled with the right items when the match 
-        starts
+        starts.
 
 
         5) Saving the map schematic using:
@@ -69,7 +73,7 @@ function(cmd)
 
         /skywars createkit <kit name> <texture name>: texture name is the texture
         that the kit button will have in the selector menu at the start of the match,
-        it must be a file name that you put in the <SKYWARS MOD FOLDER>/textures folder
+        it must be a file name that you put in the <SKYWARS MOD FOLDER>/textures folder.
 
         /skywars additem <kit name> <item> <count>: with this you can add items to it
         
@@ -82,10 +86,10 @@ function(cmd)
         /skywars enable <arena name>
 
 
-        Once you've done this you can click the sign and start playing :)
-        You can use /help skywars to read all the commands
+        Once you've done this you can click the sign and start playing :).
+        You can use /help skywars to read all the commands.
         To modify the game settings (such as the messages prefix or the
-        hub spawn point) you can edit the SETTINGS.lua file
+        hub spawn point) you can edit the SETTINGS.lua file.
         ]])
     end)
 
@@ -169,16 +173,19 @@ function(cmd)
     -- ! CHEST CMDS ! --
     --------------------
 
-    cmd:sub("addtreasure :arena :treasure :rarity:number :preciousness:int :count:int", 
-    function(sender, arena_name, treasure_name, rarity, preciousness, count)
+    cmd:sub("addtreasure :arena :treasure :count:int :rarity:number :preciousness:int", 
+    function(sender, arena_name, treasure_name, count, rarity, preciousness )
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         
         if arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
         elseif count <= 0 then
             skywars.print_error(sender, skywars.T("Count has to be greater than 0!"))
             return
@@ -196,12 +203,57 @@ function(cmd)
         table.insert(arena.treasures, {name = treasure_name, rarity = rarity, count = count, preciousness = preciousness})
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
-        skywars.print_msg(sender, skywars.T("@1 added to @2!", treasure_name, arena_name))
+        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
+            count, treasure_name, arena_name, rarity, preciousness
+        ))
+
+        
     end)
     
 
+
+    cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int", 
+    function(sender, arena_name, rarity, preciousness)
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
+        local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
+
+        if treasure_name == nil then
+        else print(treasure_name) end
+        if arena == nil then
+            skywars.print_error(sender, skywars.T("Arena not found!"))
+            return
+        end
+        if arena.enabled == true then
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
+        end
+        if rarity < 2 then
+            skywars.print_error(sender, skywars.T("Rarity has to be greater than 2!"))
+            return
+        elseif rarity > 20 then
+            skywars.print_error(sender, skywars.T("Rarity has to be smaller than 21!"))
+            return
+        elseif treasure_name == "" then
+            skywars.print_error(sender, skywars.T("Your hand is empty!"))
+            return
+        end
+
+        table.insert(arena.treasures, {name = treasure_name, rarity = rarity, count = count, preciousness = preciousness})
+
+        arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
+        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
+            count, treasure_name, arena_name, rarity, preciousness
+        ))
+
+        
+    end)
+
     
-    cmd:sub("removetreasure :arena :treasure", function(sender, arena_name, treasure_name)
+    cmd:sub("removetreasure name :arena :treasure", function(sender, arena_name, treasure_name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
@@ -209,8 +261,11 @@ function(cmd)
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
         end
 
         for i=1, #arena.treasures do
@@ -222,7 +277,36 @@ function(cmd)
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
 
-        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2", treasure_name, arena_name))
+        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
+        else skywars.print_error(sender, skywars.T("Treasure not found!")) end
+    end)
+
+
+
+    cmd:sub("removetreasure id :arena :id:int", function(sender, arena_name, treasure_id)
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local treasure_name = ""
+
+        if arena == nil then
+            skywars.print_error(sender, skywars.T("Arena not found!"))
+            return
+        elseif arena.enabled == true then
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
+        end
+
+        for i=1, #arena.treasures do
+            if i == treasure_id then
+                treasure_name = arena.treasures[i].name
+                table.remove(arena.treasures, i)
+            end 
+        end
+        arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
+
+        if treasure_name ~= "" then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
         else skywars.print_error(sender, skywars.T("Treasure not found!")) end
     end)
 
@@ -232,6 +316,7 @@ function(cmd)
         local id, from_arena = arena_lib.get_arena_by_name("skywars", from)
         local id2, to_arena = arena_lib.get_arena_by_name("skywars", to)
         local found = false
+
 
         if from_arena == nil then
             skywars.print_error(sender, skywars.T("First arena not found!"))
@@ -243,8 +328,11 @@ function(cmd)
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
             return
         elseif to_arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", to))
-            return
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if to_arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", to))
+                return
+            end
         end
 
         to_arena.treasures = {}
@@ -270,12 +358,36 @@ function(cmd)
         skywars.print_msg(sender, skywars.T("Treasures list:"))
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
-            skywars.print_msg(sender, tostring(i) .. ".\n" .. 
+            skywars.print_msg(sender, "ID: " .. tostring(i) .. ".\n" .. 
                 skywars.T(
                     "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
                     treasure.name, treasure.rarity, treasure.preciousness, treasure.count
-                )
+                ) .. "\n\n"
             )
+        end
+    end)
+
+
+
+    cmd:sub("searchtreasure :arena :treasure", function(sender, arena_name, treasure_name)
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+
+        if arena == nil then
+            skywars.print_error(sender, skywars.T("Arena not found!"))
+            return
+        end
+
+        skywars.print_msg(sender, skywars.T("Treasures list:"))
+        for i=1, #arena.treasures do
+            local treasure = arena.treasures[i]
+            if treasure.name == treasure_name then
+                skywars.print_msg(sender, "ID: " .. tostring(i) .. ".\n" .. 
+                    skywars.T(
+                        "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
+                        treasure.name, treasure.rarity, treasure.preciousness, treasure.count
+                    ) .. "\n\n"
+                )
+            end
         end
     end)
 
@@ -298,10 +410,15 @@ function(cmd)
         if arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
-        elseif arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return
-        elseif t_min <= 0 or t_max <= 0 then
+        end
+        if arena.enabled == true then
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
+        end
+        if t_min <= 0 or t_max <= 0 then
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
             return
         end
@@ -338,8 +455,11 @@ function(cmd)
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
         elseif arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
         end
 
         for i=1, #arena.chests do
@@ -449,7 +569,7 @@ function(cmd)
         end
         
         if found then 
-            skywars.print_msg(sender, skywars.T("@1 removed from @2!", item_name, kit_name))
+            skywars.print_msg(sender, skywars.T("@1 removed from @2!!", item_name, kit_name))
         else
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
         end
@@ -494,10 +614,15 @@ function(cmd)
         if arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
-        elseif arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return
-        elseif kits[kit_name] == nil then
+        end
+        if arena.enabled == true then
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
+        end
+        if kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
@@ -519,10 +644,15 @@ function(cmd)
         if arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
-        elseif arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return
-        elseif kits[kit_name] == nil then
+        end
+        if arena.enabled == true then
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
+        end
+        if kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
@@ -536,9 +666,8 @@ function(cmd)
         end
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "kits", arena.kits, false)
-        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!", kit_name, arena_name)) 
+        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!!", kit_name, arena_name)) 
         else skywars.print_error(sender, skywars.T("Kit not found!")) end
-        
     end)
 
 
@@ -547,6 +676,7 @@ function(cmd)
         local id, from_arena = arena_lib.get_arena_by_name("skywars", from)
         local id2, to_arena = arena_lib.get_arena_by_name("skywars", to)
         local found = false
+
 
         if from_arena == nil then
             skywars.print_error(sender, skywars.T("First arena not found!"))
@@ -558,8 +688,12 @@ function(cmd)
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
             return
         elseif to_arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", to))
-            return
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+
+            if to_arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", to))
+                return
+            end
         end
 
         to_arena.kits = {}
@@ -605,17 +739,22 @@ function(cmd)
         if arena == nil then
             skywars.print_error(sender, skywars.T("Arena not found!"))
             return
-        elseif arena.enabled == true then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return
-        elseif pos1 == "" or pos2 == "" then
+        end
+        if arena.enabled == true then
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
+        end
+        if pos1 == "" or pos2 == "" then
             skywars.print_error(sender, skywars.T("Pos1 or pos2 are not set!"))
             return
         end
 
-        skywars.create_schematic(sender, {x = pos1.x, y = pos1.y, z = pos1.z}, {x = pos2.x, y = pos2.y, z = pos2.z}, name, arena)
-
-        skywars.print_msg(sender, skywars.T("Schematic @1 created! You can use /skywars info @2 to know its folder (see schematic=PATH)", name, arena_name)) 
+        local schem_path = minetest.get_worldpath() .. "/" .. name .. ".mts" 
+        skywars.create_schematic(sender, {x = pos1.x, y = pos1.y, z = pos1.z}, {x = pos2.x, y = pos2.y, z = pos2.z}, schem_path, arena)
+        skywars.print_msg(sender, skywars.T("Schematic @1 created! (Saved in @2)", name, schem_path)) 
     end)
 
 
@@ -637,66 +776,44 @@ end, {
     description = [[
 
         Arena_lib:
+
         - tutorial
-
         - create <arena name> [min players] [max players]
-
         - edit <arena name>
-
         - remove <arena name>
-
         - info <arena name>
-
         - list
-
         - enable <arena name>
-
         - disable <arena name>
 
 
         Skywars commands:
-        - addtreasure <arena name> <item> <rarity (min 2.0, max 20.0)> 
-        <preciousness> <count>
-        
-        - removetreasure <arena name> <treasure name>
 
+        - addtreasure <arena name> <item> <count> <rarity (min 2.0, max 20.0)> 
+        <preciousness> 
+        - addtreasure hand <arena name> <rarity (min 2.0, max 20.0)> 
+        <preciousness>
+        - removetreasure name <arena name> <treasure name>
+        - removetreasure id <arena name> <treasure id>
         - gettreasures <arena name>
-
-        - copytreasures <(from) arena name> <(to) arena name>: this will copy 
-        the first arena treasures in to the second one (! the second one will 
-        be overwritten !)
-
+        - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
+        - copytreasures <(from) arena name> <(to) arena name>
         - addchest <arena name> <min_preciousness> <max_preciousness> 
         <min_treasures_amount (min. 1)> <max_treasures_amount>
-
         - removechest <id>
-
-        - getchests <arena name>: shows id and position of each chest 
-
+        - getchests <arena name>
         - pos1
-
         - pos2
-
         - createschematic <arena name> <schematic_name>
-
         - getpos
-
         - createkit <kit name> <texture name>
-
         - deletekit <kit name>
-
         - additem <kit name> <item> <count>
-
         - removeitem <kit name> <item>
-        
         - arenakit add <arena> <kit name>
-
         - arenakit remove <arena> <kit name>
-
         - getkits
-
         - getitems <kit name>
-
         - copykits <arena1> <arena2>
         ]],
     privs = { skywars_admin = true }

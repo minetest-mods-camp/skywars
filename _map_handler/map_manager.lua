@@ -30,8 +30,8 @@ end
 function skywars.create_schematic(sender, pos1, pos2, name, arena)
     pos1, pos2 = reorder_positions(pos1, pos2)
 
-    minetest.create_schematic(pos1, pos2, nil, minetest.get_worldpath() .. "/" .. name .. ".mts", nil)
-    arena.schematic = minetest.get_worldpath() .. "/" .. name .. ".mts"
+    minetest.create_schematic(pos1, pos2, nil, name, nil)
+    arena.schematic = name
 
     arena_lib.change_arena_property(sender, "skywars", arena.name, "pos1", pos1) 
     arena_lib.change_arena_property(sender, "skywars", arena.name, "pos2", pos2) 
