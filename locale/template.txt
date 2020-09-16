@@ -25,8 +25,6 @@ Chest not found!=
 Chest list:=
 ID: @1 - POSITION: @2=
 Position saved!=
-You have to look to the north!=
-Pos1 Z has to be smaller than pos2!=
 Schematic @1 created! You can use /skywars info @2 to know its folder (see schematic@=PATH)=
 @1 wasn't configured properly!=
 @1 must be disabled!=
@@ -43,3 +41,4 @@ Kits list:=
 @1 items:=
 Kit not found!=
 @1 kits have been copied to @2!=
+Time is out, the match is over!=

@@ -30,6 +30,9 @@ skywars_settings.prefix = "Skywars > "
 -- The players walking speed when ther're playing a match
 skywars_settings.player_speed = 1
 
+-- The match duration in seconds
+skywars_settings.timer = 600
+
 
 
 

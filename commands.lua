@@ -59,12 +59,10 @@ function(cmd)
         /skywars createschematic <arena name> <schematic_name>
         in order to automatically reset the map on every match, you have to 
         create a schematic file; to do so, simply specify the corners of the 
-        map by facing NORTH (you can press F5 to know where you're facing), 
-        and by being sure pos1 Z is SMALLER than pos2 Z (/skywars pos1 and 
-        /skywars pos2 to set the two corners).
-        !If you overwrite a schematic that you've already created before make 
-        sure to reload the server, so that it can be loaded correctly, and 
-        remember that the old schematic won't be deleted!
+        map by using /skywars pos1 and /skywars pos2.
+        !If you overwrite a schematic that you've already created before
+        or you delete an arena make sure to reload the server/delete the old
+        schematic, because the old one won't be deleted!
 
         
         6) (Optional) Creating and setting the kits using: 
@@ -581,12 +579,7 @@ function(cmd)
 
     cmd:sub("pos1", function(sender)
         local player = minetest.get_player_by_name(sender)
-        local looking_dir = player:get_look_dir()
 
-        if looking_dir.z <= 0 then
-            skywars.print_error(sender, skywars.T("You have to look to the north!")) 
-            return
-        end
         player:get_meta():set_string("pos1", minetest.serialize(player:get_pos()))
         skywars.print_msg(sender, skywars.T("Position saved!")) 
     end)
@@ -595,12 +588,6 @@ function(cmd)
 
     cmd:sub("pos2", function(sender)
         local player = minetest.get_player_by_name(sender)
-        local looking_dir = player:get_look_dir()
-
-        if looking_dir.z <= 0 then
-            skywars.print_error(sender, skywars.T("You have to look to the north!")) 
-            return
-        end
 
         player:get_meta():set_string("pos2", minetest.serialize(player:get_pos()))
         skywars.print_msg(sender, skywars.T("Position saved!")) 
@@ -623,9 +610,6 @@ function(cmd)
             return
         elseif pos1 == "" or pos2 == "" then
             skywars.print_error(sender, skywars.T("Pos1 or pos2 are not set!"))
-            return
-        elseif pos1.z > pos2.z then
-            skywars.print_error(sender, skywars.T("Pos1 Z has to be smaller than pos2!"))
             return
         end
 
