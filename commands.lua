@@ -253,7 +253,7 @@ function(cmd)
     end)
 
     
-    cmd:sub("removetreasure name :arena :treasure", function(sender, arena_name, treasure_name)
+    cmd:sub("removetreasure :arena :treasure", function(sender, arena_name, treasure_name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
@@ -793,7 +793,7 @@ end, {
         <preciousness> 
         - addtreasure hand <arena name> <rarity (min 2.0, max 20.0)> 
         <preciousness>
-        - removetreasure name <arena name> <treasure name>
+        - removetreasure <arena name> <treasure name>
         - removetreasure id <arena name> <treasure id>
         - gettreasures <arena name>
         - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
