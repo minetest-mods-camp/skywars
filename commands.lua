@@ -1,6 +1,5 @@
 ChatCmdBuilder.new("skywars", 
 function(cmd)
-
     cmd:sub("tutorial", 
     function(sender)
         skywars.print_msg(sender, [[
