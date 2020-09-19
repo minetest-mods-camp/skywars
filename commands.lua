@@ -898,6 +898,8 @@ end, {
         - copytreasures <(from) arena name> <(to) arena name>
         - addchest <arena name> <min_preciousness> <max_preciousness> 
         <min_treasures_amount (min. 1)> <max_treasures_amount>
+        - addchest pos <arena name> <min_preciousness> <max_preciousness> 
+        <min_treasures_amount (min. 1)> <max_treasures_amount>
         - removechest <id>
         - getchests <arena name>
         - pos1
