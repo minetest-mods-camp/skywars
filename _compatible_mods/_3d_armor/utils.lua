@@ -10,7 +10,7 @@ local function move_armor_to_slot(player, armor_name)
         local wielded_armor = inv:get_stack("main", slots-slot_offset)
 
         inv:set_stack("main", slots-slot_offset, ItemStack(armor_name))
-        minetest.after(0, function() inv:set_stack("main", player:get_wield_index(), ItemStack(wielded_armor:get_name())) end)
+        minetest.after(0, function() inv:set_stack("main", player:get_wield_index(), wielded_armor) end)
     end
 
     -- if the armor is equal to one of the slot types then switch the items
@@ -76,7 +76,7 @@ function skywars.remove_all(player)
     
 	armor_inv:set_list("armor", {})
 	armor:set_player_armor(player)
-	armor:save_armor_inventory(player)
+    armor:save_armor_inventory(player)
 end
 
 
