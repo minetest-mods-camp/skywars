@@ -5,8 +5,8 @@
 
 Arena not found!=Arena non trovata!
 Count has to be greater than 0!=La quantità deve essere maggiore di 0
-Rarity has to be greater than 2!=La rarità deve essere maggiore di 2!
-Rarity has to be smaller than 21!=La rarità deve essere minore di 21!
+Rarity has to be greater than 0!=La rarità deve essere maggiore di 0!
+Rarity has to be smaller than 11!=La rarità deve essere minore di 11!
 @1 doesn't exist!=@1 non esiste!
 Your hand is empty!=La tua mano è vuota
 Treasure not found!=Tesoro non trovato!
@@ -22,6 +22,7 @@ Chest added!=Cassa aggiunta!
 Chest removed!=Cassa rimossa!
 Chest not found!=Cassa non trovata!
 Chest list:=Lista delle casse:
+You're not looking at anything!=Non stai guardando nulla!
 ID: @1 - POSITION: @2=ID: @1 - POSIZIONE: @2
 Position saved!=Posizione salvata
 Schematic @1 created! (Saved in @2)=Schematica @1 creata! (Salvata in @2)

@@ -25,28 +25,34 @@ clicking it).
 3) Setting the arena treasures (the items that can spawn in the 
 chests):
 item: the item name
-rarity: how often it will spawn in chests (the rarity gap between two 
-treasures should be at least of 2)
+rarity: how often it will spawn in chests
 preciousness: in which chests it can be put, for example a chest with 
 a preciousness range 2-4 can spawn just items with a preciousness 
 between 2 and 4
 count: the item amount
 
-/skywars addtreasure <arena name> <item> <count> <rarity (min 2.0, max 
-1000.0)> <preciousness>
+/skywars addtreasure <arena name> <item> <count> <rarity (min 1.0, max 
+10.0)> <preciousness>
 
 You can also use: 
-/skywars addtreasure hand <arena name> <rarity (min 2.0, max 20.0)> 
+/skywars addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
 <preciousness>
 this will get the item name and count from the one in your hand.
+
 
 4) Setting the chests in the arena using:
 
 /skywars addchest <arena name> <min_preciousness> <max_preciousness> 
 <min_treasures_amount (min. 1)> <max_treasures_amount>
-to add a chest use this command at the position you want it to spawn, it 
-will automatically be filled with the right items when the match 
-starts.
+to add a chest that will be filled with the right treasures when the match
+starts, this will set the position to the node you're looking at (not over it).
+
+You can also use: 
+
+/skywars addchest pos <arena name> <min_preciousness> <max_preciousness> 
+<min_treasures_amount (min. 1)> <max_treasures_amount>
+this will set the position over the node you're standing on.
+
 
 
 5) Saving the map schematic using:
@@ -69,6 +75,8 @@ that the kit button will have in the selector menu at the start of the match,
 it must be a file name that you put in the <SKYWARS MOD FOLDER>/textures folder.
 
 /skywars additem <kit name> <item> <count>: with this you can add items to it
+or
+/skywars additem hand <kit name>
 
 /skywars arenakit add <arena name> <kit name>: each arena has a "kits" property
 that contains the choosable kits, with this command you add one to it
