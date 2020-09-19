@@ -67,7 +67,7 @@ end
 
 
 
-function skywars.remove_all(player)
+function skywars.remove_all_armor(player)
     local name, armor_inv = armor:get_valid_player(player, "[remove_all]")
     
 	if not name then

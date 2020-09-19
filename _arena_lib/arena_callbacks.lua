@@ -1,5 +1,4 @@
 arena_lib.on_load("skywars", function(arena)
-
   if arena.reset == false then
     minetest.place_schematic(arena.pos1, arena.schematic)
     arena.reset = true
@@ -9,9 +8,11 @@ arena_lib.on_load("skywars", function(arena)
   skywars.fill_chests(arena)
   
   for pl_name in pairs(arena.players) do
+    local player = minetest.get_player_by_name(pl_name)
+
     skywars.show_kit_selector(pl_name, arena)
+    minetest.after(0.1, function() player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1)) end)
   end
-  
 end)
 
 
@@ -39,7 +40,7 @@ arena_lib.on_celebration("skywars", function(arena, winner_name)
 
     skywars.deactivate_hotbar(player)
     skywars.remove_HUD(arena, pl_name)
-    skywars.remove_all(player)
+    skywars.remove_all_armor(player)
   end
 end)
 
@@ -51,7 +52,7 @@ arena_lib.on_end("skywars", function(arena, players)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
     
-    skywars.remove_all(player)
+    skywars.remove_all_armor(player)
     -- restore player's original speed
     player:set_physics_override({speed=arena.players[pl_name].speed})
   end
@@ -75,7 +76,7 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
     arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("@1 is dead", pl_name))
   end
 
-  skywars.remove_all(player)
+  skywars.remove_all_armor(player)
   skywars.deactivate_hotbar(player)
   arena_lib.remove_player_from_arena(pl_name, 1)
   skywars.update_players_counter(arena)
@@ -84,9 +85,12 @@ end)
 
 
 arena_lib.on_quit("skywars", function(arena, pl_name)
+  local player = minetest.get_player_by_name(pl_name)
+
   skywars.deactivate_hotbar(minetest.get_player_by_name(pl_name))
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
+  skywars.remove_all_armor(player)
 end)
 
 
@@ -95,7 +99,7 @@ arena_lib.on_disconnect("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
   skywars.deactivate_hotbar(player)
   skywars.update_players_counter(arena, false)
-  skywars.remove_all(player)
+  skywars.remove_all_armor(player)
 end)
 
 
@@ -106,7 +110,7 @@ arena_lib.on_kick("skywars", function(arena, pl_name)
   skywars.deactivate_hotbar(player)
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
-  skywars.remove_all(player)
+  skywars.remove_all_armor(player)
 end)
 
 

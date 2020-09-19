@@ -198,7 +198,15 @@ function(cmd)
             return
         end
 
-        table.insert(arena.treasures, {name = treasure_name, rarity = rarity, count = count, preciousness = preciousness})
+        local item_id = 1
+        if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
+        table.insert(arena.treasures, {
+            name = treasure_name, 
+            rarity = rarity, 
+            count = count, 
+            preciousness = preciousness, 
+            id = item_id
+        })
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
         skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
@@ -241,7 +249,15 @@ function(cmd)
             return
         end
 
-        table.insert(arena.treasures, {name = treasure_name, rarity = rarity, count = count, preciousness = preciousness})
+        local item_id = 1
+        if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
+        table.insert(arena.treasures, {
+            name = treasure_name, 
+            rarity = rarity, 
+            count = count, 
+            preciousness = preciousness, 
+            id = item_id
+        })
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
         skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
@@ -301,7 +317,7 @@ function(cmd)
         end
 
         for i=1, #arena.treasures do
-            if i == treasure_id then
+            if arena.treasures[i].id == treasure_id then
                 treasure_name = arena.treasures[i].name
                 table.remove(arena.treasures, i)
                 break
@@ -364,7 +380,7 @@ function(cmd)
         skywars.print_msg(sender, skywars.T("Treasures list:"))
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
-            skywars.print_msg(sender, "ID: " .. tostring(i) .. ".\n" .. 
+            skywars.print_msg(sender, "ID: " .. arena.treasures[i].id .. ".\n" .. 
                 skywars.T(
                     "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
                     treasure.name, treasure.rarity, treasure.preciousness, treasure.count
@@ -390,7 +406,7 @@ function(cmd)
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
             if treasure.name == treasure_name then
-                skywars.print_msg(sender, "ID: " .. tostring(i) .. ".\n" .. 
+                skywars.print_msg(sender, "ID: " .. arena.treasures[i].id .. ".\n" .. 
                     skywars.T(
                         "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
                         treasure.name, treasure.rarity, treasure.preciousness, treasure.count
@@ -406,6 +422,9 @@ function(cmd)
     function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local pos = vector.round(minetest.get_player_by_name(sender):get_pos())
+        
+        local chest_id = 1
+        if arena.chests[#arena.chests] then chest_id = arena.chests[#arena.chests].id+1 end
         local chest = 
         {
             pos = pos,
@@ -413,7 +432,7 @@ function(cmd)
             max_preciousness = max_preciousness,
             min_treasures = t_min,
             max_treasures = t_max,
-            id = arena.chests[#arena.chests].id + 1
+            id = chest_id
         }
 
         if arena_lib.is_arena_in_edit_mode(arena_name) then 
@@ -452,6 +471,8 @@ function(cmd)
 
         if result then skywars.print_error(sender, skywars.T("You're not looking at anything!")) end
 
+        local chest_id = 1
+        if arena.chests[#arena.chests] then chest_id = arena.chests[#arena.chests].id+1 end
         local chest = 
         {
             pos = pos,
@@ -459,7 +480,7 @@ function(cmd)
             max_preciousness = max_preciousness,
             min_treasures = t_min,
             max_treasures = t_max,
-            id = arena.chests[#arena.chests].id + 1
+            id = chest_id
         }
 
         if arena_lib.is_arena_in_edit_mode(arena_name) then 
@@ -733,7 +754,7 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+        if arena_lib.is_arena_in_edit_mode(arena_name) then
             skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
             return 
         elseif arena == nil then
