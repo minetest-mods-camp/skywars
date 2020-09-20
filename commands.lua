@@ -268,7 +268,7 @@ function(cmd)
     
     cmd:sub("removetreasure :arena :treasure", function(sender, arena_name, treasure_name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
-        local found = false
+        local found = {true, false} -- the first is used to repeat the for until nothing is found
 
         if arena_lib.is_arena_in_edit_mode(arena_name) then 
             skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
@@ -284,15 +284,20 @@ function(cmd)
             end
         end
 
-        for i=1, #arena.treasures do
-            if arena.treasures[i] and arena.treasures[i].name == treasure_name then
-                table.remove(arena.treasures, i)
-                found = true
-            end 
+        while found[1] do
+            found[1] = false
+            for i, treasure in pairs(arena.treasures) do
+                if treasure.name == treasure_name then
+                    table.remove(arena.treasures, i)
+                    i = i-1
+                    found[1] = true
+                    found[2] = true
+                end 
+            end
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
 
-        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
+        if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
         else skywars.print_error(sender, skywars.T("Treasure not found!")) end
     end)
 

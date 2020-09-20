@@ -71,7 +71,7 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 	end
 
 	local treasures = {}
-	local count = 0
+	
 	-- while the generated treasures are less then the desired amount
 	while #treasures < treasure_amount and #p_treasures > 0 do
 		for c=1,treasure_amount do
@@ -81,14 +81,13 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 					local random = math.random(1, 100)
 
 					-- if the random number is a multiple of the item rarity then select it
-					if random % (p_treasures[t].rarity * 4 + 3) == 0 then
+					if random % (p_treasures[t].rarity * 10) == 0 then
 						table.insert(treasures, p_treasures[t])
 						break
 					end
 				end
 			end
 		end
-		count = count + 1
 	end
 
 	local itemstacks = {}

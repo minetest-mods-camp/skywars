@@ -6,17 +6,13 @@ local function move_armor_to_slot(player, armor_name)
     local slots = player:hud_get_hotbar_itemcount()
     local inv = player:get_inventory()
 
-    local function switch_items(slot_offset)
-        local wielded_armor = inv:get_stack("main", slots-slot_offset)
-
-        inv:set_stack("main", slots-slot_offset, ItemStack(armor_name))
-        minetest.after(0, function() inv:set_stack("main", player:get_wield_index(), wielded_armor) end)
-    end
-
     -- if the armor is equal to one of the slot types then switch the items
     for i=0, 4 do
         if armor_type == slot_type[i] then
-            switch_items(i)
+            local wielded_armor = inv:get_stack("main", slots-i)
+
+            inv:set_stack("main", slots-i, ItemStack(armor_name))
+            minetest.after(0, function() inv:set_stack("main", player:get_wield_index(), wielded_armor) end)
         end
     end
 end
