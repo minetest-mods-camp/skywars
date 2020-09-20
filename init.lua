@@ -3,6 +3,11 @@ dofile(minetest.get_modpath("skywars") .. "/SETTINGS.lua")
 skywars = {}
 skywars.T = minetest.get_translator("skywars")
 
+local disabled_damage_types_ = {}
+if skywars_settings.fall_damage_disabled then
+  disabled_damage_types_ = {"fall"}
+end
+
 arena_lib.register_minigame("skywars", {
   prefix = skywars_settings.prefix,
   hub_spawn_point = skywars_settings.hub_spawn_point,
@@ -27,7 +32,8 @@ arena_lib.register_minigame("skywars", {
   player_properties = {
     speed = skywars_settings.player_speed
   },
-  timer = skywars_settings.timer
+  timer = skywars_settings.timer,
+  disabled_damage_types = disabled_damage_types_
 })
 
 

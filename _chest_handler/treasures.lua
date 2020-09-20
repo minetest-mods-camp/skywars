@@ -22,16 +22,15 @@ local function treasure_to_itemstack(treasure)
 	itemstack.name = treasure.name
 	itemstack.count = determine_count(treasure)
 
+	if ItemStack(itemstack):is_known() == false then
+		minetest.log("error","[Skywars Treasures] I was asked to put "..treasure.name.." inside a chest, but it doesn't exist.")
+	end
 	return ItemStack(itemstack)
 end
 
 
 
 function skywars.select_random_treasures(treasure_amount, min_preciousness, max_preciousness, arena)
-	if #arena.treasures == 0 and treasure_amount >= 1 then
-		minetest.log("info","[treasurer] I was asked to return "..treasure_amount.." treasure(s) but I can’t return any because no treasure was registered to me.")
-		return {}
-	end
 	if treasure_amount == nil or treasure_amount == 0 then treasure_amount = 1 end
 
 	-- sorting the table from the rarest to the least rare treasure

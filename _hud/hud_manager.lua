@@ -1,8 +1,8 @@
 function skywars.generate_HUD(arena, pl_name)
     local player = minetest.get_player_by_name(pl_name)
-    local players_
+    local players_count_
     local players_killed_
-    local background_players_ 
+    local background_players_counter_ 
     local background_kill_counter_
     local x_pos = 0.45
     local y_pos = 0

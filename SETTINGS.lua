@@ -22,7 +22,7 @@ skywars_settings.loading_time = 10
 skywars_settings.queue_waiting_time = 10
 
 -- The time between the end of the match and the respawn at the hub.
-skywars_settings.celebration_time = 3
+skywars_settings.celebration_time = 5
 
 -- What's going to appear in most of the lines printed by murder.
 skywars_settings.prefix = "Skywars > "
@@ -32,6 +32,9 @@ skywars_settings.player_speed = 1
 
 -- The match duration in seconds
 skywars_settings.timer = 600
+
+-- true = on/false = off (case sensitive)
+skywars_settings.fall_damage_disabled = true
 
 
 
