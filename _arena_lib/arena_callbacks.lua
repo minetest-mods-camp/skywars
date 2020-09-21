@@ -17,7 +17,10 @@ arena_lib.on_load("skywars", function(arena)
     local player = minetest.get_player_by_name(pl_name)
 
     skywars.show_kit_selector(pl_name, arena)
-    minetest.after(0.1, function() player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1)) end)
+    minetest.after(0.1, function()
+      player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
+      player:set_physics_override({gravity=0})
+    end)
   end
 end)
 
@@ -30,7 +33,7 @@ arena_lib.on_start("skywars", function(arena)
     local player = minetest.get_player_by_name(pl_name)
 
     skywars.generate_HUD(arena, pl_name)
-    player:set_physics_override({speed=arena.players[pl_name].speed})
+    player:set_physics_override({speed=arena.players[pl_name].speed, gravity=1})
     -- saving original speed
     arena.players[pl_name].speed = player:get_physics_override().speed
   end
