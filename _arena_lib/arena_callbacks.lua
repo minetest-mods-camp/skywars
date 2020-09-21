@@ -16,10 +16,17 @@ arena_lib.on_load("skywars", function(arena)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
+    -- preventing players with noclip to fall like idiots when placing blocks
+    if minetest.check_player_privs(pl_name, {noclip=true}) then
+      local privs = minetest.get_player_privs(pl_name)
+      privs.noclip = nil
+      minetest.set_player_privs(pl_name, privs)
+    end
+
     skywars.show_kit_selector(pl_name, arena)
     minetest.after(0.1, function()
-      player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
       player:set_physics_override({gravity=0})
+      player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
     end)
   end
 end)
