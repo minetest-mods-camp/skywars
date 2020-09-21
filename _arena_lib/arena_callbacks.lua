@@ -79,8 +79,6 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
       -- arena.HUDs[killer].players_killed[2] == players amount
       reason.object:hud_change(arena.HUDs[killer].players_killed[1], "text", tostring(arena.HUDs[killer].players_killed[2] + 1))
     end
-  else
-    arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("@1 is dead", pl_name))
   end
 
   armor:remove_all(player)

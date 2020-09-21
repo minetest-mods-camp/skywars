@@ -34,7 +34,6 @@ You didn't set the schematic!=
 @1 must be disabled!=
 Pos1 or pos2 are not set!=
 @1 was killed by @2=
-@1 is dead=
 @1 already exists!=
 @1 added to @2!=
 x@1 @2 added to @3 with @4 rarity and @5 preciousness!=
