@@ -6,9 +6,16 @@ arena_lib.on_load("skywars", function(arena)
 
   skywars.place_chests(arena)
   skywars.fill_chests(arena)
-  
+
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
+
+    -- preventing players with noclip to fall like idiots when placing blocks
+    if minetest.check_player_privs(pl_name, {noclip=true}) then
+      local privs = minetest.get_player_privs(pl_name)
+      privs.noclip = nil
+      minetest.set_player_privs(pl_name, privs)
+    end
 
     skywars.show_kit_selector(pl_name, arena)
     minetest.after(0.1, function() player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1)) end)
@@ -29,7 +36,7 @@ arena_lib.on_start("skywars", function(arena)
     -- saving original speed
     arena.players[pl_name].speed = player:get_physics_override().speed
   end
-  
+
 end)
 
 
@@ -51,7 +58,7 @@ arena_lib.on_end("skywars", function(arena, players)
 
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
-    
+
     skywars.remove_all_armor(player)
     -- restore player's original speed
     player:set_physics_override({speed=arena.players[pl_name].speed})
@@ -104,7 +111,7 @@ end)
 
 
 
-arena_lib.on_kick("skywars", function(arena, pl_name) 
+arena_lib.on_kick("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
   skywars.deactivate_hotbar(player)
