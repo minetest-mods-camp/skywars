@@ -57,10 +57,10 @@ skywars_settings.hud__kit_background = "Kits.png"
 -- The width of the bacgkround texture in real coordinates,
 -- a unit of measurement which is roughly around 64 pixels, but 
 -- varies based on the screen density and scaling settings of the client
-skywars_settings.background_width = 12
+skywars_settings.background_width = 8
 
 -- The height of the bacgkround texture in real coordinates
-skywars_settings.background_height = 12
+skywars_settings.background_height = 8
 
 -- The x position of the first buttons row
 skywars_settings.starting_x = 1.7
@@ -78,8 +78,8 @@ skywars_settings.distance_y = 3
 skywars_settings.buttons_per_row = 3
 
 -- The buttons width in real coordinates
-skywars_settings.buttons_width = 2.2
+skywars_settings.buttons_width = 2
 
 -- The buttons height in real coordinates
-skywars_settings.buttons_height = 2
+skywars_settings.buttons_height = 1.8
 

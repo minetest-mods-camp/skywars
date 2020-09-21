@@ -876,9 +876,7 @@ function(cmd)
             return
         end
 
-        local schem_path = minetest.get_worldpath() .. "/" .. name .. ".mts" 
-        skywars.create_schematic(sender, {x = pos1.x, y = pos1.y, z = pos1.z}, {x = pos2.x, y = pos2.y, z = pos2.z}, schem_path, arena)
-        skywars.print_msg(sender, skywars.T("Schematic @1 created! (Saved in @2)", name, schem_path)) 
+        skywars.create_schematic(sender, {x = pos1.x, y = pos1.y, z = pos1.z}, {x = pos2.x, y = pos2.y, z = pos2.z}, name, arena)
     end)
 
 
