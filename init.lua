@@ -13,7 +13,7 @@ arena_lib.register_minigame("skywars", {
   hub_spawn_point = skywars_settings.hub_spawn_point,
   join_while_in_progress = false,
   celebration_time = skywars_settings.celebration_time,
-  loading_time = skywars_settings.loading_time,
+  load_time = skywars_settings.loading_time,
   queue_waiting_time = skywars_settings.queue_waiting_time,
   temp_properties = {
     HUDs = {},
