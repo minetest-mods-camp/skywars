@@ -38,6 +38,7 @@ function skywars.create_schematic(sender, pos1, pos2, name, arena)
         path = path:gsub("//", "/")
         arena.schematic = path
 
+        minetest.create_schematic(pos1, pos2, nil, path, nil)
         skywars.print_msg(sender, skywars.T("Schematic @1 created! (Saved in @2)", name, path)) 
     end
 
