@@ -15,7 +15,11 @@ arena_lib.on_load("skywars", function(arena)
       minetest.set_player_privs(pl_name, privs)
     end
 
-    minetest.set_node(vector.round(vector.add(player:get_pos(), {x = 0,y =-1,z = 0})), {name="default:glass"})
+    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =-1,z = 0})), {name="default:glass"})
+    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 1,y =1,z = 0})), {name="default:glass"})
+    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = -1,y =1,z = 0})), {name="default:glass"})
+    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = 1})), {name="default:glass"})
+    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = -1})), {name="default:glass"})
 
     skywars.show_kit_selector(pl_name, arena)
     minetest.after(0.1, function()
