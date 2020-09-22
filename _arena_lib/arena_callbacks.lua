@@ -79,6 +79,7 @@ arena_lib.on_end("skywars", function(arena, players)
     armor:remove_all(player)
     -- restore player's original speed
     player:set_physics_override({speed=arena.players[pl_name].speed})
+    skywars.block_enderpearl(player, arena)
   end
 end)
 
@@ -117,6 +118,7 @@ arena_lib.on_quit("skywars", function(arena, pl_name)
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
   armor:remove_all(player)
+  skywars.block_enderpearl(player, arena)
 end)
 
 
@@ -148,6 +150,7 @@ arena_lib.on_kick("skywars", function(arena, pl_name)
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
   armor:remove_all(player)
+  skywars.block_enderpearl(player, arena)
 end)
 
 

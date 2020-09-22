@@ -39,7 +39,8 @@ arena_lib.register_minigame("skywars", {
 
 
 dofile(minetest.get_modpath("skywars") .. "/chatcmdbuilder.lua")
-dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/exschem/init.lua")
+dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/exschem/init_exschem.lua")
+dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/enderpearl/init_enderpearl.lua")
 dofile(minetest.get_modpath("skywars") .. "/_storage/storage_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/_hud/hud_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/commands.lua")
