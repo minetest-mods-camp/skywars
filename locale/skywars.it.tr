@@ -21,6 +21,7 @@ name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4=nome: @1 @nrarità: @2 @npr
 Chest added!=Cassa aggiunta!
 Chest removed!=Cassa rimossa!
 Chest not found!=Cassa non trovata!
+The chest already exists!=La cassa già esiste!
 Chest list:=Lista delle casse:
 You're not looking at anything!=Non stai guardando nulla!
 ID: @1 - POSITION: @2=ID: @1 - POSIZIONE: @2

@@ -25,14 +25,7 @@ arena_lib.on_load("skywars", function(arena)
   end
 
   -- load the schematic
-  if arena.reset == false then
-    if minetest.get_modpath("exschem") == "" or minetest.get_modpath("exschem") == nil then
-      minetest.place_schematic(arena.pos1, arena.schematic)
-    else
-      skywars.load_exschem_schematic(arena.pos1, arena.schematic)
-    end
-    arena.reset = true
-  end
+  skywars.load_schematic(arena)
 end)
 
 
@@ -58,7 +51,7 @@ arena_lib.on_celebration("skywars", function(arena, winner_name)
     local player = minetest.get_player_by_name(pl_name)
 
     skywars.remove_HUD(arena, pl_name)
-    armor:remove_all(player)
+    skywars.remove_armor(player)
   end
 end)
 
@@ -76,7 +69,7 @@ arena_lib.on_end("skywars", function(arena, players)
       minetest.set_player_privs(pl_name, privs)
     end
 
-    armor:remove_all(player)
+    skywars.remove_armor(player)
     -- restore player's original speed
     player:set_physics_override({speed=arena.players[pl_name].speed})
     skywars.block_enderpearl(player, arena)
@@ -99,7 +92,7 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
     end
   end
 
-  armor:remove_all(player)
+  skywars.remove_armor(player)
   arena_lib.remove_player_from_arena(pl_name, 1)
   skywars.update_players_counter(arena)
 end)
@@ -117,7 +110,7 @@ arena_lib.on_quit("skywars", function(arena, pl_name)
 
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
-  armor:remove_all(player)
+  skywars.remove_armor(player)
   skywars.block_enderpearl(player, arena)
 end)
 
@@ -133,7 +126,7 @@ arena_lib.on_disconnect("skywars", function(arena, pl_name)
   end
 
   skywars.update_players_counter(arena, false)
-  armor:remove_all(player)
+  skywars.remove_armor(player)
 end)
 
 
@@ -149,7 +142,7 @@ arena_lib.on_kick("skywars", function(arena, pl_name)
 
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
-  armor:remove_all(player)
+  skywars.remove_armor(player)
   skywars.block_enderpearl(player, arena)
 end)
 

@@ -7,7 +7,9 @@ Don't change the variables' names if you don't know what you're doing
 
 
 
+
 -- ARENA LIB'S SETTINGS --
+
 
 -- The table that stores all the global variables, don't touch this.
 skywars_settings = {}
@@ -83,3 +85,10 @@ skywars_settings.buttons_width = 2
 -- The buttons height in real coordinates
 skywars_settings.buttons_height = 1.8
 
+
+
+
+-- ARMOR 3D SETTINGS --
+
+
+skywars_settings.remove_armors_on_join = true

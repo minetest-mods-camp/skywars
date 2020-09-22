@@ -25,6 +25,7 @@ Chest added!=
 Chest removed!=
 Chest not found!=
 Chest list:=
+The chest already exists!=
 ID: @1 - POSITION: @2=
 Position saved!=
 Schematic @1 created! (Saved in @2)=

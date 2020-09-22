@@ -3,6 +3,7 @@ dofile(minetest.get_modpath("skywars") .. "/SETTINGS.lua")
 skywars = {}
 skywars.T = minetest.get_translator("skywars")
 
+
 local disabled_damage_types_ = {}
 if skywars_settings.fall_damage_disabled then
   disabled_damage_types_ = {"fall"}
@@ -41,6 +42,7 @@ arena_lib.register_minigame("skywars", {
 dofile(minetest.get_modpath("skywars") .. "/chatcmdbuilder.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/exschem/init_exschem.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/enderpearl/init_enderpearl.lua")
+dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/3d_armor/init_3d_armor.lua")
 dofile(minetest.get_modpath("skywars") .. "/_storage/storage_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/_hud/hud_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/commands.lua")
@@ -55,7 +57,6 @@ dofile(minetest.get_modpath("skywars") .. "/_kits/formspec.lua")
 ---------------
 -- ! UTILS ! --
 ---------------
-
 
 function skywars.print_error(player, msg)
   minetest.chat_send_player(player, minetest.colorize("#e6482e", skywars_settings.prefix .. msg))

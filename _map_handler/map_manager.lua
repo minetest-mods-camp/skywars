@@ -30,7 +30,7 @@ end
 function skywars.create_schematic(sender, pos1, pos2, name, arena)
     pos1, pos2 = reorder_positions(pos1, pos2)
 
-    if minetest.get_modpath("exschem") == "" or minetest.get_modpath("exschem") == nil then
+    if minetest.get_modpath("exschem") then
         local path = minetest.get_worldpath() .. "/" .. name .. ".mts" 
 
         skywars.print_msg(sender, skywars.T("Schematic @1 created! (Saved in @2)", name, path)) 
@@ -44,6 +44,19 @@ function skywars.create_schematic(sender, pos1, pos2, name, arena)
     arena_lib.change_arena_property(sender, "skywars", arena.name, "pos1", pos1) 
     arena_lib.change_arena_property(sender, "skywars", arena.name, "pos2", pos2) 
     arena_lib.change_arena_property(sender, "skywars", arena.name, "schematic", arena.schematic)
+end
+
+
+
+function skywars.load_schematic(arena)
+    if arena.reset == false then
+        if minetest.get_modpath("exschem") then
+            minetest.place_schematic(arena.pos1, arena.schematic)
+        else
+            skywars.load_exschem_schematic(arena.pos1, arena.schematic)
+        end
+        arena.reset = true
+    end
 end
 
 

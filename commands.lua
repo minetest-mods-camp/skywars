@@ -427,8 +427,9 @@ function(cmd)
     function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local pos = vector.round(minetest.get_player_by_name(sender):get_pos())
-        
+        local exists = false
         local chest_id = 1
+
         if arena.chests[#arena.chests] then chest_id = arena.chests[#arena.chests].id+1 end
         local chest = 
         {
@@ -456,6 +457,16 @@ function(cmd)
         end
         if t_min <= 0 or t_max <= 0 then
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
+            return
+        end
+        for i=1, #arena.chests do
+            if vector.equals(arena.chests[i].pos, pos) then
+                exists = true
+                break
+            end 
+        end 
+        if exists then
+            skywars.print_error(sender, skywars.T("The chest already exists!"))
             return
         end
 
@@ -473,8 +484,12 @@ function(cmd)
         local look_dir = player:get_look_dir()
         local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
         local result, pos = minetest.line_of_sight(vector.add(pos_head, vector.divide(look_dir, 4)), vector.add(pos_head, vector.multiply(look_dir, 10)))
+        local exists = false
 
-        if result then skywars.print_error(sender, skywars.T("You're not looking at anything!")) end
+        if result then 
+            skywars.print_error(sender, skywars.T("You're not looking at anything!")) 
+            return
+        end
 
         local chest_id = 1
         if arena.chests[#arena.chests] then chest_id = arena.chests[#arena.chests].id+1 end
@@ -504,6 +519,16 @@ function(cmd)
         end
         if t_min <= 0 or t_max <= 0 then
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
+            return
+        end
+        for i=1, #arena.chests do
+            if vector.equals(arena.chests[i].pos, pos) then
+                exists = true
+                break
+            end 
+        end 
+        if exists then
+            skywars.print_error(sender, skywars.T("The chest already exists!"))
             return
         end
 
@@ -535,9 +560,18 @@ function(cmd)
     
 
     
-    cmd:sub("removechest :arena :id:int", function(sender, arena_name, chest_id)
+    cmd:sub("removechest :arena", function(sender, arena_name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
+        local player = minetest.get_player_by_name(sender)
+        local look_dir = player:get_look_dir()
+        local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
+        local result, pos = minetest.line_of_sight(vector.add(pos_head, vector.divide(look_dir, 4)), vector.add(pos_head, vector.multiply(look_dir, 10)))
+
+        if result then 
+            skywars.print_error(sender, skywars.T("You're not looking at anything!"))
+            return
+        end
 
         if arena_lib.is_arena_in_edit_mode(arena_name) then 
             skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
@@ -554,7 +588,43 @@ function(cmd)
         end
 
         for i=1, #arena.chests do
-            if arena.chests[i].id == chest_id then
+            if vector.equals(arena.chests[i].pos, pos) then
+                table.remove(arena.chests, i)
+                found = true
+                break
+            end 
+        end
+        arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
+
+        if found then
+            skywars.print_msg(sender, skywars.T("Chest removed!"))
+        else
+            skywars.print_error(sender, skywars.T("Chest not found!"))
+        end
+    end)
+
+
+
+    cmd:sub("removechest id :arena :id:int", function(sender, arena_name, chest_id)
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local found = false
+        
+        if arena_lib.is_arena_in_edit_mode(arena_name) then 
+            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+            return 
+        elseif arena == nil then
+            skywars.print_error(sender, skywars.T("Arena not found!"))
+            return
+        elseif arena.enabled == true then
+            arena_lib.disable_arena(sender, "skywars", arena_name)
+            if arena.enabled == true then
+                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+                return
+            end
+        end
+
+        for i=1, #arena.chests do
+            if arena.chests[i].id == id then
                 table.remove(arena.chests, i)
                 found = true
                 break
@@ -619,22 +689,26 @@ function(cmd)
 
 
 
-    cmd:sub("addkit hand :kit", 
+    cmd:sub("additem hand :kit", 
     function(sender, kit_name)
         local kits = skywars.load_kits()
         local item_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
-        local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
+        local item_count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
+        local itemstack = {}
 
-        if kits[kit_name] == nil then
+        if ItemStack(item_name):is_known() == false then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
+            return
+        elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
-        elseif treasure_name == "" then
+        elseif item_name == "" then
             skywars.print_error(sender, skywars.T("Your hand is empty!"))
             return
         end
-
+        
         itemstack.name = item_name
-        itemstack.count = count
+        itemstack.count = item_count
 
         table.insert(kits[kit_name].items, itemstack)
         skywars.overwrite_kits(kits) 
@@ -924,7 +998,8 @@ end, {
         <min_treasures_amount (min. 1)> <max_treasures_amount>
         - addchest pos <arena name> <min_preciousness> <max_preciousness> 
         <min_treasures_amount (min. 1)> <max_treasures_amount>
-        - removechest <id>
+        - removechest
+        - removechest id <id>
         - getchests <arena name>
         - pos1
         - pos2
