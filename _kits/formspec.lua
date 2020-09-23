@@ -34,6 +34,11 @@ local function create_formspec(arena)
         local x = skywars_settings.starting_x + offset_x
         local y = skywars_settings.starting_y + offset_y
 
+        if kits[name] == nil then
+            minetest.log("error", "[Skywars] The arena " .. arena.name .. " is trying to show a kit called " .. name .. ", but it doesn't exist!")
+            goto continue
+        end
+
         -- if offset_x has reached its maximum amount then reset it and increase offset_y
         if offset_x == distance_x * (buttons_per_row-1) then 
             offset_y = offset_y + distance_y
@@ -60,6 +65,7 @@ local function create_formspec(arena)
             table.insert(formspec, "tooltip["..name..";"..minetest.formspec_escape(kit_items).."]")
         end
         
+        ::continue::
     end 
 
     return table.concat(formspec, "")

@@ -5,16 +5,6 @@ arena_lib.on_load("skywars", function(arena)
   minetest.after(skywars_settings.loading_time, function()
     skywars.place_chests(arena)
     skywars.fill_chests(arena)
-
-    for pl_name in pairs(arena.players) do
-      local player = minetest.get_player_by_name(pl_name)
-
-      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =-1,z = 0})), {name="air"})
-      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 1,y =1,z = 0})), {name="air"})
-      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = -1,y =1,z = 0})), {name="air"})
-      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = 1})), {name="air"})
-      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = -1})), {name="air"})
-    end
   end)
   
   for pl_name in pairs(arena.players) do
@@ -28,11 +18,25 @@ arena_lib.on_load("skywars", function(arena)
       minetest.set_player_privs(pl_name, privs)
     end
 
-    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =-1,z = 0})), {name="default:glass"})
-    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 1,y =1,z = 0})), {name="default:glass"})
-    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = -1,y =1,z = 0})), {name="default:glass"})
-    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = 1})), {name="default:glass"})
-    minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = -1})), {name="default:glass"})
+    local function set_glass(relative_pos)
+      local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
+
+      if minetest.get_node(node_pos).name == "air" then 
+        minetest.add_node(node_pos, {name="default:glass"})
+
+        minetest.after(skywars_settings.loading_time, function() 
+          minetest.add_node(node_pos, {name="air"})
+        end)
+      end
+    end
+
+    -- puts glass nodes around the player
+    set_glass({x = 0,y = -1,z = 0})
+    set_glass({x = 0,y = -2,z = 0})
+    set_glass({x = 1,y = 1,z = 0})
+    set_glass({x = -1,y = 1,z = 0})
+    set_glass({x = 0,y = 1,z = 1})
+    set_glass({x = 0,y = 1,z = -1})
 
     skywars.show_kit_selector(pl_name, arena)
     minetest.after(0.1, function()
@@ -63,6 +67,12 @@ end)
 arena_lib.on_celebration("skywars", function(arena, winner_name)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
+
+    if player:get_meta():get_int("noclip") == 2 then
+      local privs = minetest.get_player_privs(pl_name)
+      privs.noclip = true
+      minetest.set_player_privs(pl_name, privs)
+    end
 
     skywars.remove_HUD(arena, pl_name)
     skywars.remove_armor(player)
@@ -104,6 +114,12 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
       -- arena.HUDs[killer].players_killed[2] == players amount
       reason.object:hud_change(arena.HUDs[killer].players_killed[1], "text", tostring(arena.HUDs[killer].players_killed[2] + 1))
     end
+  end
+
+  if player:get_meta():get_int("noclip") == 2 then
+    local privs = minetest.get_player_privs(pl_name)
+    privs.noclip = true
+    minetest.set_player_privs(pl_name, privs)
   end
 
   skywars.remove_armor(player)

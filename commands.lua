@@ -713,7 +713,7 @@ function(cmd)
         table.insert(kits[kit_name].items, itemstack)
         skywars.overwrite_kits(kits) 
         
-        skywars.print_msg(sender, skywars.T("@1 added to @2!", item_name, kit_name))
+        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3!", item_count, item_name, kit_name))
     end)
 
 
