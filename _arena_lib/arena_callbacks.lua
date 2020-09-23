@@ -1,7 +1,20 @@
 arena_lib.on_load("skywars", function(arena)
+  -- load the schematic
+  skywars.load_schematic(arena)
+
   minetest.after(skywars_settings.loading_time, function()
     skywars.place_chests(arena)
     skywars.fill_chests(arena)
+
+    for pl_name in pairs(arena.players) do
+      local player = minetest.get_player_by_name(pl_name)
+
+      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =-1,z = 0})), {name="air"})
+      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 1,y =1,z = 0})), {name="air"})
+      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = -1,y =1,z = 0})), {name="air"})
+      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = 1})), {name="air"})
+      minetest.add_node(vector.round(vector.add(player:get_pos(), {x = 0,y =1,z = -1})), {name="air"})
+    end
   end)
   
   for pl_name in pairs(arena.players) do
@@ -27,9 +40,6 @@ arena_lib.on_load("skywars", function(arena)
       player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
     end)
   end
-
-  -- load the schematic
-  skywars.load_schematic(arena)
 end)
 
 

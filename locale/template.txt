@@ -45,6 +45,7 @@ Kit @1 deleted!=
 Kits list:=
 @1 items:=
 Kit not found!=
+@1 resetted!=
 @1 kits have been copied to @2!=
 Time is out, the match is over!=
 Nobody=

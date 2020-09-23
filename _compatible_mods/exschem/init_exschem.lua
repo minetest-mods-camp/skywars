@@ -9,5 +9,6 @@ end
 
 
 function skywars.load_exschem_schematic(pos1, schematic)
+    minetest.log("action", "Skywars > Loading  " .. schematic .. " at pos1:" .. minetest.serialize(pos1))
     exschem.load(pos1, pos1, 0, {}, schematic, 0)
 end

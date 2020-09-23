@@ -752,16 +752,34 @@ function(cmd)
         for i=1, #kits[kit_name].items do
             if kits[kit_name].items[i].name == item_name then
                 table.remove(kits[kit_name].items, i)
-                found = true 
+                found = true
+                break 
             end
         end
         skywars.overwrite_kits(kits)
 
         if found then 
-            skywars.print_msg(sender, skywars.T("@1 removed from @2!!", item_name, kit_name))
+            skywars.print_msg(sender, skywars.T("@1 removed from @2!", item_name, kit_name))
         else
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
         end
+    end)
+
+
+
+    cmd:sub("resetkit :kit", 
+    function(sender, kit_name)
+        local kits = skywars.load_kits()
+
+        if kits[kit_name] == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
+            return
+        end
+
+        kits[kit_name].items = {}
+        skywars.overwrite_kits(kits)
+
+        skywars.print_msg(sender, skywars.T("@1 resetted!", kit_name))
     end)
 
 
@@ -1013,6 +1031,7 @@ end, {
         - arenakit add <arena> <kit name>
         - arenakit remove <arena> <kit name>
         - getkits
+        - resetkit <kit name>
         - getitems <kit name>
         - copykits <arena1> <arena2>
         ]],
