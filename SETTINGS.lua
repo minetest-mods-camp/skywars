@@ -30,7 +30,7 @@ skywars_settings.celebration_time = 5
 skywars_settings.prefix = "Skywars > "
 
 -- The players walking speed when ther're playing a match
-skywars_settings.player_speed = 1
+skywars_settings.player_speed = 1.5
 
 -- The match duration in seconds
 skywars_settings.timer = 600
@@ -56,14 +56,6 @@ For X and Y, 0.0 and 1.0 represent opposite edges of the game window, for exampl
 -- The texture background for the kit menu
 skywars_settings.hud__kit_background = "Kits.png"
 
--- The width of the bacgkround texture in real coordinates,
--- a unit of measurement which is roughly around 64 pixels, but 
--- varies based on the screen density and scaling settings of the client
-skywars_settings.background_width = 8
-
--- The height of the bacgkround texture in real coordinates
-skywars_settings.background_height = 8
-
 -- The x position of the first buttons row
 skywars_settings.starting_x = 1.7
 
@@ -79,7 +71,9 @@ skywars_settings.distance_y = 3
 -- The amount of buttons in a row
 skywars_settings.buttons_per_row = 3
 
--- The buttons width in real coordinates
+-- The buttons width in real coordinates,
+-- a unit of measurement which is roughly around 64 pixels, but 
+-- varies based on the screen density and scaling settings of the client
 skywars_settings.buttons_width = 2
 
 -- The buttons height in real coordinates

@@ -17,10 +17,9 @@ local function create_formspec(arena)
         "anchor[0.5,0.5]",
         "no_prepend[]",
         "bgcolor[#00000000;]",
-        "background[0,0;"..skywars_settings.background_width..","..skywars_settings.background_height..";"..skywars_settings.hud__kit_background..";true]",
+        "background[0,0;1,1;"..skywars_settings.hud__kit_background..";true]",
         "style_type[image_button;border=false]"
     }
-
     local buttons_per_row = skywars_settings.buttons_per_row
     local distance_x = skywars_settings.distance_x
     local distance_y = skywars_settings.distance_y

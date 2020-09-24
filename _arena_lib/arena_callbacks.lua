@@ -9,6 +9,7 @@ arena_lib.on_load("skywars", function(arena)
   
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
+    local pl_pos = player:get_pos()
 
     -- preventing players with noclip to fall when placing blocks
     if minetest.check_player_privs(pl_name, {noclip=true}) then
@@ -42,6 +43,11 @@ arena_lib.on_load("skywars", function(arena)
     minetest.after(0.1, function()
       player:set_physics_override({gravity=0, jump=0})
       player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
+    end)
+
+    -- teleports the player back to in the glass
+    minetest.after(1, function()
+      player:set_pos(pl_pos)
     end)
   end
 end)
