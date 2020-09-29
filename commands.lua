@@ -60,19 +60,23 @@ function(cmd)
         this will set the position over the node you're standing on.
 
 
-        5) Saving the map schematic using:
+        5) Saving the map area using:
 
-        /skywars pos1
-        /skywars pos2
-        /skywars createschematic <arena name> <schematic_name>
-        in order to automatically reset the map on every match, you have to 
-        create a schematic file; to do so, simply specify the corners of the 
-        map by using /skywars pos1 and /skywars pos2.
-        !If you overwrite a schematic that you've already created before
-        or you delete an arena make sure to reload the server/delete the old
-        schematic, because the old one won't be deleted!
-
+        /skywars pos1 <arena name>
+        /skywars pos2 <arena name>
+        in order to kill players that go out of the map, you have to define a 
+        map area; to do so, simply specify its corners by using
+        /skywars pos1 and /skywars pos2.
         
+        ! WARNING !
+        To modify a map you must use use /skywars reset <arena name> and then disable 
+        the arena, otherwise your changes may get lost.
+        Everything you change when the arena's disabled won't be saved, so make
+        sure to properly reset your map before doing so (e.g. if when you reset the arena
+        flowing lava and water created some stone it won't be reset the first time, so
+        you'll have to reset it until the map is clear).
+
+
         6) (Optional) Creating and setting the kits using: 
 
         /skywars createkit <kit name> <texture name>: texture name is the texture
@@ -779,7 +783,7 @@ function(cmd)
         kits[kit_name].items = {}
         skywars.overwrite_kits(kits)
 
-        skywars.print_msg(sender, skywars.T("@1 resetted!", kit_name))
+        skywars.print_msg(sender, skywars.T("@1 reset!", kit_name))
     end)
 
 
@@ -924,65 +928,66 @@ function(cmd)
     -- ! MAP CMDS ! --
     ------------------
 
-    cmd:sub("pos1", function(sender)
+    cmd:sub("pos1 :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-
-        player:get_meta():set_string("pos1", minetest.serialize(player:get_pos()))
-        skywars.print_msg(sender, skywars.T("Position saved!")) 
-    end)
-
-
-
-    cmd:sub("pos2", function(sender)
-        local player = minetest.get_player_by_name(sender)
-
-        player:get_meta():set_string("pos2", minetest.serialize(player:get_pos()))
-        skywars.print_msg(sender, skywars.T("Position saved!")) 
-    end)
-
-
-
-    cmd:sub("createschematic :arena :name",
-    function(sender, arena_name, name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+
+        if arena == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
+            return
+        end
+
+        arena.pos1 = player:get_pos()
+        arena_lib.change_arena_property(sender, "skywars", arena.name, "pos1", arena.pos1) 
+
+        skywars.print_msg(sender, skywars.T("Position saved!")) 
+
+    end)
+
+
+
+    cmd:sub("pos2 :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local pos1 = minetest.deserialize(player:get_meta():get_string("pos1")) 
-        local pos2 = minetest.deserialize(player:get_meta():get_string("pos2")) 
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
-            return
-        end
-        if arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
-        end
-        if pos1 == "" or pos2 == "" then
-            skywars.print_error(sender, skywars.T("Pos1 or pos2 are not set!"))
+        if arena == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
             return
         end
 
-        skywars.create_schematic(sender, {x = pos1.x, y = pos1.y, z = pos1.z}, {x = pos2.x, y = pos2.y, z = pos2.z}, name, arena)
+        arena.pos2 = player:get_pos()
+        arena_lib.change_arena_property(sender, "skywars", arena.name, "pos2", arena.pos2) 
+
+        skywars.print_msg(sender, skywars.T("Position saved!")) 
     end)
 
 
 
     cmd:sub("getpos", function(sender)
-
-        function round(num, numDecimalPlaces)
-            return string.format("%." .. (numDecimalPlaces or 0) .. "f", num)
-        end
-
         local pos = minetest.get_player_by_name(sender):get_pos()
-        local readable_pos = "[X Y Z] " .. round(pos.x, 1) .. " " .. round(pos.y, 1) .. " " .. round(pos.z, 1)
+        local readable_pos = "[X Y Z] " .. minetest.pos_to_string(pos, 1)
 
         skywars.print_msg(sender, readable_pos)
+    end)
+
+
+
+    cmd:sub("reset :arena", function(sender, arena_name)
+        local player = minetest.get_player_by_name(sender)
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+
+        if arena == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
+            return
+        end
+        
+        skywars.reset_map(arena)
+
+        if arena.enabled then
+            skywars.print_msg(sender, skywars.T("@1 reset!", arena.name)) 
+        else
+            skywars.print_error(sender, skywars.T("@1 must be enabled!", arena_name))
+        end
     end)
 
 end, {
@@ -995,7 +1000,6 @@ end, {
         - create <arena name> [min players] [max players]
         - edit <arena name>
         - remove <arena name>
-        - info <arena name>
         - list
         - enable <arena name>
         - disable <arena name>
@@ -1019,9 +1023,9 @@ end, {
         - removechest
         - removechest id <id>
         - getchests <arena name>
-        - pos1
-        - pos2
-        - createschematic <arena name> <schematic_name>
+        - pos1 <arena name>
+        - pos2 <arena name>
+        - reset <arena name>
         - getpos
         - createkit <kit name> <texture name>
         - deletekit <kit name>

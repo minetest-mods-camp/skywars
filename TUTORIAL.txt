@@ -54,18 +54,21 @@ You can also use:
 this will set the position over the node you're standing on.
 
 
+5) Saving the map area using:
 
-5) Saving the map schematic using:
+/skywars pos1 <arena name>
+/skywars pos2 <arena name>
+in order to kill players that go out of the map, you have to define a 
+map area; to do so, simply specify its corners by using
+/skywars pos1 and /skywars pos2.
 
-/skywars pos1
-/skywars pos2
-/skywars createschematic <arena name> <schematic_name>
-in order to automatically reset the map on every match, you have to 
-create a schematic file; to do so, simply specify the corners of the 
-map by using /skywars pos1 and /skywars pos2.
-!If you overwrite a schematic that you've already created before
-or you delete an arena make sure to reload the server/delete the old
-schematic, because the old one won't be deleted!
+! WARNING !
+To modify a map you must use use /skywars reset <arena name> and then disable 
+the arena, otherwise your changes may get lost.
+Everything you change when the arena's disabled won't be saved, so make
+sure to properly reset your map before doing so (e.g. if when you reset the arena
+flowing lava and water created some stone it won't be resetted the first time, so
+you'll have to reset it until the map is clear).
 
 
 6) (Optional) Creating and setting the kits using: 
@@ -79,12 +82,13 @@ or
 /skywars additem hand <kit name>
 
 /skywars arenakit add <arena name> <kit name>: each arena has a "kits" property
-that contains the choosable kits, with this command you add one to it
+that contains the choosable kits, with this command you add one to it.
 
 
 7) Enabling the arena using
 
 /skywars enable <arena name>
+
 
 
 Once you've done this you can click the sign and start playing :).

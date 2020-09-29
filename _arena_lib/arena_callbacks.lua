@@ -1,10 +1,11 @@
 arena_lib.on_load("skywars", function(arena)
-  -- load the schematic
-  skywars.load_schematic(arena)
-
+  skywars.reset_map(arena)
   minetest.after(skywars_settings.loading_time, function()
     skywars.place_chests(arena)
     skywars.fill_chests(arena)
+    -- preventing the lava-water reaction or whatever happens
+    -- after the first reset from modifing the map 
+    skywars.reset_map(arena)
   end)
   
   for pl_name in pairs(arena.players) do
@@ -88,8 +89,6 @@ end)
 
 
 arena_lib.on_end("skywars", function(arena, players)
-  arena.reset = false
-
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
     
@@ -191,8 +190,8 @@ arena_lib.on_enable("skywars", function(arena, pl_name)
   elseif arena.chests[1] == nil then
     skywars.print_error(pl_name, skywars.T("You didn't set the chests!"))
     return false
-  elseif arena.schematic == "" or arena.pos1.x == nil then
-    skywars.print_error(pl_name, skywars.T("You didn't set the schematic!"))
+  elseif arena.pos1.x == nil or arena.pos2.x == nil then
+    skywars.print_error(pl_name, skywars.T("You didn't set the map corners!"))
     return false
   end
 

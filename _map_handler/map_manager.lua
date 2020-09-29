@@ -1,65 +1,44 @@
--- reordering the corner's position so that pos1 is smaller than pos2
-local function reorder_positions(pos1, pos2)
-    local temp
+local function get_arena_by_pos(pos)
+    for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
+        if arena.pos1.x == nil or arena.pos2.x == nil then goto continue end
 
-    if pos1.z > pos2.z then
-        temp = pos1.z
-        pos1.z = pos2.z
-        pos2.z = temp
-    end
+        local map_area = VoxelArea:new{MinEdge = arena.pos1, MaxEdge = arena.pos2}
+        local serialized_pos = minetest.serialize(pos)
 
-    if pos1.y > pos2.y then
-        temp = pos1.y
-        pos1.y = pos2.y
-        pos2.y = temp
-    end
-
-    if pos1.x > pos2.x then
-        temp = pos1.x
-        pos1.x = pos2.x
-        pos2.x = temp
-    end
-
-    return pos1, pos2
-     
-end
-
-
-
--- Creates the schematic using pos1 (the first corner of the map) and pos2 (the second one)
-function skywars.create_schematic(sender, pos1, pos2, name, arena)
-    pos1, pos2 = reorder_positions(pos1, pos2)
-
-    if minetest.get_modpath("exschem") then
-        skywars.create_exschem_schematic(sender, pos1, pos2, name, arena)
-        arena.schematic = name
-    else
-        local path = minetest.get_worldpath() .. "/" .. name .. ".mts" 
-        path = path:gsub("//", "/")
-        arena.schematic = path
-
-        minetest.create_schematic(pos1, pos2, nil, path, nil)
-        skywars.print_msg(sender, skywars.T("Schematic @1 created! (Saved in @2)", name, path)) 
-    end
-
-    arena.pos1 = pos1
-    arena.pos2 = pos2
-    arena_lib.change_arena_property(sender, "skywars", arena.name, "pos1", pos1) 
-    arena_lib.change_arena_property(sender, "skywars", arena.name, "pos2", pos2) 
-    arena_lib.change_arena_property(sender, "skywars", arena.name, "schematic", arena.schematic)
-end
-
-
-
-function skywars.load_schematic(arena)
-    if arena.reset == false then
-        if minetest.get_modpath("exschem") then
-            skywars.load_exschem_schematic(arena.pos1, arena.schematic)
-        else
-            minetest.place_schematic(arena.pos1, arena.schematic)
+        if map_area:contains(pos.x, pos.y, pos.z) then
+            return arena
         end
-        arena.reset = true
+
+        ::continue::
     end
+end
+
+
+
+local function save_block(arena, pos, node)
+    local maps = skywars.load_maps()
+    local serialized_pos = minetest.serialize(pos)
+
+    if arena and maps[serialized_pos] == nil then
+
+        maps[serialized_pos] = node
+
+        skywars.overwrite_maps(maps)
+    end
+end
+
+
+
+function skywars.reset_map(arena)
+    local maps = skywars.load_maps()
+
+    if not maps or maps == "" then return end
+    for serialized_pos, node in pairs(maps) do
+        local pos = minetest.deserialize(serialized_pos)
+        minetest.add_node(pos, node)
+    end
+    maps = {}
+    skywars.overwrite_maps(maps)
 end
 
 
@@ -74,4 +53,54 @@ function skywars.kill_players_out_map(arena)
             player:set_hp(0)
         end
     end
+end
+
+
+
+minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack, pointed_thing)
+    local arena = arena_lib.get_arena_by_player(player:get_player_name())
+    save_block(arena, pos, oldnode)
+
+    if arena == nil then 
+        arena = get_arena_by_pos(pos)
+        if arena and arena.enabled then 
+            save_block(arena, pos, oldnode)
+        end
+    end
+end)
+
+
+
+minetest.register_on_dignode(function(pos, oldnode, player)
+    local arena = arena_lib.get_arena_by_player(player:get_player_name())
+    save_block(arena, pos, oldnode)
+
+    if arena == nil then 
+        arena = get_arena_by_pos(pos)
+        if arena and arena.enabled then 
+            save_block(arena, pos, oldnode)
+        end
+    end
+end)
+
+
+
+-- minetest.set_node override
+local set_node = minetest.set_node
+function minetest.set_node(pos, node)
+    local arena = get_arena_by_pos(pos)
+    local oldnode = minetest.get_node(pos)
+    
+    if arena and arena.enabled then save_block(arena, pos, oldnode) end
+
+	return set_node(pos, node)
+end
+
+
+
+function minetest.add_node(pos, node)
+    minetest.set_node(pos, node)
+end
+function minetest.remove_node(pos)
+    minetest.set_node(pos, {name="air"})
 end
