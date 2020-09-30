@@ -32,18 +32,18 @@ arena_lib.on_load("skywars", function(arena)
       end
     end
 
-    -- puts glass nodes around the player
-    set_glass({x = 0,y = -1,z = 0})
-    set_glass({x = 0,y = -2,z = 0})
-    set_glass({x = 1,y = 1,z = 0})
-    set_glass({x = -1,y = 1,z = 0})
-    set_glass({x = 0,y = 1,z = 1})
-    set_glass({x = 0,y = 1,z = -1})
-
     skywars.show_kit_selector(pl_name, arena)
     minetest.after(0.1, function()
       player:set_physics_override({gravity=0, jump=0})
       player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
+
+      -- puts glass nodes around the player
+      set_glass({x = 0,y = -1,z = 0})
+      set_glass({x = 0,y = -2,z = 0})
+      set_glass({x = 1,y = 1,z = 0})
+      set_glass({x = -1,y = 1,z = 0})
+      set_glass({x = 0,y = 1,z = 1})
+      set_glass({x = 0,y = 1,z = -1})
     end)
 
     -- teleports the player back to in the glass
