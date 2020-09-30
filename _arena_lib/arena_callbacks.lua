@@ -1,11 +1,11 @@
 arena_lib.on_load("skywars", function(arena)
   skywars.reset_map(arena)
   minetest.after(skywars_settings.loading_time, function()
+    skywars.reset_map(arena)
     skywars.place_chests(arena)
     skywars.fill_chests(arena)
-    -- preventing the lava-water reaction or whatever happens
+    -- trying to prevent the lava-water reaction or whatever happens
     -- after the first reset from modifing the map 
-    skywars.reset_map(arena)
   end)
   
   for pl_name in pairs(arena.players) do

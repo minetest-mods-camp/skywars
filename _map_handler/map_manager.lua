@@ -19,10 +19,9 @@ local function save_block(arena, pos, node)
     local maps = skywars.load_maps()
     local serialized_pos = minetest.serialize(pos)
 
+    -- if the arena exists and this block has not been changed yet
     if arena and maps[serialized_pos] == nil then
-
         maps[serialized_pos] = node
-
         skywars.overwrite_maps(maps)
     end
 end
