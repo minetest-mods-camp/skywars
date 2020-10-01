@@ -1,6 +1,6 @@
 --[[
                             ! WARNING !
-Don't change the variables' names if you don't know what you're doing!
+Don't change the variables names if you don't know what you're doing!
 
 (skywars_settings.variable_name = value)
 ]]
@@ -67,10 +67,10 @@ skywars_settings.starting_x = 1.7
 -- The y position of the first buttons row.
 skywars_settings.starting_y = 6.9
 
--- The horizontal distance betweek buttons in real coordinates.
+-- The horizontal distance between buttons in real coordinates.
 skywars_settings.distance_x = 3.4
 
--- The vertical distance betweek buttons in real coordinates.
+-- The vertical distance between buttons in real coordinates.
 skywars_settings.distance_y = 3
 
 -- The amount of buttons in a row.
