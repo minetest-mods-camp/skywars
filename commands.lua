@@ -1,3 +1,25 @@
+local function arena_valid(arena_name, sender, is_property_changing)
+    local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+
+    if arena_lib.is_arena_in_edit_mode(arena_name) and is_property_changing then 
+        skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+        return false
+    elseif arena == nil then
+        skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
+        return false
+    elseif arena.enabled == true and is_property_changing then
+        arena_lib.disable_arena(sender, "skywars", arena_name)
+        if arena.enabled == true then
+            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+            return false
+        end
+    end
+
+    return true
+end
+
+
+
 ChatCmdBuilder.new("skywars", 
 function(cmd)
     cmd:sub("tutorial", 
@@ -176,18 +198,8 @@ function(cmd)
     function(sender, arena_name, treasure_name, count, rarity, preciousness )
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
-            return
-        elseif arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
+        if not arena_valid(arena_name, sender, true) then 
+            return       
         elseif count <= 0 then
             skywars.print_error(sender, skywars.T("Count has to be greater than 0!"))
             return
@@ -228,19 +240,8 @@ function(cmd)
         local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
         local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        end
-        if arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
         if rarity < 1 then
             skywars.print_error(sender, skywars.T("Rarity has to be greater than 0!"))
@@ -269,23 +270,45 @@ function(cmd)
         ))
     end)
 
+
+
+    cmd:sub("removetreasure hand :arena", function(sender, arena_name)
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local found = {true, false} -- the first is used to repeat the for until nothing is found
+        local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
+
+        if treasure_name == "" then
+            skywars.print_error(sender, skywars.T("Your hand is empty!"))
+            return
+        elseif not arena_valid(arena_name, sender, true) then 
+            return
+        end
+
+        while found[1] do
+            found[1] = false
+            for i, treasure in pairs(arena.treasures) do
+                if treasure.name == treasure_name then
+                    table.remove(arena.treasures, i)
+                    i = i-1
+                    found[1] = true
+                    found[2] = true
+                end 
+            end
+        end
+        arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
+
+        if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
+        else skywars.print_error(sender, skywars.T("Treasure not found!")) end
+    end)
+
+
     
     cmd:sub("removetreasure :arena :treasure", function(sender, arena_name, treasure_name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        elseif arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
 
         while found[1] do
@@ -311,18 +334,8 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local treasure_name = ""
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        elseif arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
 
         for i=1, #arena.treasures do
@@ -345,22 +358,13 @@ function(cmd)
         local id2, to_arena = arena_lib.get_arena_by_name("skywars", to)
         local found = false
 
-
-        if from_arena == nil then
-            skywars.print_error(sender, skywars.T("First arena not found!"))
+        if not arena_valid(from, sender) then
             return
-        elseif to_arena == nil then
-            skywars.print_error(sender, skywars.T("Second arena not found!"))
+        elseif not arena_valid(to_arena, sender, true) then
             return
         elseif from_arena == to_arena then
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
             return
-        elseif to_arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if to_arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", to))
-                return
-            end
         end
 
         to_arena.treasures = {}
@@ -378,20 +382,15 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender) then 
             return
         end
-
         skywars.print_msg(sender, skywars.T("Treasures list:"))
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
             skywars.print_msg(sender, "ID: " .. arena.treasures[i].id .. ".\n" .. 
                 skywars.T(
-                    "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
+                    "name: @1   @nrarity: @2   @npreciousness: @3   @ncount: @4",
                     treasure.name, treasure.rarity, treasure.preciousness, treasure.count
                 ) .. "\n\n"
             )
@@ -403,11 +402,7 @@ function(cmd)
     cmd:sub("searchtreasure :arena :treasure", function(sender, arena_name, treasure_name)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender) then 
             return
         end
 
@@ -445,19 +440,8 @@ function(cmd)
             id = chest_id
         }
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        end
-        if arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
         if t_min <= 0 or t_max <= 0 then
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
@@ -474,7 +458,10 @@ function(cmd)
             return
         end
 
-        skywars.print_msg(sender, skywars.T("Chest added!"))
+        skywars.print_msg(sender, 
+            skywars.T("Chest added with @1-@2 preciousness and @3-@4 treasures amount!",
+            min_preciousness, max_preciousness, min_treasures_amount, max_treasures_amount)
+        )
         table.insert(arena.chests, chest)
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
     end)
@@ -507,19 +494,8 @@ function(cmd)
             id = chest_id
         }
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        end
-        if arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
         if t_min <= 0 or t_max <= 0 then
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
@@ -536,7 +512,10 @@ function(cmd)
             return
         end
 
-        skywars.print_msg(sender, skywars.T("Chest added!"))
+        skywars.print_msg(sender, 
+            skywars.T("Chest added with @1-@2 preciousness and @3-@4 treasures amount!",
+            min_preciousness, max_preciousness, t_min, t_max)
+        )
         table.insert(arena.chests, chest)
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
     end)
@@ -547,18 +526,22 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender) then 
             return
         end
 
         skywars.print_msg(sender, skywars.T("Chest list:"))
         for i=1, #arena.chests do
-            local chest_pos = tostring(arena.chests[i].pos.x) .. " " .. tostring(arena.chests[i].pos.y) .. " " .. tostring(arena.chests[i].pos.z)
-            skywars.print_msg(sender, skywars.T("ID: @1 - POSITION: @2", arena.chests[i].id, chest_pos))
+            local chest = arena.chests[i]
+            local chest_pos = minetest.pos_to_string(chest.pos, 0)
+
+            skywars.print_msg(sender, 
+                skywars.T(
+                    "ID: @1 - Position: @2   @npreciousness: @3-@4   @ntreasures amount: @5-@6",
+                    chest.id, chest_pos, chest.min_preciousness, chest.max_preciousness,
+                    chest.min_treasures, chest.max_treasures
+                ) .. "\n\n"
+            )
         end
     end)
     
@@ -577,18 +560,8 @@ function(cmd)
             return
         end
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        elseif arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
 
         for i=1, #arena.chests do
@@ -613,18 +586,8 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
         
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        elseif arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
 
         for i=1, #arena.chests do
@@ -739,6 +702,41 @@ function(cmd)
 
 
 
+    cmd:sub("removeitem hand :kit", 
+    function(sender, kit_name)
+        local kits = skywars.load_kits()
+        local item_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
+        local found = false
+
+        if kits[kit_name] == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
+            return
+        elseif ItemStack(item_name):is_known() == false then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
+            return
+        elseif item_name == "" then
+            skywars.print_error(sender, skywars.T("Your hand is empty!"))
+            return
+        end
+
+        for i=1, #kits[kit_name].items do
+            if kits[kit_name].items[i].name == item_name then
+                table.remove(kits[kit_name].items, i)
+                found = true
+                break 
+            end
+        end
+        skywars.overwrite_kits(kits)
+
+        if found then 
+            skywars.print_msg(sender, skywars.T("@1 removed from @2!", item_name, kit_name))
+        else
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
+        end
+    end)
+
+
+
     cmd:sub("removeitem :kit :item", 
     function(sender, kit_name, item_name)
         local kits = skywars.load_kits()
@@ -822,19 +820,8 @@ function(cmd)
         local kits = skywars.load_kits()
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then 
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then 
             return
-        end
-        if arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
         end
         if kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
@@ -855,21 +842,9 @@ function(cmd)
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
         local found = false
 
-        if arena_lib.is_arena_in_edit_mode(arena_name) then
-            skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-            return 
-        elseif arena == nil then
-            skywars.print_error(sender, skywars.T("Arena not found!"))
+        if not arena_valid(arena_name, sender, true) then
             return
-        end
-        if arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-            if arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-                return
-            end
-        end
-        if kits[kit_name] == nil then
+        elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
@@ -895,22 +870,13 @@ function(cmd)
         local found = false
 
 
-        if from_arena == nil then
-            skywars.print_error(sender, skywars.T("First arena not found!"))
+        if not arena_valid(from, sender) then
             return
-        elseif to_arena == nil then
-            skywars.print_error(sender, skywars.T("Second arena not found!"))
+        elseif not arena_valid(to, sender, true) then
             return
         elseif from_arena == to_arena then
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
             return
-        elseif to_arena.enabled == true then
-            arena_lib.disable_arena(sender, "skywars", arena_name)
-
-            if to_arena.enabled == true then
-                skywars.print_error(sender, skywars.T("@1 must be disabled!", to))
-                return
-            end
         end
 
         to_arena.kits = {}
@@ -981,15 +947,20 @@ function(cmd)
             return
         end
         
-        skywars.reset_map(arena)
-
         if arena.enabled then
+            skywars.reset_map(arena)
             skywars.print_msg(sender, skywars.T("@1 reset!", arena.name)) 
         else
             skywars.print_error(sender, skywars.T("@1 must be enabled!", arena_name))
         end
     end)
 
+
+
+    cmd:sub("clearmapstable", function(sender)
+        skywars.overwrite_maps({})
+        skywars.print_msg(sender, skywars.T("Maps table reset!")) 
+    end)
 end, {
 
     description = [[
@@ -1005,13 +976,15 @@ end, {
         - disable <arena name>
 
 
-        Skywars commands:
+        Skywars:
+
         - tutorial
         - addtreasure <arena name> <item> <count> <rarity (min 1.0, max 10.0)> 
         <preciousness> 
         - addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
         <preciousness>
         - removetreasure <arena name> <treasure name>: remove all treasures with than name
+        - removetreasure hand <arena name>
         - removetreasure id <arena name> <treasure id>
         - gettreasures <arena name>
         - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
@@ -1032,12 +1005,18 @@ end, {
         - additem <kit name> <item> <count>
         - additem hand <kit name>
         - removeitem <kit name> <item>
+        - removeitem hand <kit name>
         - arenakit add <arena> <kit name>
         - arenakit remove <arena> <kit name>
         - getkits
         - resetkit <kit name>
         - getitems <kit name>
         - copykits <arena1> <arena2>
+
+
+        Debug:
+
+        - clearmapstable: clears the changed blocks table of each map without resetting them
         ]],
     privs = { skywars_admin = true }
 })

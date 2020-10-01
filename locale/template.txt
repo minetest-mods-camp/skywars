@@ -2,8 +2,9 @@
 # author(s):
 # reviewer(s):
 # textdomain: skywars
+# @n means "newline"
+# @<number> (@1, @2, ecc) is a value that the mod will pass at runtime 
 
-Arena not found!=
 Count has to be greater than 0!=
 Rarity has to be greater than 0!=
 Rarity has to be smaller than 11!=
@@ -19,14 +20,13 @@ First arena not found!=
 Second arena not found!=
 @1 treasures have been copied to @2!=
 The arenas must be different!=
-# @n means "newline"
-name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4=
-Chest added!=
+name: @1   @nrarity: @2   @npreciousness: @3   @ncount: @4=
+Chest added with @1-@2 preciousness and @3-@4 treasures amount!=
 Chest removed!=
 Chest not found!=
 Chest list:=
 The chest already exists!=
-ID: @1 - POSITION: @2=
+ID: @1 - Position: @2   @npreciousness: @3-@4   @ntreasures amount: @5-@6=
 Position saved!=
 You didn't set the treasures!=
 You didn't set the chests!=
@@ -39,7 +39,6 @@ Pos1 or pos2 are not set!=
 @1 added to @2!=
 x@1 @2 added to @3 with @4 rarity and @5 preciousness!=
 @1 removed from @2!=
-Choose a kit=
 Kit @1 created!=
 Kit @1 deleted!=
 Kits list:=
@@ -51,3 +50,4 @@ x@1 @2 added to @3!=
 Time is out, the match is over!=
 Nobody=
 Nobody must be in the editor!=
+Maps table reset!=

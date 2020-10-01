@@ -1,3 +1,45 @@
+local function add_privs(pl_name)
+  local privs = minetest.get_player_privs(pl_name)
+  local player = minetest.get_player_by_name(pl_name)
+  
+  -- preventing players with noclip to fall when placing blocks
+  if privs.noclip then
+    player:get_meta():set_int("noclip", 2)
+    privs.noclip = nil
+  else
+    player:get_meta():set_int("noclip", 0)
+  end
+
+  if skywars_settings.build_permission ~= "" then
+    if privs[skywars_settings.build_permission] then
+      player:get_meta():set_int("build", 2)
+    else 
+      player:get_meta():set_int("build", 0)
+    end
+    privs[skywars_settings.build_permission] = true
+  end
+
+  minetest.set_player_privs(pl_name, privs)
+end
+
+
+
+local function remove_privs(pl_name)
+  local privs = minetest.get_player_privs(pl_name)
+  local player = minetest.get_player_by_name(pl_name)
+
+  if player:get_meta():get_int("noclip") == 2 then
+    privs.noclip = true
+  end
+  if player:get_meta():get_int("build") ~= 2 then
+    privs[skywars_settings.build_permission] = nil
+  end
+
+  minetest.set_player_privs(pl_name, privs)
+end
+
+
+
 arena_lib.on_load("skywars", function(arena)
   skywars.reset_map(arena)
   minetest.after(skywars_settings.loading_time, function()
@@ -12,14 +54,6 @@ arena_lib.on_load("skywars", function(arena)
     local player = minetest.get_player_by_name(pl_name)
     local pl_pos = player:get_pos()
 
-    -- preventing players with noclip to fall when placing blocks
-    if minetest.check_player_privs(pl_name, {noclip=true}) then
-      local privs = minetest.get_player_privs(pl_name)
-      player:get_meta():set_int("noclip", 2)
-      privs.noclip = nil
-      minetest.set_player_privs(pl_name, privs)
-    end
-
     local function set_glass(relative_pos)
       local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
 
@@ -31,6 +65,8 @@ arena_lib.on_load("skywars", function(arena)
         end)
       end
     end
+
+    add_privs(pl_name)
 
     skywars.show_kit_selector(pl_name, arena)
     minetest.after(0.1, function()
@@ -75,12 +111,7 @@ arena_lib.on_celebration("skywars", function(arena, winner_name)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
-    if player:get_meta():get_int("noclip") == 2 then
-      local privs = minetest.get_player_privs(pl_name)
-      privs.noclip = true
-      minetest.set_player_privs(pl_name, privs)
-    end
-
+    remove_privs(pl_name)
     skywars.remove_HUD(arena, pl_name)
     skywars.remove_armor(player)
   end
@@ -92,12 +123,7 @@ arena_lib.on_end("skywars", function(arena, players)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
     
-    if player:get_meta():get_int("noclip") == 2 then
-      local privs = minetest.get_player_privs(pl_name)
-      privs.noclip = true
-      minetest.set_player_privs(pl_name, privs)
-    end
-
+    remove_privs(pl_name)
     skywars.remove_armor(player)
     -- restore player's original speed
     player:set_physics_override({speed=arena.players[pl_name].speed})
@@ -121,11 +147,7 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
     end
   end
 
-  if player:get_meta():get_int("noclip") == 2 then
-    local privs = minetest.get_player_privs(pl_name)
-    privs.noclip = true
-    minetest.set_player_privs(pl_name, privs)
-  end
+  remove_privs(pl_name)
 
   skywars.remove_armor(player)
   arena_lib.remove_player_from_arena(pl_name, 1)
@@ -137,11 +159,7 @@ end)
 arena_lib.on_quit("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
-  if player:get_meta():get_int("noclip") == 2 then
-    local privs = minetest.get_player_privs(pl_name)
-    privs.noclip = true
-    minetest.set_player_privs(pl_name, privs)
-  end
+  remove_privs(pl_name)
 
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
@@ -154,11 +172,7 @@ end)
 arena_lib.on_disconnect("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
-  if player:get_meta():get_int("noclip") == 2 then
-    local privs = minetest.get_player_privs(pl_name)
-    privs.noclip = true
-    minetest.set_player_privs(pl_name, privs)
-  end
+  remove_privs(pl_name)
 
   skywars.update_players_counter(arena, false)
   skywars.remove_armor(player)
@@ -169,11 +183,7 @@ end)
 arena_lib.on_kick("skywars", function(arena, pl_name) 
   local player = minetest.get_player_by_name(pl_name)
 
-  if player:get_meta():get_int("noclip") == 2 then
-    local privs = minetest.get_player_privs(pl_name)
-    privs.noclip = true
-    minetest.set_player_privs(pl_name, privs)
-  end
+  remove_privs(pl_name)
 
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
