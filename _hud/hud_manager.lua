@@ -85,11 +85,10 @@ function skywars.update_players_counter(arena, players_updated)
         pl_amount = pl_amount-1
     end
 
-    -- updating the player counter HUD
+    -- updating the players counter HUD
     for pl_name in pairs(arena.players) do
         local player = minetest.get_player_by_name(pl_name)
         
-        -- if the temp property doesn't exists then return
         if arena.match_players == nil then return end 
 
         player:hud_change(arena.HUDs[pl_name].players_count, "text", tostring(arena.players_amount) .. "/" .. tostring(arena.match_players))

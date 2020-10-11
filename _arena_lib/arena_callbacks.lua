@@ -49,11 +49,11 @@ end)
 arena_lib.on_load("skywars", function(arena)
   skywars.reset_map(arena)
   minetest.after(skywars_settings.loading_time, function()
+    -- trying to prevent the lava-water reaction or whatever happens
+    -- after the first reset from modifing the map 
     skywars.reset_map(arena)
     skywars.place_chests(arena)
     skywars.fill_chests(arena)
-    -- trying to prevent the lava-water reaction or whatever happens
-    -- after the first reset from modifing the map 
   end)
   
   for pl_name in pairs(arena.players) do
@@ -65,10 +65,6 @@ arena_lib.on_load("skywars", function(arena)
 
       if minetest.get_node(node_pos).name == "air" then 
         minetest.add_node(node_pos, {name="default:glass"})
-
-        minetest.after(skywars_settings.loading_time, function() 
-          minetest.add_node(node_pos, {name="air"})
-        end)
       end
     end
 
@@ -88,7 +84,7 @@ arena_lib.on_load("skywars", function(arena)
       set_glass({x = 0,y = 1,z = -1})
     end)
 
-    -- teleports the player back to in the glass
+    -- teleports the player back in the glass
     minetest.after(1, function()
       player:set_pos(pl_pos)
     end)
@@ -104,9 +100,11 @@ arena_lib.on_start("skywars", function(arena)
     local player = minetest.get_player_by_name(pl_name)
 
     skywars.generate_HUD(arena, pl_name)
-    player:set_physics_override({speed=arena.players[pl_name].speed, gravity=1, jump=1})
     -- saving original speed
     arena.players[pl_name].speed = player:get_physics_override().speed
+    player:set_physics_override({speed=skywars_settings.player_speed, gravity=1, jump=1})
+
+    skywars.activate_enderpearl(player, arena)
   end
   
 end)
@@ -149,7 +147,8 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
       arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("@1 was killed by @2", pl_name, killer))
       -- arena.HUDs[killer].players_killed[1] == HUD ID
       -- arena.HUDs[killer].players_killed[2] == players amount
-      reason.object:hud_change(arena.HUDs[killer].players_killed[1], "text", tostring(arena.HUDs[killer].players_killed[2] + 1))
+      arena.HUDs[killer].players_killed[2] = arena.HUDs[killer].players_killed[2] + 1 
+      reason.object:hud_change(arena.HUDs[killer].players_killed[1], "text", tostring(arena.HUDs[killer].players_killed[2]))
     end
   end
 

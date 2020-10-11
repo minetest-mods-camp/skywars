@@ -18,6 +18,7 @@ arena_lib.register_minigame("skywars", {
   queue_waiting_time = skywars_settings.queue_waiting_time,
   temp_properties = {
     HUDs = {},
+    -- the original amount of players in the arena
     match_players = 0,
     time_passed = 0
   },

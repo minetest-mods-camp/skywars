@@ -1,4 +1,4 @@
--- reordering the corner's position so that pos1 is smaller than pos2
+-- reordering the corners positions so that pos1 is smaller than pos2
 local function reorder_positions(pos1, pos2)
     local temp
 
@@ -26,12 +26,12 @@ end
 
 
 
+-- returns the arena where the player's in
 local function get_arena_by_pos(pos)
     for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
         if arena.pos1.x == nil or arena.pos2.x == nil then goto continue end
 
         local map_area = VoxelArea:new{MinEdge = arena.pos1, MaxEdge = arena.pos2}
-        local serialized_pos = minetest.serialize(pos)
 
         if map_area:contains(pos.x, pos.y, pos.z) then
             return arena
@@ -52,7 +52,7 @@ local function save_block(arena, pos, node)
     if not maps[arena.name] then maps[arena.name] = {} end
     if not maps[arena.name].blocks then maps[arena.name].blocks = {} end
 
-    -- if this block has not been changed yet
+    -- if this block has not been changed yet then save it
     if maps[arena.name].blocks[serialized_pos] == nil then
         maps[arena.name].blocks[serialized_pos] = node
         skywars.overwrite_maps(maps)

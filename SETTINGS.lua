@@ -7,7 +7,6 @@ Don't change the variables names if you don't know what you're doing!
 
 
 
-
 -- ARENA LIB'S SETTINGS --
 
 
@@ -48,23 +47,20 @@ skywars_settings.build_permission = "build"
 
 -- HUDS SETTINGS --
 
-
---[[ COORDINATES SYSTEM
-For X and Y, 0.0 and 1.0 represent opposite edges of the game window, for example:
-    * [0.0, 0.0] is the top left corner of the game window
-    * [1.0, 1.0] is the bottom right of the game window
-    * [0.5, 0.5] is the center of the game window
---]]
-
+-- Real coordinates:
+-- a unit of measurement which is roughly around 64 pixels, but 
+-- varies based on the screen density and scaling settings of the client.
 
 
 -- The texture background for the kit menu.
 skywars_settings.hud__kit_background = "Kits.png"
 
--- The x position of the first buttons row.
+-- The x position offset from the background border of the first buttons row 
+-- in real coordinates, the bigger it is the righter the row will be placed.
 skywars_settings.starting_x = 1.7
 
--- The y position of the first buttons row.
+-- The y position offset from the background border of the first buttons row 
+-- in real coordinates, the bigger it is the lower the row will be placed.
 skywars_settings.starting_y = 6.9
 
 -- The horizontal distance between buttons in real coordinates.
@@ -76,9 +72,7 @@ skywars_settings.distance_y = 3
 -- The amount of buttons in a row.
 skywars_settings.buttons_per_row = 3
 
--- The buttons width in real coordinates,
--- a unit of measurement which is roughly around 64 pixels, but 
--- varies based on the screen density and scaling settings of the client.
+-- The buttons width in real coordinates.
 skywars_settings.buttons_width = 2
 
 -- The buttons height in real coordinates.

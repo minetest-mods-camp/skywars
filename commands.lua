@@ -52,15 +52,15 @@ function(cmd)
 
         3) Setting the arena treasures (the items that can spawn in the 
         chests):
-        item: the item name
-        rarity: how often it will spawn in chests
-        preciousness: in which chests it can be put, for example a chest with 
-        a preciousness range 2-4 can spawn just items with a preciousness 
-        between 2 and 4
-        count: the item amount
 
         /skywars addtreasure <arena name> <item> <count> <rarity (min 1.0, max 
         10.0)> <preciousness>
+        item: the item name
+        rarity: how often it will spawn in chests
+        preciousness: in which chests it can be put, for example a chest with 
+        a preciousness range 2-4 can just spawn items with a preciousness 
+        between 2 and 4
+        count: the item amount
 
         You can also use: 
         /skywars addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
@@ -86,9 +86,9 @@ function(cmd)
 
         /skywars pos1 <arena name>
         /skywars pos2 <arena name>
-        in order to kill players that go out of the map, you have to define a 
-        map area; to do so, simply specify its corners by using
-        /skywars pos1 and /skywars pos2.
+        in order to kill players that go out of the map and to properly save the changes
+        made to the arena you have to define a map area; to do so, simply specify its 
+        corners by using: /skywars pos1 and /skywars pos2.
         
         ! WARNING !
         To modify a map you must use use /skywars reset <arena name> and then disable 
@@ -103,7 +103,7 @@ function(cmd)
 
         /skywars createkit <kit name> <texture name>: texture name is the texture
         that the kit button will have in the selector menu at the start of the match,
-        it must be a file name that you put in the <SKYWARS MOD FOLDER>/textures folder.
+        it must be a file name that you put in the "<SKYWARS MOD FOLDER>/textures" folder.
 
         /skywars additem <kit name> <item> <count>: with this you can add items to it
         or
@@ -119,9 +119,9 @@ function(cmd)
 
 
         Once you've done this you can click the sign and start playing :).
-        You can use /help skywars to read all the commands.
+        You should use /help skywars to read all the commands.
         To modify the game settings (such as the messages prefix or the
-        hub spawn point) you can edit the SETTINGS.lua file.
+        hub spawn point) you can edit the "<SKYWARD MOD FOLDER>/SETTINGS.lua" file.
         ]])
     end)
 
@@ -145,21 +145,18 @@ function(cmd)
 
     
     
-    -- list of the arenas
     cmd:sub("list", function(name)
         arena_lib.print_arenas(name, "skywars")
     end)
 
 
 
-    -- info on a specific arena
     cmd:sub("info :arena", function(name, arena_name)
         arena_lib.print_arena_info(name, "skywars", arena_name)
     end)
 
 
 
-    -- this sets the spawns using the player position
     cmd:sub("setspawn :arena", function(name, arena)
         arena_lib.set_spawner(name, "skywars", arena)
     end)
@@ -409,7 +406,7 @@ function(cmd)
         skywars.print_msg(sender, skywars.T("Treasures list:"))
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
-            if treasure.name == treasure_name then
+            if treasure.name:match(treasure_name) then
                 skywars.print_msg(sender, "ID: " .. arena.treasures[i].id .. ".\n" .. 
                     skywars.T(
                         "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
@@ -964,7 +961,7 @@ function(cmd)
 end, {
 
     description = [[
-        (Use /help skywars)
+        (/help skywars)
 
         Arena_lib:
 
@@ -983,23 +980,22 @@ end, {
         <preciousness> 
         - addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
         <preciousness>
+        - gettreasures <arena name>
+        - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
         - removetreasure <arena name> <treasure name>: remove all treasures with than name
         - removetreasure hand <arena name>
         - removetreasure id <arena name> <treasure id>
-        - gettreasures <arena name>
-        - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
         - copytreasures <(from) arena name> <(to) arena name>
         - addchest <arena name> <min_preciousness> <max_preciousness> 
         <min_treasures_amount (min. 1)> <max_treasures_amount>
         - addchest pos <arena name> <min_preciousness> <max_preciousness> 
         <min_treasures_amount (min. 1)> <max_treasures_amount>
-        - removechest
-        - removechest id <id>
         - getchests <arena name>
+        - removechest <arena name>: removes the chest you're looking at
+        - removechest id <id>
         - pos1 <arena name>
         - pos2 <arena name>
         - reset <arena name>
-        - getpos
         - createkit <kit name> <texture name>
         - deletekit <kit name>
         - additem <kit name> <item> <count>
@@ -1011,12 +1007,13 @@ end, {
         - getkits
         - resetkit <kit name>
         - getitems <kit name>
-        - copykits <arena1> <arena2>
+        - copykits <(from) arena name> <(to) arena name>
 
 
-        Debug:
+        Debug (don't use them if you don't know what you're doing):
 
         - clearmapstable: clears the changed blocks table of each map without resetting them
+        - getpos
         ]],
     privs = { skywars_admin = true }
 })
