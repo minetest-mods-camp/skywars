@@ -2,15 +2,15 @@
 local mod = "skywars"
 
 
-local function determine_count(treasure)
-	if(type(treasure.count)=="number") then
-		return treasure.count
-	else
-		local min,max,prob = treasure.count[1], treasure.count[2], treasure.count[3]
-		if(prob == nil) then
-			return(math.floor(min + math.random() * (max-min)))
-		else
-			return(math.floor(min + prob() * (max-min)))
+function skywars.reorder_treasures(arena)
+	-- sorting the table from the rarest to the least rare treasure
+	for j=#arena.treasures, 2, -1 do
+		for i=1, #arena.treasures-1 do
+			if arena.treasures[i].rarity < arena.treasures[i+1].rarity then
+				local temp = arena.treasures[i]
+				arena.treasures[i] = arena.treasures[i + 1] 
+				arena.treasures[i + 1] = temp
+			end
 		end
 	end
 end
@@ -20,7 +20,7 @@ end
 local function treasure_to_itemstack(treasure)
 	local itemstack = {}
 	itemstack.name = treasure.name
-	itemstack.count = determine_count(treasure)
+	itemstack.count = treasure.count
 
 	if ItemStack(itemstack):is_known() == false then
 		minetest.log("error","[Skywars Treasures] I was asked to put "..treasure.name.." inside a chest, but it doesn't exist.")
@@ -32,17 +32,6 @@ end
 
 function skywars.select_random_treasures(treasure_amount, min_preciousness, max_preciousness, arena)
 	if treasure_amount == nil or treasure_amount == 0 then treasure_amount = 1 end
-
-	-- sorting the table from the rarest to the least rare treasure
-	for j=#arena.treasures, 2, -1 do
-		for i=1, #arena.treasures-1 do
-			if arena.treasures[i].rarity < arena.treasures[i+1].rarity then
-				local temp = arena.treasures[i]
-				arena.treasures[i] = arena.treasures[i+ 1] 
-				arena.treasures[i + 1] = temp
-			end
-		end
-	end
 
 	-- helper table
 	local p_treasures = {}

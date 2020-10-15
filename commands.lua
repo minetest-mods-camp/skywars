@@ -226,7 +226,7 @@ function(cmd)
             count, treasure_name, arena_name, rarity, preciousness
         ))
 
-        
+        skywars.reorder_treasures(arena)
     end)
     
 
@@ -265,6 +265,8 @@ function(cmd)
         skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
             count, treasure_name, arena_name, rarity, preciousness
         ))
+
+        skywars.reorder_treasures(arena)
     end)
 
 
@@ -296,6 +298,8 @@ function(cmd)
 
         if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
         else skywars.print_error(sender, skywars.T("Treasure not found!")) end
+
+        skywars.reorder_treasures(arena)
     end)
 
 
@@ -323,6 +327,8 @@ function(cmd)
 
         if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
         else skywars.print_error(sender, skywars.T("Treasure not found!")) end
+
+        skywars.reorder_treasures(arena)
     end)
 
 
@@ -346,6 +352,8 @@ function(cmd)
 
         if treasure_name ~= "" then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
         else skywars.print_error(sender, skywars.T("Treasure not found!")) end
+
+        skywars.reorder_treasures(arena)
     end)
 
 
