@@ -30,7 +30,7 @@ arena_lib.register_minigame("skywars", {
     kits = {}
   },
   player_properties = {
-    speed = skywars_settings.player_speed
+    speed = 1
   },
   timer = skywars_settings.timer,
   disabled_damage_types = disabled_damage_types_

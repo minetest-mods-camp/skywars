@@ -58,7 +58,6 @@ arena_lib.on_load("skywars", function(arena)
   
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
-    local pl_pos = player:get_pos()
 
     local function set_glass(relative_pos)
       local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
@@ -71,7 +70,10 @@ arena_lib.on_load("skywars", function(arena)
     add_privs(pl_name)
 
     skywars.show_kit_selector(pl_name, arena)
+
     minetest.after(0.1, function()
+      local pl_pos = player:get_pos()
+
       player:set_physics_override({gravity=0, jump=0})
       player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
 
@@ -82,11 +84,11 @@ arena_lib.on_load("skywars", function(arena)
       set_glass({x = -1,y = 1,z = 0})
       set_glass({x = 0,y = 1,z = 1})
       set_glass({x = 0,y = 1,z = -1})
-    end)
-
-    -- teleports the player back in the glass
-    minetest.after(1, function()
-      player:set_pos(pl_pos)
+      
+      -- teleports the player back in the glass
+      minetest.after(1, function()
+        player:set_pos(pl_pos)
+      end)
     end)
   end
 end)
@@ -102,7 +104,7 @@ arena_lib.on_start("skywars", function(arena)
     skywars.generate_HUD(arena, pl_name)
     -- saving original speed
     arena.players[pl_name].speed = player:get_physics_override().speed
-    player:set_physics_override({speed=skywars_settings.player_speed, gravity=1, jump=1})
+    player:set_physics_override({gravity=1, jump=1})
 
     skywars.activate_enderpearl(player, arena)
   end
@@ -166,6 +168,7 @@ arena_lib.on_quit("skywars", function(arena, pl_name)
 
   remove_privs(pl_name)
 
+  player:set_physics_override({speed=arena.players[pl_name].speed})
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
   skywars.remove_armor(player)
