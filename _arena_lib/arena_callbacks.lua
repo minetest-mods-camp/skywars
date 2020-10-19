@@ -47,6 +47,7 @@ end)
 
 
 arena_lib.on_load("skywars", function(arena)
+  skywars.load_map_mapblocks(arena)
   skywars.reset_map(arena)
   minetest.after(skywars_settings.loading_time, function()
     -- trying to prevent the lava-water reaction or whatever happens
@@ -104,11 +105,10 @@ arena_lib.on_start("skywars", function(arena)
     skywars.generate_HUD(arena, pl_name)
     -- saving original speed
     arena.players[pl_name].speed = player:get_physics_override().speed
-    player:set_physics_override({gravity=1, jump=1})
+    player:set_physics_override({speed = skywars_settings.player_speed, gravity=1, jump=1})
 
     skywars.activate_enderpearl(player, arena)
   end
-  
 end)
 
 

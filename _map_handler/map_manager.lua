@@ -61,6 +61,12 @@ end
 
 
 
+function skywars.load_map_mapblocks(arena)
+    minetest.load_area(arena.pos1, arena.pos2)
+    minetest.emerge_area(arena.pos1, arena.pos2)
+end
+
+
 function skywars.reset_map(arena)
     local maps = skywars.load_maps()
     local pos1, pos2 = reorder_positions(arena.pos1, arena.pos2)
