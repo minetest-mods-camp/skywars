@@ -49,13 +49,6 @@ end)
 arena_lib.on_load("skywars", function(arena)
   skywars.load_map_mapblocks(arena)
   skywars.reset_map(arena)
-  minetest.after(skywars_settings.loading_time, function()
-    -- trying to prevent the lava-water reaction or whatever happens
-    -- after the first reset from modifing the map 
-    skywars.reset_map(arena)
-    skywars.place_chests(arena)
-    skywars.fill_chests(arena)
-  end)
   
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
@@ -98,6 +91,10 @@ end)
 
 arena_lib.on_start("skywars", function(arena)
   arena.match_players = arena.players_amount
+  
+  skywars.reset_map(arena)
+  skywars.place_chests(arena)
+  skywars.fill_chests(arena)
 
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)

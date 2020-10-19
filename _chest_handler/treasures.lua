@@ -32,24 +32,24 @@ end
 
 
 function skywars.select_random_treasures(treasure_amount, min_preciousness, max_preciousness, arena)
-	local rarity_filtered_treasures = {}
+	local preciousness_filtered_treasures = {}
 	local generated_treasures = {}
 	local treasures_to_be_generated = treasure_amount
 
 	for i = 1, #arena.treasures do
-		if arena.treasures[i].rarity >= min_preciousness and arena.treasures[i].rarity <= max_preciousness then
-			table.insert(rarity_filtered_treasures, arena.treasures[i])
+		if arena.treasures[i].preciousness >= min_preciousness and arena.treasures[i].preciousness <= max_preciousness then
+			table.insert(preciousness_filtered_treasures, arena.treasures[i])
 		end
 	end
 
-	while #generated_treasures < treasures_to_be_generated and #rarity_filtered_treasures > 0 do
+	while #generated_treasures < treasures_to_be_generated and #preciousness_filtered_treasures > 0 do
 		for i = 1, treasures_to_be_generated do
 			if not generated_treasures[i] then 
-				for j = 1, #rarity_filtered_treasures do
+				for j = 1, #preciousness_filtered_treasures do
 					local random = math.random(1, 100)
-					local treasure_itemstack = treasure_to_itemstack(rarity_filtered_treasures[j])
+					local treasure_itemstack = treasure_to_itemstack(preciousness_filtered_treasures[j])
 
-					if treasure_itemstack and random % (rarity_filtered_treasures[j].rarity * 10) == 0 then
+					if treasure_itemstack and random % (preciousness_filtered_treasures[j].rarity * 10) == 0 then
 						table.insert(generated_treasures, treasure_itemstack)
 						break
 					end
