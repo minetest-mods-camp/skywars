@@ -67,6 +67,7 @@ function skywars.load_map_mapblocks(arena)
 end
 
 
+
 function skywars.reset_map(arena)
     local maps = skywars.load_maps()
     local pos1, pos2 = reorder_positions(arena.pos1, arena.pos2)
@@ -76,8 +77,9 @@ function skywars.reset_map(arena)
     -- deleting drops
     for i, obj in pairs(minetest.get_objects_inside_radius(map_center, distance_from_center)) do
         if not obj:is_player() then
-            local prop = obj:get_properties()
-            if prop.automatic_rotate > 0 and ItemStack(prop.textures[1]):is_known() then
+            local props = obj:get_properties()
+            local entity_texture = props.textures[1]
+            if props.automatic_rotate > 0 and ItemStack(entity_texture):is_known() then
                 obj:remove()
             end 
         end
