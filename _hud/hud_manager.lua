@@ -15,8 +15,8 @@ function skywars.generate_HUD(arena, pl_name)
         position  = {x = x_pos, y = y_pos},
         offset = {x = distance_x+background_width, y = 50},
         text      = "sw_players_hud.png",
-        alignment = { x = 1.0},
-        scale     = { x = scale, y = scale},
+        alignment = {x = 1.0},
+        scale     = {x = scale, y = scale},
         number    = 0xFFFFFF,
     })
 
@@ -24,10 +24,10 @@ function skywars.generate_HUD(arena, pl_name)
     background_kill_counter_ = player:hud_add({
         hud_elem_type = "image",
         position  = {x = x_pos, y = y_pos},
-        offset = {x = -distance_x, y = 50},
+        offset = {x = 0-distance_x, y = 50},
         text      = "sw_kill_counter_hud.png",
-        alignment = { x = 1.0},
-        scale     = { x = scale, y = scale},
+        alignment = {x = 1.0},
+        scale     = {x = scale, y = scale},
         number    = 0xFFFFFF,
     })
 
@@ -37,8 +37,8 @@ function skywars.generate_HUD(arena, pl_name)
         position  = {x = x_pos, y = y_pos},
         offset = {x = distance_x+background_width+39, y = 50+6},
         text      = tostring(arena.players_amount) .. "/" .. tostring(arena.match_players),
-        alignment = { x = 0},
-        scale     = { x = 100, y = 100},
+        alignment = {x = 0},
+        scale     = {x = 100, y = 100},
         number    = 0xdff6f5,
     })
 
@@ -48,8 +48,8 @@ function skywars.generate_HUD(arena, pl_name)
         position  = {x = x_pos, y = y_pos},
         offset = {x = -distance_x+33, y = 50+5},
         text      = 0,
-        alignment = { x = 0},
-        scale     = { x = 100, y = 100},
+        alignment = {x = 0},
+        scale     = {x = 100, y = 100},
         number    = 0xdff6f5,
     })
 
