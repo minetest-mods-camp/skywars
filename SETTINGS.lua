@@ -32,9 +32,6 @@ skywars_settings.prefix = "Skywars > "
 -- The players walking speed when ther're playing a match.
 skywars_settings.player_speed = 1.5
 
--- The match duration in seconds.
-skywars_settings.timer = 600
-
 -- true = on/false = off (case sensitive).
 skywars_settings.fall_damage_disabled = true
 

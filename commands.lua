@@ -1,21 +1,28 @@
-local function arena_valid(arena_name, sender, is_property_changing)
-    local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+local function get_valid_arena(arena_name, sender, property_is_changing)
+    local arena = {} 
 
-    if arena_lib.is_arena_in_edit_mode(arena_name) and is_property_changing then 
-        skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-        return false
-    elseif arena == nil then
+    if string.match(arena_name, "@") or string.match(arena_name, "@") then
+        local player_pos = minetest.get_player_by_name(sender):get_pos()
+        arena = skywars.get_arena_by_pos(player_pos)
+    else
+        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+    end
+
+    if not arena then
         skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
-        return false
-    elseif arena.enabled == true and is_property_changing then
+        return nil
+    elseif arena_lib.is_arena_in_edit_mode(arena_name) and property_is_changing then 
+        skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+        return nil
+    elseif arena.enabled and property_is_changing then
         arena_lib.disable_arena(sender, "skywars", arena_name)
-        if arena.enabled == true then
+        if arena.enabled then
             skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return false
+            return nil
         end
     end
 
-    return true
+    return arena
 end
 
 
@@ -44,10 +51,11 @@ function(cmd)
         2) Editing the arena using:
 
         /skywars edit <arena name>
-        in this menu you can add spawn points and set up the sign to enter the
-        arena: the spawn points are where the players will spawn when they 
-        enter the arena, while the sign is just the way to enter it (by 
-        clicking it).
+        in this menu you can add spawn points, set up the timer and the sign to
+        enter the arena: the spawn points are where the players will spawn when 
+        they enter the arena, the timer's a value starting from whatever you set 
+        it to decrementing until it reaches 0, and the sign is just the way to 
+        enter the arena (by clicking it).
 
 
         3) Setting the arena treasures (the items that can spawn in the 
@@ -89,6 +97,8 @@ function(cmd)
         in order to kill players that go out of the map and to properly save the changes
         made to the arena you have to define a map area; to do so, simply specify its 
         corners by using: /skywars pos1 and /skywars pos2.
+        Once you've done this you can put "@" instead of the arena name in a command
+        to automatically get the one you're standing in. 
         
         ! WARNING !
         To modify a map you must use use /skywars reset <arena name> and then disable 
@@ -128,61 +138,101 @@ function(cmd)
 
 
     cmd:sub("create :arena", function(name, arena_name)
-        arena_lib.create_arena(name, "skywars", arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.create_arena(name, "skywars", arena.name)
     end)
 
 
 
     cmd:sub("create :arena :minplayers:int :maxplayers:int", function(name, arena_name, min_players, max_players)
-        arena_lib.create_arena(name, "skywars", arena_name, min_players, max_players)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.create_arena(name, "skywars", arena.name, min_players, max_players)
     end)
 
 
 
     cmd:sub("remove :arena", function(name, arena_name)
-        arena_lib.remove_arena(name, "skywars", arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.remove_arena(name, "skywars", arena.name)
     end)
 
     
     
     cmd:sub("list", function(name)
-        arena_lib.print_arenas(name, "skywars")
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.print_arenas(arena.name, "skywars")
     end)
 
 
 
     cmd:sub("info :arena", function(name, arena_name)
-        arena_lib.print_arena_info(name, "skywars", arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.print_arena_info(name, "skywars", arena.name)
     end)
 
 
 
-    cmd:sub("setspawn :arena", function(name, arena)
-        arena_lib.set_spawner(name, "skywars", arena)
+    cmd:sub("setspawn :arena", function(name, arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.set_spawner(name, "skywars", arena.name)
     end)
 
 
 
-    cmd:sub("setsign :arena", function(sender, arena)
-        arena_lib.set_sign(sender, nil, nil, "skywars", arena)
+    cmd:sub("setsign :arena", function(name, arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.set_sign(name, nil, nil, "skywars", arena.name)
     end)
 
 
     
-    cmd:sub("edit :arena", function(sender, arena)
-        arena_lib.enter_editor(sender, "skywars", arena)
+    cmd:sub("edit :arena", function(name, arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.enter_editor(name, "skywars", arena.name)
     end)
 
 
 
-    cmd:sub("enable :arena", function(name, arena)
-        arena_lib.enable_arena(name, "skywars", arena)
+    cmd:sub("enable :arena", function(name, arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.enable_arena(name, "skywars", arena.name)
     end)
 
 
 
-    cmd:sub("disable :arena", function(name, arena)
-        arena_lib.disable_arena(name, "skywars", arena)
+    cmd:sub("disable :arena", function(name, arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.disable_arena(name, "skywars", arena.name)
     end)
 
 
@@ -193,9 +243,9 @@ function(cmd)
 
     cmd:sub("addtreasure :arena :treasure :count:int :rarity:number :preciousness:int", 
     function(sender, arena_name, treasure_name, count, rarity, preciousness )
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return       
         elseif count <= 0 then
             skywars.print_error(sender, skywars.T("Count has to be greater than 0!"))
@@ -233,11 +283,11 @@ function(cmd)
 
     cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int", 
     function(sender, arena_name, rarity, preciousness)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
         local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
 
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
         if rarity < 1 then
@@ -272,14 +322,14 @@ function(cmd)
 
 
     cmd:sub("removetreasure hand :arena", function(sender, arena_name)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
         local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
 
         if treasure_name == "" then
             skywars.print_error(sender, skywars.T("Your hand is empty!"))
             return
-        elseif not arena_valid(arena_name, sender, true) then 
+        elseif not arena then 
             return
         end
 
@@ -305,10 +355,10 @@ function(cmd)
 
     
     cmd:sub("removetreasure :arena :treasure", function(sender, arena_name, treasure_name)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
 
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
 
@@ -334,10 +384,10 @@ function(cmd)
 
 
     cmd:sub("removetreasure id :arena :id:int", function(sender, arena_name, treasure_id)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local treasure_name = ""
 
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
 
@@ -359,13 +409,13 @@ function(cmd)
 
 
     cmd:sub("copytreasures :fromarena :toarena", function(sender, from, to)
-        local id, from_arena = arena_lib.get_arena_by_name("skywars", from)
-        local id2, to_arena = arena_lib.get_arena_by_name("skywars", to)
+        local from_arena = get_valid_arena(from, sender)
+        local to_arena = get_valid_arena(to, sender, true)
         local found = false
 
-        if not arena_valid(from, sender) then
+        if not to_arena or not from_arena then
             return
-        elseif not arena_valid(to_arena, sender, true) then
+        elseif not get_valid_arena(to_arena, sender, true) then
             return
         elseif from_arena == to_arena then
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
@@ -384,10 +434,10 @@ function(cmd)
 
 
     cmd:sub("gettreasures :arena", function(sender, arena_name)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender)
         local found = false
 
-        if not arena_valid(arena_name, sender) then 
+        if not arena then 
             return
         end
         skywars.print_msg(sender, skywars.T("Treasures list:"))
@@ -405,9 +455,9 @@ function(cmd)
 
 
     cmd:sub("searchtreasure :arena :treasure", function(sender, arena_name, treasure_name)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
 
-        if not arena_valid(arena_name, sender) then 
+        if not arena then 
             return
         end
 
@@ -429,7 +479,7 @@ function(cmd)
 
     cmd:sub("addchest pos :arena :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
     function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local pos = vector.round(minetest.get_player_by_name(sender):get_pos())
         local exists = false
         local chest_id = 1
@@ -445,7 +495,7 @@ function(cmd)
             id = chest_id
         }
 
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
         if t_min <= 0 or t_max <= 0 then
@@ -475,7 +525,7 @@ function(cmd)
 
     cmd:sub("addchest :arena :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
     function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local player = minetest.get_player_by_name(sender)
         local look_dir = player:get_look_dir()
         local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
@@ -499,7 +549,7 @@ function(cmd)
             id = chest_id
         }
 
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
         if t_min <= 0 or t_max <= 0 then
@@ -528,10 +578,10 @@ function(cmd)
 
 
     cmd:sub("getchests :arena", function(sender, arena_name)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender)
         local found = false
 
-        if not arena_valid(arena_name, sender) then 
+        if not arena then 
             return
         end
 
@@ -553,7 +603,7 @@ function(cmd)
 
     
     cmd:sub("removechest :arena", function(sender, arena_name)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local found = false
         local player = minetest.get_player_by_name(sender)
         local look_dir = player:get_look_dir()
@@ -565,7 +615,7 @@ function(cmd)
             return
         end
 
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
 
@@ -588,10 +638,10 @@ function(cmd)
 
 
     cmd:sub("removechest id :arena :id:int", function(sender, arena_name, chest_id)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local found = false
         
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
 
@@ -823,9 +873,9 @@ function(cmd)
     cmd:sub("arenakit add :arena :kit", 
     function(sender, arena_name, kit_name)
         local kits = skywars.load_kits()
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
 
-        if not arena_valid(arena_name, sender, true) then 
+        if not arena then 
             return
         end
         if kits[kit_name] == nil then
@@ -844,10 +894,10 @@ function(cmd)
     cmd:sub("arenakit remove :arena :kit", 
     function(sender, arena_name, kit_name)
         local kits = skywars.load_kits()
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
         local found = false
 
-        if not arena_valid(arena_name, sender, true) then
+        if not arena then
             return
         elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
@@ -870,14 +920,12 @@ function(cmd)
 
 
     cmd:sub("copykits :fromarena :toarena", function(sender, from, to)
-        local id, from_arena = arena_lib.get_arena_by_name("skywars", from)
-        local id2, to_arena = arena_lib.get_arena_by_name("skywars", to)
+        local from_arena = get_valid_arena(from, sender)
+        local to_arena = get_valid_arena(to, sender, true)
         local found = false
 
 
-        if not arena_valid(from, sender) then
-            return
-        elseif not arena_valid(to, sender, true) then
+        if not from_arena or to_arena then
             return
         elseif from_arena == to_arena then
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
@@ -901,10 +949,9 @@ function(cmd)
 
     cmd:sub("pos1 :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
 
-        if arena == nil then
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
+        if not arena then
             return
         end
 
@@ -919,10 +966,9 @@ function(cmd)
 
     cmd:sub("pos2 :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
 
-        if arena == nil then
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
+        if not arena then
             return
         end
 
@@ -945,10 +991,9 @@ function(cmd)
 
     cmd:sub("reset :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        local arena = get_valid_arena(arena_name, sender, true)
 
-        if arena == nil then
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
+        if not arena then
             return
         end
         

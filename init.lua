@@ -20,7 +20,6 @@ arena_lib.register_minigame("skywars", {
     HUDs = {},
     -- the original amount of players in the arena
     match_players = 0,
-    time_passed = 0
   },
   properties = {
     chests = {},
@@ -32,7 +31,7 @@ arena_lib.register_minigame("skywars", {
   player_properties = {
     speed = 1
   },
-  timer = skywars_settings.timer,
+  time_mode = 2,
   disabled_damage_types = disabled_damage_types_
 })
 

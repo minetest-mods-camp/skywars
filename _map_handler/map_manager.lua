@@ -26,8 +26,7 @@ end
 
 
 
--- returns the arena where the player's in
-local function get_arena_by_pos(pos)
+function skywars.get_arena_by_pos(pos)
     for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
         if arena.pos1.x == nil or arena.pos2.x == nil then goto continue end
 
@@ -118,7 +117,7 @@ minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack
     save_block(arena, pos, oldnode)
 
     if arena == nil then 
-        arena = get_arena_by_pos(pos)
+        arena = skywars.get_arena_by_pos(pos)
         if arena and arena.enabled then 
             save_block(arena, pos, oldnode)
         end
@@ -132,7 +131,7 @@ minetest.register_on_dignode(function(pos, oldnode, player)
     save_block(arena, pos, oldnode)
 
     if arena == nil then 
-        arena = get_arena_by_pos(pos)
+        arena = skywars.get_arena_by_pos(pos)
         if arena and arena.enabled then 
             save_block(arena, pos, oldnode)
         end
@@ -144,7 +143,7 @@ end)
 -- minetest.set_node override
 local set_node = minetest.set_node
 function minetest.set_node(pos, node)
-    local arena = get_arena_by_pos(pos)
+    local arena = skywars.get_arena_by_pos(pos)
     local oldnode = minetest.get_node(pos)
     
     if arena and arena.enabled then save_block(arena, pos, oldnode) end

@@ -13,10 +13,11 @@ an arena can have.
 2) Editing the arena using:
 
 /skywars edit <arena name>
-in this menu you can add spawn points and set up the sign to enter the
-arena: the spawn points are where the players will spawn when they 
-enter the arena, while the sign is just the way to enter it (by 
-clicking it).
+in this menu you can add spawn points, set up the timer and the sign to
+enter the arena: the spawn points are where the players will spawn when 
+they enter the arena, the timer's a value starting from whatever you set 
+it to decrementing until it reaches 0, and the sign is just the way to 
+enter the arena (by clicking it).
 
 
 3) Setting the arena treasures (the items that can spawn in the 
@@ -58,13 +59,15 @@ this will set the position over the node you're standing on.
 in order to kill players that go out of the map and to properly save the changes
 made to the arena you have to define a map area; to do so, simply specify its 
 corners by using: /skywars pos1 and /skywars pos2.
+Once you've done this you can put "@" instead of the arena name in any command
+to automatically get the one you're standing in. 
 
 ! WARNING !
 To modify a map you must use use /skywars reset <arena name> and then disable 
 the arena, otherwise your changes may get lost.
 Everything you change when the arena's disabled won't be saved, so make
 sure to properly reset your map before doing so (e.g. if when you reset the arena
-flowing lava and water created some stone it won't be resetted the first time, so
+flowing lava and water created some stone it won't be reset the first time, so
 you'll have to reset it until the map is clear).
 
 

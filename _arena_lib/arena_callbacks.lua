@@ -40,6 +40,37 @@ end
 
 
 
+local function create_glass_cage(player)
+  local function set_glass(relative_pos)
+    local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
+    if minetest.get_node(node_pos).name == "air" then 
+      minetest.add_node(node_pos, {name="default:glass"})
+    end
+  end
+
+  minetest.after(0.1, function()
+    local pl_pos = player:get_pos()
+
+    player:set_physics_override({gravity=0, jump=0})
+    player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
+
+    set_glass({x = 0,y = -1,z = 0})
+    set_glass({x = 0,y = -2,z = 0})
+    set_glass({x = 1,y = 1,z = 0})
+    set_glass({x = -1,y = 1,z = 0})
+    set_glass({x = 0,y = 1,z = 1})
+    set_glass({x = 0,y = 1,z = -1})
+    set_glass({x = 0,y = 2,z = 0})
+    
+    -- teleports the player back in the glass
+    minetest.after(1, function()
+      player:set_pos(pl_pos)
+    end)
+  end)
+end
+
+
+
 minetest.register_on_joinplayer(function(player)
   remove_privs(player:get_player_name())
 end)
@@ -49,41 +80,13 @@ end)
 arena_lib.on_load("skywars", function(arena)
   skywars.load_map_mapblocks(arena)
   skywars.reset_map(arena)
-  
+
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
-    local function set_glass(relative_pos)
-      local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
-
-      if minetest.get_node(node_pos).name == "air" then 
-        minetest.add_node(node_pos, {name="default:glass"})
-      end
-    end
-
     add_privs(pl_name)
-
     skywars.show_kit_selector(pl_name, arena)
-
-    minetest.after(0.1, function()
-      local pl_pos = player:get_pos()
-
-      player:set_physics_override({gravity=0, jump=0})
-      player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
-
-      -- puts glass nodes around the player
-      set_glass({x = 0,y = -1,z = 0})
-      set_glass({x = 0,y = -2,z = 0})
-      set_glass({x = 1,y = 1,z = 0})
-      set_glass({x = -1,y = 1,z = 0})
-      set_glass({x = 0,y = 1,z = 1})
-      set_glass({x = 0,y = 1,z = -1})
-      
-      -- teleports the player back in the glass
-      minetest.after(1, function()
-        player:set_pos(pl_pos)
-      end)
-    end)
+    create_glass_cage(player)
   end
 end)
 
@@ -91,7 +94,7 @@ end)
 
 arena_lib.on_start("skywars", function(arena)
   arena.match_players = arena.players_amount
-  
+
   skywars.reset_map(arena)
   skywars.place_chests(arena)
   skywars.fill_chests(arena)
@@ -140,7 +143,7 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
   local player = minetest.get_player_by_name(pl_name)
 
   if reason.type == "punch" then
-    if reason.object ~= nil and reason.object:is_player() then
+    if reason.object and reason.object:is_player() then
       local killer = reason.object:get_player_name()
 
       arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("@1 was killed by @2", pl_name, killer))
@@ -177,10 +180,7 @@ end)
 arena_lib.on_disconnect("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
-  remove_privs(pl_name)
-
   skywars.update_players_counter(arena, false)
-  skywars.remove_armor(player)
 end)
 
 
@@ -189,7 +189,6 @@ arena_lib.on_kick("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
   remove_privs(pl_name)
-
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
   skywars.remove_armor(player)
@@ -216,9 +215,7 @@ end)
 
 
 arena_lib.on_timer_tick("skywars", function(arena)
-  arena.time_passed = arena.time_passed + 1
-
-  if arena.time_passed % 5 == 0 then
+  if arena.current_time % 5 == 0 then
     skywars.kill_players_out_map(arena)
   end
 end)
