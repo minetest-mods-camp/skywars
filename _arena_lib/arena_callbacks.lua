@@ -40,27 +40,29 @@ end
 
 
 
-local function create_glass_cage(player)
-  local function set_glass(relative_pos)
-    local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
-    if minetest.get_node(node_pos).name == "air" then 
-      minetest.add_node(node_pos, {name="default:glass"})
-    end
+local function set_glass(player, relative_pos)
+  local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
+  if minetest.get_node(node_pos).name == "air" then 
+    minetest.add_node(node_pos, {name="default:glass"})
   end
+end
 
+
+
+local function create_glass_cage(player)
   minetest.after(0.1, function()
     local pl_pos = player:get_pos()
 
     player:set_physics_override({gravity=0, jump=0})
     player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
 
-    set_glass({x = 0,y = -1,z = 0})
-    set_glass({x = 0,y = -2,z = 0})
-    set_glass({x = 1,y = 1,z = 0})
-    set_glass({x = -1,y = 1,z = 0})
-    set_glass({x = 0,y = 1,z = 1})
-    set_glass({x = 0,y = 1,z = -1})
-    set_glass({x = 0,y = 2,z = 0})
+    set_glass(player, {x = 0,y = -1,z = 0})
+    set_glass(player, {x = 0,y = -2,z = 0})
+    set_glass(player, {x = 1,y = 1,z = 0})
+    set_glass(player, {x = -1,y = 1,z = 0})
+    set_glass(player, {x = 0,y = 1,z = 1})
+    set_glass(player, {x = 0,y = 1,z = -1})
+    set_glass(player, {x = 0,y = 2,z = 0})
     
     -- teleports the player back in the glass
     minetest.after(1, function()
@@ -103,8 +105,7 @@ arena_lib.on_start("skywars", function(arena)
     local player = minetest.get_player_by_name(pl_name)
 
     skywars.generate_HUD(arena, pl_name)
-    -- saving original speed
-    arena.players[pl_name].speed = player:get_physics_override().speed
+    arena.players[pl_name].original_speed = player:get_physics_override().speed
     player:set_physics_override({speed = skywars_settings.player_speed, gravity=1, jump=1})
 
     skywars.activate_enderpearl(player, arena)
@@ -131,8 +132,7 @@ arena_lib.on_end("skywars", function(arena, players)
     
     remove_privs(pl_name)
     skywars.remove_armor(player)
-    -- restore player's original speed
-    player:set_physics_override({speed=arena.players[pl_name].speed})
+    player:set_physics_override({speed=arena.players[pl_name].original_speed})
     skywars.block_enderpearl(player, arena)
   end
 end)
@@ -147,10 +147,8 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
       local killer = reason.object:get_player_name()
 
       arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("@1 was killed by @2", pl_name, killer))
-      -- arena.HUDs[killer].players_killed[1] == HUD ID
-      -- arena.HUDs[killer].players_killed[2] == players amount
-      arena.HUDs[killer].players_killed[2] = arena.HUDs[killer].players_killed[2] + 1 
-      reason.object:hud_change(arena.HUDs[killer].players_killed[1], "text", tostring(arena.HUDs[killer].players_killed[2]))
+      arena.HUDs[killer].players_killed.amount = arena.HUDs[killer].players_killed.amount + 1 
+      reason.object:hud_change(arena.HUDs[killer].players_killed.id, "text", tostring(arena.HUDs[killer].players_killed.amount))
     end
   end
 
@@ -168,7 +166,7 @@ arena_lib.on_quit("skywars", function(arena, pl_name)
 
   remove_privs(pl_name)
 
-  player:set_physics_override({speed=arena.players[pl_name].speed})
+  player:set_physics_override({speed=arena.players[pl_name].original_speed})
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
   skywars.remove_armor(player)
@@ -215,7 +213,7 @@ end)
 
 
 arena_lib.on_timer_tick("skywars", function(arena)
-  if arena.current_time % 5 == 0 then
+  if arena.current_time % 3 == 0 then
     skywars.kill_players_out_map(arena)
   end
 end)

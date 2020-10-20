@@ -1,9 +1,10 @@
 local function get_valid_arena(arena_name, sender, property_is_changing)
-    local arena = {} 
+    local arena = nil 
 
     if string.match(arena_name, "@") or string.match(arena_name, "@") then
         local player_pos = minetest.get_player_by_name(sender):get_pos()
         arena = skywars.get_arena_by_pos(player_pos)
+        if arena then arena_name = arena.name end
     else
         local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
     end
@@ -22,7 +23,21 @@ local function get_valid_arena(arena_name, sender, property_is_changing)
         end
     end
 
-    return arena
+    return arena, arena_name
+end
+
+
+
+local function get_looking_node(pl_name)
+    local player = minetest.get_player_by_name(pl_name)
+    local look_dir = player:get_look_dir()
+    local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
+    local result, pos = minetest.line_of_sight(
+        vector.add(pos_head, vector.divide(look_dir, 4)), 
+        vector.add(pos_head, vector.multiply(look_dir, 10))
+    )
+
+    return result, pos
 end
 
 
@@ -243,7 +258,7 @@ function(cmd)
 
     cmd:sub("addtreasure :arena :treasure :count:int :rarity:number :preciousness:int", 
     function(sender, arena_name, treasure_name, count, rarity, preciousness )
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         
         if not arena then 
             return       
@@ -283,7 +298,7 @@ function(cmd)
 
     cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int", 
     function(sender, arena_name, rarity, preciousness)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
         local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
 
@@ -322,7 +337,7 @@ function(cmd)
 
 
     cmd:sub("removetreasure hand :arena", function(sender, arena_name)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
         local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
 
@@ -355,7 +370,7 @@ function(cmd)
 
     
     cmd:sub("removetreasure :arena :treasure", function(sender, arena_name, treasure_name)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
 
         if not arena then 
@@ -384,7 +399,7 @@ function(cmd)
 
 
     cmd:sub("removetreasure id :arena :id:int", function(sender, arena_name, treasure_id)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local treasure_name = ""
 
         if not arena then 
@@ -455,7 +470,7 @@ function(cmd)
 
 
     cmd:sub("searchtreasure :arena :treasure", function(sender, arena_name, treasure_name)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
         if not arena then 
             return
@@ -479,7 +494,7 @@ function(cmd)
 
     cmd:sub("addchest pos :arena :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
     function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local pos = vector.round(minetest.get_player_by_name(sender):get_pos())
         local exists = false
         local chest_id = 1
@@ -525,15 +540,13 @@ function(cmd)
 
     cmd:sub("addchest :arena :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
     function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
-        local arena = get_valid_arena(arena_name, sender, true)
-        local player = minetest.get_player_by_name(sender)
-        local look_dir = player:get_look_dir()
-        local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
-        local result, pos = minetest.line_of_sight(vector.add(pos_head, vector.divide(look_dir, 4)), vector.add(pos_head, vector.multiply(look_dir, 10)))
-        local exists = false
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
+        local result, pos = get_looking_node(sender)
 
         if result then 
             skywars.print_error(sender, skywars.T("You're not looking at anything!")) 
+            return
+        elseif not arena then 
             return
         end
 
@@ -603,19 +616,14 @@ function(cmd)
 
     
     cmd:sub("removechest :arena", function(sender, arena_name)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = false
-        local player = minetest.get_player_by_name(sender)
-        local look_dir = player:get_look_dir()
-        local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
-        local result, pos = minetest.line_of_sight(vector.add(pos_head, vector.divide(look_dir, 4)), vector.add(pos_head, vector.multiply(look_dir, 10)))
+        local result, pos = get_looking_node(sender)
 
         if result then 
             skywars.print_error(sender, skywars.T("You're not looking at anything!"))
             return
-        end
-
-        if not arena then 
+        elseif not arena then 
             return
         end
 
@@ -638,7 +646,7 @@ function(cmd)
 
 
     cmd:sub("removechest id :arena :id:int", function(sender, arena_name, chest_id)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = false
         
         if not arena then 
@@ -873,7 +881,7 @@ function(cmd)
     cmd:sub("arenakit add :arena :kit", 
     function(sender, arena_name, kit_name)
         local kits = skywars.load_kits()
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
         if not arena then 
             return
@@ -894,7 +902,7 @@ function(cmd)
     cmd:sub("arenakit remove :arena :kit", 
     function(sender, arena_name, kit_name)
         local kits = skywars.load_kits()
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = false
 
         if not arena then
@@ -949,7 +957,7 @@ function(cmd)
 
     cmd:sub("pos1 :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
         if not arena then
             return
@@ -966,7 +974,7 @@ function(cmd)
 
     cmd:sub("pos2 :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
         if not arena then
             return
@@ -991,7 +999,7 @@ function(cmd)
 
     cmd:sub("reset :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local arena = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
         if not arena then
             return

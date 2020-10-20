@@ -58,7 +58,7 @@ function skywars.generate_HUD(arena, pl_name)
         background_players_counter = background_players_counter_,
         players_count = players_count_,
         -- HUD ID, amount of players killed
-        players_killed = {players_killed_, 0},
+        players_killed = {id = players_killed_, amount = 0},
         background_kill_counter = background_kill_counter_
     }
 
@@ -72,7 +72,7 @@ function skywars.remove_HUD(arena, pl_name)
     player:hud_remove(arena.HUDs[pl_name].background_players_counter)
     player:hud_remove(arena.HUDs[pl_name].background_kill_counter)
     player:hud_remove(arena.HUDs[pl_name].players_count)
-    player:hud_remove(arena.HUDs[pl_name].players_killed[1])
+    player:hud_remove(arena.HUDs[pl_name].players_killed.id)
 end
 
 
