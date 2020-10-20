@@ -6,7 +6,6 @@ local function get_valid_arena(arena_name, sender, property_is_changing)
         arena = skywars.get_arena_by_pos(player_pos)
         if arena then arena_name = arena.name end
     else
-        minetest.log("(else) arena name to search " .. arena_name)
         local id, arena_ = arena_lib.get_arena_by_name("skywars", arena_name)
         arena = arena_
     end
