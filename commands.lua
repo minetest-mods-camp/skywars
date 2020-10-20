@@ -1,12 +1,14 @@
 local function get_valid_arena(arena_name, sender, property_is_changing)
     local arena = nil 
 
-    if string.match(arena_name, "@") or string.match(arena_name, "@") then
+    if string.match(arena_name, "@") then
         local player_pos = minetest.get_player_by_name(sender):get_pos()
         arena = skywars.get_arena_by_pos(player_pos)
         if arena then arena_name = arena.name end
     else
-        local id, arena = arena_lib.get_arena_by_name("skywars", arena_name)
+        minetest.log("(else) arena name to search " .. arena_name)
+        local id, arena_ = arena_lib.get_arena_by_name("skywars", arena_name)
+        arena = arena_
     end
 
     if not arena then
@@ -999,7 +1001,7 @@ function(cmd)
 
     cmd:sub("reset :arena", function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
-        local arena, arena_name = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender)
 
         if not arena then
             return
