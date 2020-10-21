@@ -1,46 +1,7 @@
-local function get_valid_arena(arena_name, sender, property_is_changing)
-    local arena = nil 
-
-    if string.match(arena_name, "@") then
-        local player_pos = minetest.get_player_by_name(sender):get_pos()
-        arena = skywars.get_arena_by_pos(player_pos)
-        if arena then arena_name = arena.name end
-    else
-        local id, arena_ = arena_lib.get_arena_by_name("skywars", arena_name)
-        arena = arena_
-    end
-
-    if not arena then
-        skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
-        return nil
-    elseif arena_lib.is_arena_in_edit_mode(arena_name) and property_is_changing then 
-        skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
-        return nil
-    elseif arena.enabled and property_is_changing then
-        arena_lib.disable_arena(sender, "skywars", arena_name)
-        if arena.enabled then
-            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
-            return nil
-        end
-    end
-
-    return arena, arena_name
-end
-
-
-
-local function get_looking_node(pl_name)
-    local player = minetest.get_player_by_name(pl_name)
-    local look_dir = player:get_look_dir()
-    local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
-    local result, pos = minetest.line_of_sight(
-        vector.add(pos_head, vector.divide(look_dir, 4)), 
-        vector.add(pos_head, vector.multiply(look_dir, 10))
-    )
-
-    return result, pos
-end
-
+local function get_valid_arena() end
+local function get_looking_node() end
+local function print_chest() end
+local function print_treasure() end
 
 
 ChatCmdBuilder.new("skywars", 
@@ -48,106 +9,7 @@ function(cmd)
     cmd:sub("tutorial", 
     function(sender)
         skywars.print_msg(sender, [[
-
-        (If you find it uncomfortable to read the tutorial from the chat
-        you can read it from a file in the mod folder called TUTORIAL.txt)
-
-        These are the steps to follow in order to create and configure an 
-        arena:
-
-
-        1) Creating the arena using:
-
-        /skywars create <arena name> [min players] [max players]
-        where min players is equal to the minimun amount of players to make 
-        the arena start, and max players to the maximum amount of players that
-        an arena can have.
-
-
-        2) Editing the arena using:
-
-        /skywars edit <arena name>
-        in this menu you can add spawn points, set up the timer and the sign to
-        enter the arena: the spawn points are where the players will spawn when 
-        they enter the arena, the timer's a value starting from whatever you set 
-        it to decrementing until it reaches 0, and the sign is just the way to 
-        enter the arena (by clicking it).
-
-
-        3) Setting the arena treasures (the items that can spawn in the 
-        chests):
-
-        /skywars addtreasure <arena name> <item> <count> <rarity (min 1.0, max 
-        10.0)> <preciousness>
-        item: the item name
-        rarity: how often it will spawn in chests
-        preciousness: in which chests it can be put, for example a chest with 
-        a preciousness range 2-4 can just spawn items with a preciousness 
-        between 2 and 4
-        count: the item amount
-
-        You can also use: 
-        /skywars addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
-        <preciousness>
-        this will get the item name and count from the one in your hand.
-
-
-        4) Setting the chests in the arena using:
-
-        /skywars addchest <arena name> <min_preciousness> <max_preciousness> 
-        <min_treasures_amount (min. 1)> <max_treasures_amount>
-        to add a chest that will be filled with the right treasures when the match
-        starts, this will set the position to the node you're looking at (not over it).
-
-        You can also use: 
-
-        /skywars addchest pos <arena name> <min_preciousness> <max_preciousness> 
-        <min_treasures_amount (min. 1)> <max_treasures_amount>
-        this will set the position over the node you're standing on.
-
-
-        5) Saving the map area using:
-
-        /skywars pos1 <arena name>
-        /skywars pos2 <arena name>
-        in order to kill players that go out of the map and to properly save the changes
-        made to the arena you have to define a map area; to do so, simply specify its 
-        corners by using: /skywars pos1 and /skywars pos2.
-        Once you've done this you can put "@" instead of the arena name in a command
-        to automatically get the one you're standing in. 
-        
-        ! WARNING !
-        To modify a map you must use use /skywars reset <arena name> and then disable 
-        the arena, otherwise your changes may get lost.
-        Everything you change when the arena's disabled won't be saved, so make
-        sure to properly reset your map before doing so (e.g. if when you reset the arena
-        flowing lava and water created some stone it won't be reset the first time, so
-        you'll have to reset it until the map is clear).
-
-
-        6) (Optional) Creating and setting the kits using: 
-
-        /skywars createkit <kit name> <texture name>: texture name is the texture
-        that the kit button will have in the selector menu at the start of the match,
-        it must be a file name that you put in the "<SKYWARS MOD FOLDER>/textures" folder.
-
-        /skywars additem <kit name> <item> <count>: with this you can add items to it
-        or
-        /skywars additem hand <kit name>
-
-        /skywars arenakit add <arena name> <kit name>: each arena has a "kits" property
-        that contains the choosable kits, with this command you add one to it
-
-
-        7) Enabling the arena using
-
-        /skywars enable <arena name>
-
-
-        Once you've done this you can click the sign and start playing :).
-        You should use /help skywars to read all the commands.
-        To modify the game settings (such as the messages prefix or the
-        hub spawn point) you can edit the "<SKYWARD MOD FOLDER>/SETTINGS.lua" file.
+        You can read it from TUTORIAL.txt in the mod folder called .
         ]])
     end)
 
@@ -458,13 +320,7 @@ function(cmd)
         end
         skywars.print_msg(sender, skywars.T("Treasures list:"))
         for i=1, #arena.treasures do
-            local treasure = arena.treasures[i]
-            skywars.print_msg(sender, "ID: " .. arena.treasures[i].id .. ".\n" .. 
-                skywars.T(
-                    "name: @1   @nrarity: @2   @npreciousness: @3   @ncount: @4",
-                    treasure.name, treasure.rarity, treasure.preciousness, treasure.count
-                ) .. "\n\n"
-            )
+            print_treasure(arena.treasures[i], sender)
         end
     end)
 
@@ -493,59 +349,12 @@ function(cmd)
 
 
 
-    cmd:sub("addchest pos :arena :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
-    function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
-        local arena, arena_name = get_valid_arena(arena_name, sender, true)
-        local pos = vector.round(minetest.get_player_by_name(sender):get_pos())
-        local exists = false
-        local chest_id = 1
+    cmd:sub("addchest :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
+    function(sender, min_preciousness, max_preciousness, t_min, t_max)
+        local arena, arena_name = get_valid_arena("@", sender, true)
+        local pos = get_looking_node(sender)
 
-        if arena.chests[#arena.chests] then chest_id = arena.chests[#arena.chests].id+1 end
-        local chest = 
-        {
-            pos = pos,
-            min_preciousness = min_preciousness, 
-            max_preciousness = max_preciousness,
-            min_treasures = t_min,
-            max_treasures = t_max,
-            id = chest_id
-        }
-
-        if not arena then 
-            return
-        end
-        if t_min <= 0 or t_max <= 0 then
-            skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
-            return
-        end
-        for i=1, #arena.chests do
-            if vector.equals(arena.chests[i].pos, pos) then
-                exists = true
-                break
-            end 
-        end 
-        if exists then
-            skywars.print_error(sender, skywars.T("The chest already exists!"))
-            return
-        end
-
-        skywars.print_msg(sender, 
-            skywars.T("Chest added with @1-@2 preciousness and @3-@4 treasures amount!",
-            min_preciousness, max_preciousness, min_treasures_amount, max_treasures_amount)
-        )
-        table.insert(arena.chests, chest)
-        arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
-    end)
-
-
-
-    cmd:sub("addchest :arena :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
-    function(sender, arena_name, min_preciousness, max_preciousness, t_min, t_max)
-        local arena, arena_name = get_valid_arena(arena_name, sender, true)
-        local result, pos = get_looking_node(sender)
-
-        if result then 
-            skywars.print_error(sender, skywars.T("You're not looking at anything!")) 
+        if not pos then 
             return
         elseif not arena then 
             return
@@ -593,7 +402,6 @@ function(cmd)
 
     cmd:sub("getchests :arena", function(sender, arena_name)
         local arena = get_valid_arena(arena_name, sender)
-        local found = false
 
         if not arena then 
             return
@@ -601,28 +409,18 @@ function(cmd)
 
         skywars.print_msg(sender, skywars.T("Chest list:"))
         for i=1, #arena.chests do
-            local chest = arena.chests[i]
-            local chest_pos = minetest.pos_to_string(chest.pos, 0)
-
-            skywars.print_msg(sender, 
-                skywars.T(
-                    "ID: @1 - Position: @2   @npreciousness: @3-@4   @ntreasures amount: @5-@6",
-                    chest.id, chest_pos, chest.min_preciousness, chest.max_preciousness,
-                    chest.min_treasures, chest.max_treasures
-                ) .. "\n\n"
-            )
+            print_chest(chest, arena.chests[i])
         end
-    end)
+    end) 
     
 
     
-    cmd:sub("removechest :arena", function(sender, arena_name)
-        local arena, arena_name = get_valid_arena(arena_name, sender, true)
+    cmd:sub("removechest", function(sender)
+        local arena, arena_name = get_valid_arena("@", sender, true)
         local found = false
-        local result, pos = get_looking_node(sender)
+        local pos = get_looking_node(sender)
 
-        if result then 
-            skywars.print_error(sender, skywars.T("You're not looking at anything!"))
+        if not pos then 
             return
         elseif not arena then 
             return
@@ -640,6 +438,33 @@ function(cmd)
         if found then
             skywars.print_msg(sender, skywars.T("Chest removed!"))
         else
+            skywars.print_error(sender, skywars.T("Chest not found!"))
+        end
+    end)
+
+
+
+    cmd:sub("inspect", function(sender)
+        local arena, arena_name = get_valid_arena("@", sender, true)
+        local found = false
+        local pos = get_looking_node(sender)
+
+        if not pos then 
+            return
+        elseif not arena then 
+            return
+        end
+
+        for i=1, #arena.chests do
+            local chest = arena.chests[i]
+            if vector.equals(chest.pos, pos) then
+                print_chest(chest, sender)
+                found = true
+                break
+            end 
+        end
+
+        if not found then
             skywars.print_error(sender, skywars.T("Chest not found!"))
         end
     end)
@@ -1038,6 +863,8 @@ end, {
         Skywars:
 
         - tutorial
+        - pos1 <arena name>
+        - pos2 <arena name>
         - addtreasure <arena name> <item> <count> <rarity (min 1.0, max 10.0)> 
         <preciousness> 
         - addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
@@ -1048,15 +875,12 @@ end, {
         - removetreasure hand <arena name>
         - removetreasure id <arena name> <treasure id>
         - copytreasures <(from) arena name> <(to) arena name>
-        - addchest <arena name> <min_preciousness> <max_preciousness> 
-        <min_treasures_amount (min. 1)> <max_treasures_amount>
-        - addchest pos <arena name> <min_preciousness> <max_preciousness> 
-        <min_treasures_amount (min. 1)> <max_treasures_amount>
+        - addchest <min_preciousness> <max_preciousness> <min_treasures_amount (min. 1)>
+          <max_treasures_amount>
         - getchests <arena name>
-        - removechest <arena name>: removes the chest you're looking at
-        - removechest id <id>
-        - pos1 <arena name>
-        - pos2 <arena name>
+        - inspect: gives you information about the chest you're looking at
+        - removechest
+        - removechest id <arena name> <id>
         - reset <arena name>
         - createkit <kit name> <texture name>
         - deletekit <kit name>
@@ -1085,4 +909,77 @@ end, {
 minetest.register_privilege("skywars_admin", {  
     description = "With this you can use /skywars"
 })
-  
+
+
+
+function get_valid_arena(arena_name, sender, property_is_changing)
+    local arena = nil 
+
+    if arena_name == "@" then
+        local player_pos = minetest.get_player_by_name(sender):get_pos()
+        arena = skywars.get_arena_by_pos(player_pos)
+        if arena then arena_name = arena.name end
+    else
+        local id, arena_ = arena_lib.get_arena_by_name("skywars", arena_name)
+        arena = arena_
+    end
+
+    if not arena then
+        skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
+        return nil
+    elseif arena_lib.is_arena_in_edit_mode(arena_name) and property_is_changing then 
+        skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
+        return nil
+    elseif arena.enabled and property_is_changing then
+        arena_lib.disable_arena(sender, "skywars", arena_name)
+        if arena.enabled then
+            skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
+            return nil
+        end
+    end
+
+    return arena, arena_name
+end
+
+
+
+function get_looking_node(pl_name)
+    local player = minetest.get_player_by_name(pl_name)
+    local look_dir = player:get_look_dir()
+    local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
+    local result, pos = minetest.line_of_sight(
+        vector.add(pos_head, vector.divide(look_dir, 4)), 
+        vector.add(pos_head, vector.multiply(look_dir, 10))
+    )
+
+    if result then 
+        skywars.print_error(sender, skywars.T("You're not looking at anything!"))
+        return nil
+    end
+
+    return pos
+end
+
+
+
+function print_chest(chest, sender)
+    local chest_pos = minetest.pos_to_string(chest.pos, 0)
+    skywars.print_msg(sender, 
+        skywars.T(
+            "ID: @1   @nposition: @2   @npreciousness: @3-@4   @ntreasures amount: @5-@6",
+            chest.id, chest_pos, chest.min_preciousness, chest.max_preciousness,
+            chest.min_treasures, chest.max_treasures
+        ) .. "\n\n"
+    )
+end
+
+
+
+function print_treasure(treasure, sender)
+    skywars.print_msg(sender,
+        skywars.T(
+            "ID: @1   @nname: @2   @nrarity: @3   @npreciousness: @4   @ncount: @5",
+            treasure.id, treasure.name, treasure.rarity, treasure.preciousness, treasure.count
+        ) .. "\n\n"
+    )
+end

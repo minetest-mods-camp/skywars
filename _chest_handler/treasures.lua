@@ -1,5 +1,6 @@
 -- Select the treasures to put in the chests inventory
 local mod = "skywars"
+local function treasure_to_itemstack() end
 
 
 function skywars.reorder_treasures(arena)
@@ -13,20 +14,6 @@ function skywars.reorder_treasures(arena)
 			end
 		end
 	end
-end
-
-
-
-local function treasure_to_itemstack(treasure)
-	local itemstack = {}
-	itemstack.name = treasure.name
-	itemstack.count = treasure.count
-
-	if ItemStack(itemstack):is_known() == false then
-		minetest.log("error","[Skywars Treasures] I was asked to put "..treasure.name.." inside a chest, but it doesn't exist.")
-		return nil
-	end
-	return ItemStack(itemstack)
 end
 
 
@@ -59,4 +46,18 @@ function skywars.select_random_treasures(treasure_amount, min_preciousness, max_
 	end
 
 	return generated_treasures
+end
+
+
+
+function treasure_to_itemstack(treasure)
+	local itemstack = {}
+	itemstack.name = treasure.name
+	itemstack.count = treasure.count
+
+	if ItemStack(itemstack):is_known() == false then
+		minetest.log("error","[Skywars Treasures] I was asked to put "..treasure.name.." inside a chest, but it doesn't exist.")
+		return nil
+	end
+	return ItemStack(itemstack)
 end

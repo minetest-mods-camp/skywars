@@ -10,27 +10,37 @@ the arena start, and max players to the maximum amount of players that
 an arena can have.
 
 
-2) Editing the arena using:
+2) Saving the map area using:
+
+/skywars pos1 <arena name>
+/skywars pos2 <arena name>
+in order to kill players that go out of the map and to properly recognize
+the arena you have to define a map area; to do so, simply specify its 
+corners by using the two commands above.
+Once you've done this you can put "@" instead of the arena name in any command
+to automatically get the one you're standing in. 
+
+
+3) Editing the arena using:
 
 /skywars edit <arena name>
 in this menu you can add spawn points, set up the timer and the sign to
 enter the arena: the spawn points are where the players will spawn when 
-they enter the arena, the timer's a value starting from whatever you set 
-it to decrementing until it reaches 0, and the sign is just the way to 
-enter the arena (by clicking it).
+they enter the arena, the timer's a value decrementing from whatever you set 
+it until 0, and the sign is just the way to  enter the arena (by clicking it).
 
 
-3) Setting the arena treasures (the items that can spawn in the 
+4) Setting the arena treasures (the items that can spawn in the 
 chests):
 
 /skywars addtreasure <arena name> <item> <count> <rarity (min 1.0, max 
 10.0)> <preciousness>
-item: the item name
-rarity: how often it will spawn in chests
-preciousness: in which chests it can be put, for example a chest with 
-a preciousness range 2-4 can just spawn items with a preciousness 
-between 2 and 4
-count: the item amount
+item: the item name;
+rarity: how often it will spawn in chests;
+preciousness: in which chests it can be put, for example a chest with
+a preciousness range 2-4 can just spawn items with a preciousness
+between 2 and 4;
+count: the item amount.
 
 You can also use: 
 /skywars addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
@@ -38,29 +48,12 @@ You can also use:
 this will get the item name and count from the one in your hand.
 
 
-4) Setting the chests in the arena using:
+5) Setting the chests in the arena using:
 
-/skywars addchest <arena name> <min_preciousness> <max_preciousness> 
+/skywars addchest <min_preciousness> <max_preciousness> 
 <min_treasures_amount (min. 1)> <max_treasures_amount>
 to add a chest that will be filled with the right treasures when the match
 starts, this will set the position to the node you're looking at (not over it).
-
-You can also use: 
-
-/skywars addchest pos <arena name> <min_preciousness> <max_preciousness> 
-<min_treasures_amount (min. 1)> <max_treasures_amount>
-this will set the position over the node you're standing on.
-
-
-5) Saving the map area using:
-
-/skywars pos1 <arena name>
-/skywars pos2 <arena name>
-in order to kill players that go out of the map and to properly save the changes
-made to the arena you have to define a map area; to do so, simply specify its 
-corners by using: /skywars pos1 and /skywars pos2.
-Once you've done this you can put "@" instead of the arena name in any command
-to automatically get the one you're standing in. 
 
 ! WARNING !
 To modify a map you must use use /skywars reset <arena name> and then disable 
@@ -77,7 +70,7 @@ you'll have to reset it until the map is clear).
 that the kit button will have in the selector menu at the start of the match,
 it must be a file name that you put in the "<SKYWARS MOD FOLDER>/textures" folder.
 
-/skywars additem <kit name> <item> <count>: with this you can add items to it
+/skywars additem <kit name> <item> <count>: with this you can add items to it.
 or
 /skywars additem hand <kit name>
 
@@ -88,7 +81,6 @@ that contains the choosable kits, with this command you add one to it.
 7) Enabling the arena using
 
 /skywars enable <arena name>
-
 
 
 Once you've done this you can click the sign and start playing :).

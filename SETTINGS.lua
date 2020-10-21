@@ -52,16 +52,22 @@ skywars_settings.build_permission = "build"
 -- The texture background for the kit menu.
 skywars_settings.hud__kit_background = "Kits.png"
 
+-- The background width in real coordinates
+skywars_settings.background_width = 11
+
+-- The background height in real coordinates
+skywars_settings.background_height = 11
+
 -- The x position offset from the background border of the first buttons row 
 -- in real coordinates, the bigger it is the righter the row will be placed.
 skywars_settings.starting_x = 1.7
 
 -- The y position offset from the background border of the first buttons row 
 -- in real coordinates, the bigger it is the lower the row will be placed.
-skywars_settings.starting_y = 6.9
+skywars_settings.starting_y = 6.6
 
 -- The horizontal distance between buttons in real coordinates.
-skywars_settings.distance_x = 3.4
+skywars_settings.distance_x = 3.1
 
 -- The vertical distance between buttons in real coordinates.
 skywars_settings.distance_y = 3
@@ -70,10 +76,10 @@ skywars_settings.distance_y = 3
 skywars_settings.buttons_per_row = 3
 
 -- The buttons width in real coordinates.
-skywars_settings.buttons_width = 2
+skywars_settings.buttons_width = 1.8
 
 -- The buttons height in real coordinates.
-skywars_settings.buttons_height = 1.8
+skywars_settings.buttons_height = 1.6
 
 
 

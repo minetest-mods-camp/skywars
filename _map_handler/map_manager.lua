@@ -1,29 +1,6 @@
 -- reordering the corners positions so that pos1 is smaller than pos2
-local function reorder_positions(pos1, pos2)
-    local temp
-
-    if pos1.z > pos2.z then
-        temp = pos1.z
-        pos1.z = pos2.z
-        pos2.z = temp
-    end
-
-    if pos1.y > pos2.y then
-        temp = pos1.y
-        pos1.y = pos2.y
-        pos2.y = temp
-    end
-
-    if pos1.x > pos2.x then
-        temp = pos1.x
-        pos1.x = pos2.x
-        pos2.x = temp
-    end
-
-    return pos1, pos2
-     
-end
-
+local function reorder_positions() end
+local function save_block() end
 
 
 function skywars.get_arena_by_pos(pos)
@@ -37,24 +14,6 @@ function skywars.get_arena_by_pos(pos)
         end
 
         ::continue::
-    end
-end
-
-
-
-local function save_block(arena, pos, node)
-    local maps = skywars.load_maps()
-    local serialized_pos = minetest.serialize(pos)
-
-    if not arena then return end
-    if not maps then maps = {} end
-    if not maps[arena.name] then maps[arena.name] = {} end
-    if not maps[arena.name].blocks then maps[arena.name].blocks = {} end
-
-    -- if this block has not been changed yet then save it
-    if maps[arena.name].blocks[serialized_pos] == nil then
-        maps[arena.name].blocks[serialized_pos] = node
-        skywars.overwrite_maps(maps)
     end
 end
 
@@ -150,11 +109,56 @@ function minetest.set_node(pos, node)
 
 	return set_node(pos, node)
 end
-
-
 function minetest.add_node(pos, node)
     minetest.set_node(pos, node)
 end
 function minetest.remove_node(pos)
     minetest.set_node(pos, {name="air"})
+end
+
+
+
+-- reordering the corners positions so that pos1 is smaller than pos2
+function reorder_positions(pos1, pos2)
+    local temp
+
+    if pos1.z > pos2.z then
+        temp = pos1.z
+        pos1.z = pos2.z
+        pos2.z = temp
+    end
+
+    if pos1.y > pos2.y then
+        temp = pos1.y
+        pos1.y = pos2.y
+        pos2.y = temp
+    end
+
+    if pos1.x > pos2.x then
+        temp = pos1.x
+        pos1.x = pos2.x
+        pos2.x = temp
+    end
+
+    return pos1, pos2
+     
+end
+
+
+
+
+function save_block(arena, pos, node)
+    local maps = skywars.load_maps()
+    local serialized_pos = minetest.serialize(pos)
+
+    if not arena then return end
+    if not maps then maps = {} end
+    if not maps[arena.name] then maps[arena.name] = {} end
+    if not maps[arena.name].blocks then maps[arena.name].blocks = {} end
+
+    -- if this block has not been changed yet then save it
+    if maps[arena.name].blocks[serialized_pos] == nil then
+        maps[arena.name].blocks[serialized_pos] = node
+        skywars.overwrite_maps(maps)
+    end
 end

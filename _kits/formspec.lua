@@ -1,4 +1,36 @@
-local function select_kit(pl_name, kit_items)
+local function select_kit() end
+local function create_formspec() end
+
+
+function skywars.show_kit_selector(pl_name, arena)
+    if #arena.kits == 0 then return end
+    minetest.show_formspec(pl_name, "skywars:kit_selector", create_formspec(arena))
+end
+
+
+
+minetest.register_on_player_receive_fields(function(player, formname, fields)
+    if formname ~= "skywars:kit_selector" then
+        return
+    end
+
+    local pl_name = player:get_player_name()
+    local arena = arena_lib.get_arena_by_player(pl_name)
+    local kits = skywars.load_kits() 
+
+    -- if the pressed button's name is equal to one of the kits in the arena then select it
+    for i=1, #arena.kits do
+        local kit_name = arena.kits[i]
+        if fields[kit_name] then
+            select_kit(pl_name, kits[kit_name].items)
+            minetest.close_formspec(pl_name, "skywars:kit_selector")
+        end
+    end
+end)
+
+
+
+function select_kit(pl_name, kit_items)
     local player_inv = minetest.get_player_by_name(pl_name):get_inventory()
 
     for i=1, #kit_items do
@@ -9,10 +41,10 @@ end
 
 
 
-local function create_formspec(arena)
+function create_formspec(arena)
     local formspec = {
         "formspec_version[3]",
-        "size[12,12]",
+        "size["..skywars_settings.background_width..","..skywars_settings.background_height.."]",
         "position[0.5, 0.5]",
         "anchor[0.5,0.5]",
         "no_prepend[]",
@@ -69,31 +101,3 @@ local function create_formspec(arena)
 
     return table.concat(formspec, "")
 end
-
-
-
-function skywars.show_kit_selector(pl_name, arena)
-    if #arena.kits == 0 then return end
-    minetest.show_formspec(pl_name, "skywars:kit_selector", create_formspec(arena))
-end
-
-
-
-minetest.register_on_player_receive_fields(function(player, formname, fields)
-    if formname ~= "skywars:kit_selector" then
-        return
-    end
-
-    local pl_name = player:get_player_name()
-    local arena = arena_lib.get_arena_by_player(pl_name)
-    local kits = skywars.load_kits() 
-
-    -- if the pressed button's name is equal to one of the kits in the arena then select it
-    for i=1, #arena.kits do
-        local name = arena.kits[i]
-        if fields[name] then
-            select_kit(pl_name, kits[name].items)
-            minetest.close_formspec(pl_name, "skywars:kit_selector")
-        end
-    end
-end)

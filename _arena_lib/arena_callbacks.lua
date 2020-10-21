@@ -1,76 +1,6 @@
-local function add_privs(pl_name)
-  local privs = minetest.get_player_privs(pl_name)
-  local player = minetest.get_player_by_name(pl_name)
-  
-  -- preventing players with noclip to fall when placing blocks
-  if privs.noclip then
-    player:get_meta():set_string("noclip", "true")
-    privs.noclip = nil
-  else
-    player:get_meta():set_string("noclip", "false")
-  end
-
-  if skywars_settings.build_permission ~= "" then
-    if privs[skywars_settings.build_permission] then
-      player:get_meta():set_string("build", "true")
-    else 
-      player:get_meta():set_string("build", "false")
-    end
-    privs[skywars_settings.build_permission] = true
-  end
-
-  minetest.set_player_privs(pl_name, privs)
-end
-
-
-
-local function remove_privs(pl_name)
-  local privs = minetest.get_player_privs(pl_name)
-  local player = minetest.get_player_by_name(pl_name)
-
-  if player:get_meta():get_string("noclip") == "true" then
-    privs.noclip = true
-  end
-  if player:get_meta():get_string("build") == "false" then
-    privs[skywars_settings.build_permission] = nil
-  end
-
-  minetest.set_player_privs(pl_name, privs)
-end
-
-
-
-local function set_glass(player, relative_pos)
-  local node_pos = vector.round(vector.add(player:get_pos(), relative_pos))
-  if minetest.get_node(node_pos).name == "air" then 
-    minetest.add_node(node_pos, {name="default:glass"})
-  end
-end
-
-
-
-local function create_glass_cage(player)
-  minetest.after(0.1, function()
-    local pl_pos = player:get_pos()
-
-    player:set_physics_override({gravity=0, jump=0})
-    player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
-
-    set_glass(player, {x = 0,y = -1,z = 0})
-    set_glass(player, {x = 0,y = -2,z = 0})
-    set_glass(player, {x = 1,y = 1,z = 0})
-    set_glass(player, {x = -1,y = 1,z = 0})
-    set_glass(player, {x = 0,y = 1,z = 1})
-    set_glass(player, {x = 0,y = 1,z = -1})
-    set_glass(player, {x = 0,y = 2,z = 0})
-    
-    -- teleports the player back in the glass
-    minetest.after(1, function()
-      player:set_pos(pl_pos)
-    end)
-  end)
-end
-
+local function add_privs() end
+local function remove_privs() end
+local function create_glass_cage()end
 
 
 minetest.register_on_joinplayer(function(player)
@@ -106,7 +36,6 @@ arena_lib.on_start("skywars", function(arena)
 
     skywars.generate_HUD(arena, pl_name)
      
-    arena.players[pl_name].original_speed = player:get_physics_override().speed
     player:set_physics_override({speed = skywars_settings.player_speed, gravity=1, jump=1})
 
     skywars.activate_enderpearl(player, arena)
@@ -133,7 +62,6 @@ arena_lib.on_end("skywars", function(arena, players)
     
     remove_privs(pl_name)
     skywars.remove_armor(player)
-    player:set_physics_override({speed=arena.players[pl_name].original_speed})
     skywars.block_enderpearl(player, arena)
   end
 end)
@@ -167,7 +95,6 @@ arena_lib.on_quit("skywars", function(arena, pl_name)
 
   remove_privs(pl_name)
 
-  player:set_physics_override({speed=arena.players[pl_name].original_speed})
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
   skywars.remove_armor(player)
@@ -226,3 +153,77 @@ arena_lib.on_timeout("skywars", function(arena)
 
   arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("Time is out, the match is over!"))
 end)
+
+
+
+function add_privs(pl_name)
+  local privs = minetest.get_player_privs(pl_name)
+  local player = minetest.get_player_by_name(pl_name)
+  
+  -- preventing players with noclip to fall when placing blocks
+  if privs.noclip then
+    player:get_meta():set_string("noclip", "true")
+    privs.noclip = nil
+  else
+    player:get_meta():set_string("noclip", "false")
+  end
+
+  if skywars_settings.build_permission ~= "" then
+    if privs[skywars_settings.build_permission] then
+      player:get_meta():set_string("build", "true")
+    else 
+      player:get_meta():set_string("build", "false")
+    end
+    privs[skywars_settings.build_permission] = true
+  end
+
+  minetest.set_player_privs(pl_name, privs)
+end
+
+
+
+function remove_privs(pl_name)
+  local privs = minetest.get_player_privs(pl_name)
+  local player = minetest.get_player_by_name(pl_name)
+
+  if player:get_meta():get_string("noclip") == "true" then
+    privs.noclip = true
+  end
+  if player:get_meta():get_string("build") == "false" then
+    privs[skywars_settings.build_permission] = nil
+  end
+
+  minetest.set_player_privs(pl_name, privs)
+end
+
+
+
+function create_glass_cage(player)
+  minetest.after(0.1, function()
+    local pl_pos = player:get_pos()
+    local glass_blocks = {
+      {x = 0,y = -1,z = 0},
+      {x = 0,y = -2,z = 0},
+      {x = 1,y = 1,z = 0},
+      {x = -1,y = 1,z = 0},
+      {x = 0,y = 1,z = 1},
+      {x = 0,y = 1,z = -1},
+      {x = 0,y = 2,z = 0}
+    }
+
+    player:set_physics_override({gravity=0, jump=0})
+    player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
+
+    for _, relative_pos in pairs(glass_blocks) do
+      local node_pos = vector.round(vector.add(pl_pos, relative_pos))
+      if minetest.get_node(node_pos).name == "air" then 
+        minetest.add_node(node_pos, {name="default:glass"})
+      end
+    end
+    
+    -- teleports the player back in the glass
+    minetest.after(1, function()
+      player:set_pos(pl_pos)
+    end)
+  end)
+end
