@@ -129,7 +129,7 @@ function(cmd)
         elseif count <= 0 then
             skywars.print_error(sender, skywars.T("Count has to be greater than 0!"))
             return
-        elseif rarity < 1 then
+        elseif rarity <= 0 then
             skywars.print_error(sender, skywars.T("Rarity has to be greater than 0!"))
             return
         elseif rarity > 10 then
@@ -168,7 +168,7 @@ function(cmd)
         if not arena or not treasure then 
             return
         end
-        if rarity < 1 then
+        if rarity <= 0 then
             skywars.print_error(sender, skywars.T("Rarity has to be greater than 0!"))
             return
         elseif rarity > 10 then
@@ -344,7 +344,7 @@ function(cmd)
 
 
     cmd:sub("addchest :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
-    function(sender, min_preciousness, max_preciousness, t_min, t_max)
+    function(sender, min_preciousness, max_preciousness, min_treasures, max_treasures)
         local arena, arena_name = get_valid_arena("@", sender, true)
         local pos = get_looking_node_pos(sender)
 
@@ -361,15 +361,12 @@ function(cmd)
             pos = pos,
             min_preciousness = min_preciousness, 
             max_preciousness = max_preciousness,
-            min_treasures = t_min,
-            max_treasures = t_max,
+            min_treasures = min_treasures,
+            max_treasures = max_treasures,
             id = chest_id
         }
 
-        if not arena then 
-            return
-        end
-        if t_min <= 0 or t_max <= 0 then
+        if min_treasures <= 0 or max_treasures <= 0 then
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
             return
         end
@@ -386,7 +383,7 @@ function(cmd)
 
         skywars.print_msg(sender, 
             skywars.T("Chest added with @1-@2 preciousness and @3-@4 treasures amount!",
-            min_preciousness, max_preciousness, t_min, t_max)
+            min_preciousness, max_preciousness, min_treasures, max_treasures)
         )
         table.insert(arena.chests, chest)
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
@@ -915,7 +912,9 @@ function get_valid_arena(arena_name, sender, property_is_changing)
         return nil
     elseif arena.enabled and property_is_changing then
         arena_lib.disable_arena(sender, "skywars", arena_name)
-        if arena.enabled then
+        local couldnt_disable = arena.enabled
+
+        if couldnt_disable then
             skywars.print_error(sender, skywars.T("@1 must be disabled!", arena_name))
             return nil
         end
