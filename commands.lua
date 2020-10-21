@@ -10,7 +10,7 @@ function(cmd)
     cmd:sub("tutorial", 
     function(sender)
         skywars.print_msg(sender, [[
-        You can read it from TUTORIAL.txt in the mod folder called .
+        You can read it from TUTORIAL.txt in the mod folder.
         ]])
     end)
 
