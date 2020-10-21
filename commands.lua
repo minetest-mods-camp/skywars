@@ -1,7 +1,8 @@
 local function get_valid_arena() end
-local function get_looking_node() end
+local function get_looking_node_pos() end
 local function print_chest() end
 local function print_treasure() end
+local function get_wielded_item() end
 
 
 ChatCmdBuilder.new("skywars", 
@@ -162,10 +163,9 @@ function(cmd)
     cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int", 
     function(sender, arena_name, rarity, preciousness)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
-        local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
-        local count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
+        local treasure = get_wielded_item(sender)
 
-        if not arena then 
+        if not arena or not treasure then 
             return
         end
         if rarity < 1 then
@@ -174,24 +174,21 @@ function(cmd)
         elseif rarity > 10 then
             skywars.print_error(sender, skywars.T("Rarity has to be smaller than 11!"))
             return
-        elseif treasure_name == "" then
-            skywars.print_error(sender, skywars.T("Your hand is empty!"))
-            return
         end
 
         local item_id = 1
         if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
         table.insert(arena.treasures, {
-            name = treasure_name, 
+            name = treasure.name, 
             rarity = rarity, 
-            count = count, 
+            count = treasure.count, 
             preciousness = preciousness, 
             id = item_id
         })
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
         skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
-            count, treasure_name, arena_name, rarity, preciousness
+            treasure.count, treasure.name, arena_name, rarity, preciousness
         ))
 
         skywars.reorder_treasures(arena)
@@ -202,19 +199,16 @@ function(cmd)
     cmd:sub("removetreasure hand :arena", function(sender, arena_name)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
-        local treasure_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
+        local wielded_treasure = get_wielded_item(sender)
 
-        if treasure_name == "" then
-            skywars.print_error(sender, skywars.T("Your hand is empty!"))
-            return
-        elseif not arena then 
+        if not arena or not wielded_treasure then 
             return
         end
 
         while found[1] do
             found[1] = false
             for i, treasure in pairs(arena.treasures) do
-                if treasure.name == treasure_name then
+                if treasure.name == wielded_treasure.name then
                     table.remove(arena.treasures, i)
                     i = i-1
                     found[1] = true
@@ -224,7 +218,7 @@ function(cmd)
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
 
-        if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", treasure_name, arena_name))
+        if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", wielded_treasure.name, arena.name))
         else skywars.print_error(sender, skywars.T("Treasure not found!")) end
 
         skywars.reorder_treasures(arena)
@@ -352,7 +346,7 @@ function(cmd)
     cmd:sub("addchest :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
     function(sender, min_preciousness, max_preciousness, t_min, t_max)
         local arena, arena_name = get_valid_arena("@", sender, true)
-        local pos = get_looking_node(sender)
+        local pos = get_looking_node_pos(sender)
 
         if not pos then 
             return
@@ -418,7 +412,7 @@ function(cmd)
     cmd:sub("removechest", function(sender)
         local arena, arena_name = get_valid_arena("@", sender, true)
         local found = false
-        local pos = get_looking_node(sender)
+        local pos = get_looking_node_pos(sender)
 
         if not pos then 
             return
@@ -447,7 +441,7 @@ function(cmd)
     cmd:sub("inspect", function(sender)
         local arena, arena_name = get_valid_arena("@", sender, true)
         local found = false
-        local pos = get_looking_node(sender)
+        local pos = get_looking_node_pos(sender)
 
         if not pos then 
             return
@@ -548,28 +542,19 @@ function(cmd)
     cmd:sub("additem hand :kit", 
     function(sender, kit_name)
         local kits = skywars.load_kits()
-        local item_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
-        local item_count = minetest.get_player_by_name(sender):get_wielded_item():get_count()
-        local itemstack = {}
+        local itemstack = get_wielded_item(sender)
 
-        if ItemStack(item_name):is_known() == false then
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
+        if not itemstack then 
             return
         elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
-        elseif item_name == "" then
-            skywars.print_error(sender, skywars.T("Your hand is empty!"))
-            return
         end
-        
-        itemstack.name = item_name
-        itemstack.count = item_count
 
         table.insert(kits[kit_name].items, itemstack)
         skywars.overwrite_kits(kits) 
         
-        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3!", item_count, item_name, kit_name))
+        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3!", itemstack.count, itemstack.name, kit_name))
     end)
 
 
@@ -578,7 +563,9 @@ function(cmd)
     function(sender, kit_name)
         local kits = skywars.load_kits()
 
-        if kits[kit_name] == nil then
+        if not itemstack then 
+            return
+        elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
@@ -594,22 +581,18 @@ function(cmd)
     cmd:sub("removeitem hand :kit", 
     function(sender, kit_name)
         local kits = skywars.load_kits()
-        local item_name = minetest.get_player_by_name(sender):get_wielded_item():get_name()
+        local itemstack = get_wielded_item(sender)
         local found = false
 
-        if kits[kit_name] == nil then
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
+        if not itemstack then 
             return
-        elseif ItemStack(item_name):is_known() == false then
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
-            return
-        elseif item_name == "" then
-            skywars.print_error(sender, skywars.T("Your hand is empty!"))
+        elseif kits[kit_name] == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", itemstack.name))
             return
         end
 
         for i=1, #kits[kit_name].items do
-            if kits[kit_name].items[i].name == item_name then
+            if kits[kit_name].items[i].name == itemstack.name then
                 table.remove(kits[kit_name].items, i)
                 found = true
                 break 
@@ -618,9 +601,9 @@ function(cmd)
         skywars.overwrite_kits(kits)
 
         if found then 
-            skywars.print_msg(sender, skywars.T("@1 removed from @2!", item_name, kit_name))
+            skywars.print_msg(sender, skywars.T("@1 removed from @2!", itemstack.name, kit_name))
         else
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", itemstack.name))
         end
     end)
 
@@ -943,7 +926,7 @@ end
 
 
 
-function get_looking_node(pl_name)
+function get_looking_node_pos(pl_name)
     local player = minetest.get_player_by_name(pl_name)
     local look_dir = player:get_look_dir()
     local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
@@ -982,4 +965,25 @@ function print_treasure(treasure, sender)
             treasure.id, treasure.name, treasure.rarity, treasure.preciousness, treasure.count
         ) .. "\n\n"
     )
+end
+
+
+
+function get_wielded_item(player)
+    local item_name = minetest.get_player_by_name(player):get_wielded_item():get_name()
+    local item_count = minetest.get_player_by_name(player):get_wielded_item():get_count()
+    local itemstack = {}
+
+    if ItemStack(item_name):is_known() == false then
+        skywars.print_error(player, skywars.T("@1 doesn't exist!", item_name))
+        return nil
+    elseif item_name == "" then
+        skywars.print_error(player, skywars.T("Your hand is empty!"))
+        return nil
+    end
+
+    itemstack.name = item_name
+    itemstack.count = item_count
+
+    return itemstack
 end
