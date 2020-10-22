@@ -25,7 +25,7 @@ end)
 
 
 arena_lib.on_start("skywars", function(arena)
-  arena.match_players = arena.players_amount
+  arena.players_original_amount = arena.players_amount
 
   skywars.reset_map(arena)
   skywars.place_chests(arena)

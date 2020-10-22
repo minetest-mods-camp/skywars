@@ -1,17 +1,13 @@
 local function get_valid_arena() end
 local function get_looking_node_pos() end
-local function print_chest() end
-local function print_treasure() end
+local function from_chest_to_string() end
+local function from_treasure_to_string() end
 local function get_wielded_item() end
 
 
-ChatCmdBuilder.new("skywars", 
-function(cmd)
-    cmd:sub("tutorial", 
-    function(sender)
-        skywars.print_msg(sender, [[
-        You can read it from TUTORIAL.txt in the mod folder.
-        ]])
+ChatCmdBuilder.new("skywars", function(cmd)
+    cmd:sub("tutorial", function(sender)
+        skywars.print_msg(sender, "You can read it from TUTORIAL.txt in the mod folder.")
     end)
 
 
@@ -126,14 +122,11 @@ function(cmd)
         
         if not arena then 
             return       
-        elseif count <= 0 then
+        elseif count < 1 then
             skywars.print_error(sender, skywars.T("Count has to be greater than 0!"))
             return
-        elseif rarity <= 0 then
-            skywars.print_error(sender, skywars.T("Rarity has to be greater than 0!"))
-            return
-        elseif rarity > 10 then
-            skywars.print_error(sender, skywars.T("Rarity has to be smaller than 11!"))
+        elseif rarity < 1 or rarity > 10 then
+            skywars.print_error(sender, skywars.T("Rarity has to be between 1 and 10!"))
             return
         elseif ItemStack(treasure_name):is_known() == false then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", treasure_name))
@@ -142,75 +135,70 @@ function(cmd)
 
         local item_id = 1
         if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
-        table.insert(arena.treasures, {
+        local treasure = {
             name = treasure_name, 
             rarity = rarity, 
             count = count, 
             preciousness = preciousness, 
             id = item_id
-        })
+        }
+        table.insert(arena.treasures, treasure)
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
-        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
-            count, treasure_name, arena_name, rarity, preciousness
-        ))
+        skywars.print_msg(sender, "+ " .. from_treasure_to_string(treasure))
 
         skywars.reorder_treasures(arena)
     end)
     
 
 
-    cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int", 
+    cmd:sub("addtreasure hand :arena :preciousness:int :rarity:number", 
     function(sender, arena_name, rarity, preciousness)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
-        local treasure = get_wielded_item(sender)
+        local treasure_itemstack = get_wielded_item(sender)
+        local treasure = {}
 
-        if not arena or not treasure then 
+        if not arena or not treasure_itemstack then 
             return
-        end
-        if rarity <= 0 then
-            skywars.print_error(sender, skywars.T("Rarity has to be greater than 0!"))
-            return
-        elseif rarity > 10 then
-            skywars.print_error(sender, skywars.T("Rarity has to be smaller than 11!"))
+        elseif rarity < 1 or rarity > 10 then
+            skywars.print_error(sender, skywars.T("Rarity has to be between 1 and 10!"))
             return
         end
 
         local item_id = 1
         if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
-        table.insert(arena.treasures, {
-            name = treasure.name, 
+        treasure = {
+            name = treasure_itemstack.name, 
             rarity = rarity, 
-            count = treasure.count, 
+            count = treasure_itemstack.count, 
             preciousness = preciousness, 
             id = item_id
-        })
+        }
+        table.insert(arena.treasures, treasure)
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
-        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3 with @4 rarity and @5 preciousness!", 
-            treasure.count, treasure.name, arena_name, rarity, preciousness
-        ))
+        skywars.print_msg(sender, "+ " .. from_treasure_to_string(treasure))
 
         skywars.reorder_treasures(arena)
     end)
 
 
 
-    cmd:sub("removetreasure hand :arena", function(sender, arena_name)
+    cmd:sub("removetreasure hand :arena", 
+    function(sender, arena_name)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
-        local wielded_treasure = get_wielded_item(sender)
+        local wielded_itemstack = get_wielded_item(sender)
 
-        if not arena or not wielded_treasure then 
+        if not arena or not wielded_itemstack then 
             return
         end
 
         while found[1] do
             found[1] = false
             for i, treasure in pairs(arena.treasures) do
-                if treasure.name == wielded_treasure.name then
+                if treasure.name == wielded_itemstack.name then
                     table.remove(arena.treasures, i)
-                    i = i-1
                     found[1] = true
                     found[2] = true
                 end 
@@ -218,7 +206,7 @@ function(cmd)
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
 
-        if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", wielded_treasure.name, arena.name))
+        if found[2] then skywars.print_msg(sender, skywars.T("@1 removed from @2!", wielded_itemstack.name, arena.name))
         else skywars.print_error(sender, skywars.T("Treasure not found!")) end
 
         skywars.reorder_treasures(arena)
@@ -226,7 +214,8 @@ function(cmd)
 
 
     
-    cmd:sub("removetreasure :arena :treasure", function(sender, arena_name, treasure_name)
+    cmd:sub("removetreasure :arena :treasure", 
+    function(sender, arena_name, treasure_name)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
 
@@ -255,7 +244,8 @@ function(cmd)
 
 
 
-    cmd:sub("removetreasure id :arena :id:int", function(sender, arena_name, treasure_id)
+    cmd:sub("removetreasure id :arena :id:int", 
+    function(sender, arena_name, treasure_id)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local treasure_name = ""
 
@@ -280,10 +270,10 @@ function(cmd)
 
 
 
-    cmd:sub("copytreasures :fromarena :toarena", function(sender, from, to)
+    cmd:sub("copytreasures :fromarena :toarena", 
+    function(sender, from, to)
         local from_arena, from = get_valid_arena(from, sender)
         local to_arena, to = get_valid_arena(to, sender, true)
-        local found = false
 
         if not to_arena or not from_arena then
             return
@@ -300,22 +290,24 @@ function(cmd)
 
 
 
-    cmd:sub("gettreasures :arena", function(sender, arena_name)
+    cmd:sub("gettreasures :arena", 
+    function(sender, arena_name)
         local arena = get_valid_arena(arena_name, sender)
-        local found = false
 
         if not arena then 
             return
         end
+
         skywars.print_msg(sender, skywars.T("Treasures list:"))
         for i=1, #arena.treasures do
-            print_treasure(arena.treasures[i], sender)
+            skywars.print_msg(sender, from_treasure_to_string(arena.treasures[i]) .. "\n\n")
         end
     end)
 
 
 
-    cmd:sub("searchtreasure :arena :treasure", function(sender, arena_name, treasure_name)
+    cmd:sub("searchtreasure :arena :treasure", 
+    function(sender, arena_name, treasure_name)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
         if not arena then 
@@ -326,12 +318,7 @@ function(cmd)
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
             if treasure.name:match(treasure_name) then
-                skywars.print_msg(sender, "ID: " .. arena.treasures[i].id .. ".\n" .. 
-                    skywars.T(
-                        "name: @1 @nrarity: @2 @npreciousness: @3 @ncount: @4",
-                        treasure.name, treasure.rarity, treasure.preciousness, treasure.count
-                    ) .. "\n\n"
-                )
+                skywars.print_msg(sender, from_treasure_to_string(treasure)  .. "\n\n")
             end
         end
     end)
@@ -365,28 +352,28 @@ function(cmd)
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
             return
         end
+
         for i=1, #arena.chests do
             if vector.equals(arena.chests[i].pos, pos) then
                 exists = true
                 break
             end 
         end 
+
         if exists then
             skywars.print_error(sender, skywars.T("The chest already exists!"))
             return
         end
+        skywars.print_msg(sender, "+ " .. from_chest_to_string(chest))
 
-        skywars.print_msg(sender, 
-            skywars.T("Chest added with @1-@2 preciousness and @3-@4 treasures amount!",
-            min_preciousness, max_preciousness, min_treasures, max_treasures)
-        )
         table.insert(arena.chests, chest)
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
     end)
 
 
 
-    cmd:sub("getchests :arena", function(sender, arena_name)
+    cmd:sub("getchests :arena", 
+    function(sender, arena_name)
         local arena = get_valid_arena(arena_name, sender)
 
         if not arena then 
@@ -395,13 +382,14 @@ function(cmd)
 
         skywars.print_msg(sender, skywars.T("Chest list:"))
         for i=1, #arena.chests do
-            print_chest(chest, arena.chests[i])
+            skywars.print_msg(sender, from_chest_to_string(arena.chests[i]) .. "\n\n")
         end
     end) 
     
 
     
-    cmd:sub("removechest", function(sender)
+    cmd:sub("removechest", 
+    function(sender)
         local arena, arena_name = get_valid_arena("@", sender, true)
         local found = false
         local pos = get_looking_node_pos(sender)
@@ -430,7 +418,8 @@ function(cmd)
 
 
 
-    cmd:sub("inspect", function(sender)
+    cmd:sub("inspect", 
+    function(sender)
         local arena, arena_name = get_valid_arena("@", sender)
         local found = false
         local pos = get_looking_node_pos(sender)
@@ -444,7 +433,7 @@ function(cmd)
         for i=1, #arena.chests do
             local chest = arena.chests[i]
             if vector.equals(chest.pos, pos) then
-                print_chest(chest, sender)
+                skywars.print_msg(sender, from_chest_to_string(chest) .. "\n\n")
                 found = true
                 break
             end 
@@ -457,7 +446,8 @@ function(cmd)
 
 
 
-    cmd:sub("removechest id :arena :id:int", function(sender, arena_name, chest_id)
+    cmd:sub("removechest id :arena :id:int", 
+    function(sender, arena_name, chest_id)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = false
         
@@ -489,15 +479,15 @@ function(cmd)
 
     cmd:sub("createkit :name :texture", 
     function(sender, kit_name, texture)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
 
-        if kits[kit_name] ~= nil then
+        if kits[kit_name] then
             skywars.print_error(sender, skywars.T("@1 already exists!", kit_name))
             return
         end
 
         kits[kit_name] = {texture = texture, items={}}
-        skywars.overwrite_kits(kits) 
+        skywars.overwrite_table("kits", kits) 
 
         skywars.print_msg(sender, skywars.T("Kit @1 created!", kit_name))
     end)
@@ -506,7 +496,7 @@ function(cmd)
 
     cmd:sub("additem :kit :item :count:int", 
     function(sender, kit_name, item_name, item_count)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
         local itemstack = {}
 
         if ItemStack(item_name):is_known() == false then
@@ -524,7 +514,7 @@ function(cmd)
         itemstack.count = item_count
 
         table.insert(kits[kit_name].items, itemstack)
-        skywars.overwrite_kits(kits) 
+        skywars.overwrite_table("kits", kits) 
         
         skywars.print_msg(sender, skywars.T("@1 added to @2!", item_name, kit_name))
     end)
@@ -533,37 +523,35 @@ function(cmd)
 
     cmd:sub("additem hand :kit", 
     function(sender, kit_name)
-        local kits = skywars.load_kits()
-        local itemstack = get_wielded_item(sender)
+        local kits = skywars.load_table("kits")
+        local wielded_itemstack = get_wielded_item(sender)
 
-        if not itemstack then 
+        if not wielded_itemstack then 
             return
         elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
 
-        table.insert(kits[kit_name].items, itemstack)
-        skywars.overwrite_kits(kits) 
+        table.insert(kits[kit_name].items, wielded_itemstack)
+        skywars.overwrite_table("kits", kits) 
         
-        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3!", itemstack.count, itemstack.name, kit_name))
+        skywars.print_msg(sender, skywars.T("x@1 @2 added to @3!", wielded_itemstack.count, wielded_itemstack.name, kit_name))
     end)
 
 
 
     cmd:sub("deletekit :kit", 
     function(sender, kit_name)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
 
-        if not itemstack then 
-            return
-        elseif kits[kit_name] == nil then
+        if kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
 
         kits[kit_name] = nil
-        skywars.overwrite_kits(kits) 
+        skywars.overwrite_table("kits", kits) 
 
         skywars.print_msg(sender, skywars.T("Kit @1 deleted!", kit_name))
     end)
@@ -572,30 +560,30 @@ function(cmd)
 
     cmd:sub("removeitem hand :kit", 
     function(sender, kit_name)
-        local kits = skywars.load_kits()
-        local itemstack = get_wielded_item(sender)
+        local kits = skywars.load_table("kits")
+        local wielded_itemstack = get_wielded_item(sender)
         local found = false
 
-        if not itemstack then 
+        if not wielded_itemstack then 
             return
         elseif kits[kit_name] == nil then
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", itemstack.name))
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", wielded_itemstack.name))
             return
         end
 
         for i=1, #kits[kit_name].items do
-            if kits[kit_name].items[i].name == itemstack.name then
+            if kits[kit_name].items[i].name == wielded_itemstack.name then
                 table.remove(kits[kit_name].items, i)
                 found = true
                 break 
             end
         end
-        skywars.overwrite_kits(kits)
+        skywars.overwrite_table("kits", kits)
 
         if found then 
-            skywars.print_msg(sender, skywars.T("@1 removed from @2!", itemstack.name, kit_name))
+            skywars.print_msg(sender, skywars.T("@1 removed from @2!", wielded_itemstack.name, kit_name))
         else
-            skywars.print_error(sender, skywars.T("@1 doesn't exist!", itemstack.name))
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", wielded_itemstack.name))
         end
     end)
 
@@ -603,7 +591,7 @@ function(cmd)
 
     cmd:sub("removeitem :kit :item", 
     function(sender, kit_name, item_name)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
         local itemstack = {}
         local found = false
 
@@ -622,7 +610,7 @@ function(cmd)
                 break 
             end
         end
-        skywars.overwrite_kits(kits)
+        skywars.overwrite_table("kits", kits)
 
         if found then 
             skywars.print_msg(sender, skywars.T("@1 removed from @2!", item_name, kit_name))
@@ -635,7 +623,7 @@ function(cmd)
 
     cmd:sub("resetkit :kit", 
     function(sender, kit_name)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
 
         if kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
@@ -643,7 +631,7 @@ function(cmd)
         end
 
         kits[kit_name].items = {}
-        skywars.overwrite_kits(kits)
+        skywars.overwrite_table("kits", kits)
 
         skywars.print_msg(sender, skywars.T("@1 reset!", kit_name))
     end)
@@ -652,7 +640,7 @@ function(cmd)
 
     cmd:sub("getkits", 
     function(sender)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
 
         skywars.print_msg(sender, skywars.T("Kits list:"))
         for name in pairs(kits) do
@@ -664,7 +652,7 @@ function(cmd)
     
     cmd:sub("getitems :kit", 
     function(sender, kit_name)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
 
         if kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
@@ -681,13 +669,12 @@ function(cmd)
 
     cmd:sub("arenakit add :arena :kit", 
     function(sender, arena_name, kit_name)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
         if not arena then 
             return
-        end
-        if kits[kit_name] == nil then
+        elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
@@ -702,7 +689,7 @@ function(cmd)
 
     cmd:sub("arenakit remove :arena :kit", 
     function(sender, arena_name, kit_name)
-        local kits = skywars.load_kits()
+        local kits = skywars.load_table("kits")
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = false
 
@@ -728,7 +715,8 @@ function(cmd)
 
 
 
-    cmd:sub("copykits :fromarena :toarena", function(sender, from, to)
+    cmd:sub("copykits :fromarena :toarena", 
+    function(sender, from, to)
         local from_arena, from = get_valid_arena(from, sender)
         local to_arena, to = get_valid_arena(to, sender, true)
 
@@ -751,7 +739,8 @@ function(cmd)
     -- ! MAP CMDS ! --
     ------------------
 
-    cmd:sub("pos1 :arena", function(sender, arena_name)
+    cmd:sub("pos1 :arena", 
+    function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
@@ -767,7 +756,8 @@ function(cmd)
 
 
 
-    cmd:sub("pos2 :arena", function(sender, arena_name)
+    cmd:sub("pos2 :arena", 
+    function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
@@ -783,7 +773,8 @@ function(cmd)
 
 
 
-    cmd:sub("getpos", function(sender)
+    cmd:sub("getpos", 
+    function(sender)
         local pos = minetest.get_player_by_name(sender):get_pos()
         local readable_pos = "[X Y Z] " .. minetest.pos_to_string(pos, 1)
 
@@ -792,7 +783,8 @@ function(cmd)
 
 
 
-    cmd:sub("reset :arena", function(sender, arena_name)
+    cmd:sub("reset :arena", 
+    function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender)
 
@@ -810,8 +802,9 @@ function(cmd)
 
 
 
-    cmd:sub("clearmapstable", function(sender)
-        skywars.overwrite_maps({})
+    cmd:sub("clearmapstable", 
+    function(sender)
+        skywars.overwrite_table("maps", {})
         skywars.print_msg(sender, skywars.T("Maps table reset!")) 
     end)
 end, {
@@ -834,13 +827,13 @@ end, {
         - tutorial
         - pos1 <arena name>
         - pos2 <arena name>
-        - addtreasure <arena name> <item> <count> <rarity (min 1.0, max 10.0)> 
-        <preciousness> 
-        - addtreasure hand <arena name> <rarity (min 1.0, max 10.0)> 
-        <preciousness>
+        - addtreasure <arena name> <item> <count> <preciousness> 
+          <rarity (min 1.0, max 10.0)> 
+        - addtreasure hand <arena name> <preciousness>
+          <rarity (min 1.0, max 10.0)> 
         - gettreasures <arena name>
         - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
-        - removetreasure <arena name> <treasure name>: remove all treasures with than name
+        - removetreasure <arena name> <treasure name>: remove all treasures with that name
         - removetreasure hand <arena name>
         - removetreasure id <arena name> <treasure id>
         - copytreasures <(from) arena name> <(to) arena name>
@@ -933,25 +926,21 @@ end
 
 
 
-function print_chest(chest, sender)
+function from_chest_to_string(chest) 
     local chest_pos = minetest.pos_to_string(chest.pos, 0)
-    skywars.print_msg(sender, 
-        skywars.T(
-            "ID: @1   @nposition: @2   @npreciousness: @3-@4   @ntreasures amount: @5-@6",
-            chest.id, chest_pos, chest.min_preciousness, chest.max_preciousness,
-            chest.min_treasures, chest.max_treasures
-        ) .. "\n\n"
+    return skywars.T(
+        "ID: @1, position: @2, preciousness: @3-@4, treasures amount: @5-@6",
+        chest.id, chest_pos, chest.min_preciousness, chest.max_preciousness,
+        chest.min_treasures, chest.max_treasures
     )
 end
 
 
 
-function print_treasure(treasure, sender)
-    skywars.print_msg(sender,
-        skywars.T(
-            "ID: @1   @nname: @2   @nrarity: @3   @npreciousness: @4   @ncount: @5",
-            treasure.id, treasure.name, treasure.rarity, treasure.preciousness, treasure.count
-        ) .. "\n\n"
+function from_treasure_to_string(treasure) 
+    return skywars.T(
+        "ID: @1, name: @2, rarity: @3, preciousness: @4, count: @5",
+        treasure.id, treasure.name, treasure.rarity, treasure.preciousness, treasure.count
     )
 end
 

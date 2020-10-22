@@ -12,15 +12,13 @@ end
 
 function skywars.get_arena_by_pos(pos)
     for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
-        if arena.pos1.x == nil or arena.pos2.x == nil then 
-        goto continue 
-        end
+        if arena.pos1.x == nil or arena.pos2.x == nil then goto continue end
 
         reorder_positions(arena.pos1, arena.pos2)
         local map_area = VoxelArea:new{MinEdge = arena.pos1, MaxEdge = arena.pos2}
 
         if map_area:contains(pos.x, pos.y, pos.z) then
-        return arena
+            return arena
         end
 
         ::continue::

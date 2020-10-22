@@ -16,7 +16,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
     local pl_name = player:get_player_name()
     local arena = arena_lib.get_arena_by_player(pl_name)
-    local kits = skywars.load_kits() 
+    local kits = skywars.load_table("kits") 
 
     -- if the pressed button's name is equal to one of the kits in the arena then select it
     for i=1, #arena.kits do
@@ -57,7 +57,7 @@ function create_formspec(arena)
     local distance_y = skywars_settings.distance_y
     local offset_x = 0
     local offset_y = 0
-    local kits = skywars.load_kits() 
+    local kits = skywars.load_table("kits") 
 
     -- generates the formspec buttons
     for i=1, #arena.kits do

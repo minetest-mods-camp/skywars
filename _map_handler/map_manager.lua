@@ -9,7 +9,7 @@ end
 
 
 function skywars.reset_map(arena)
-    local maps = skywars.load_maps()
+    local maps = skywars.load_table("maps")
     local pos1, pos2 = reorder_positions(arena.pos1, arena.pos2)
     local distance_from_center = vector.distance(pos1, pos2) / 2
     local map_center = {x = (pos1.x+pos2.x)/2, y = (pos1.y+pos2.y)/2, z = (pos1.z+pos2.z)/2}
@@ -34,7 +34,7 @@ function skywars.reset_map(arena)
         minetest.add_node(pos, node)
     end
     maps[arena.name].blocks = {}
-    skywars.overwrite_maps(maps)
+    skywars.overwrite_table("maps", maps)
 end
 
 
@@ -101,7 +101,7 @@ end
 
 
 function save_block(arena, pos, node)
-    local maps = skywars.load_maps()
+    local maps = skywars.load_table("maps")
     local serialized_pos = minetest.serialize(pos)
 
     if not arena then return end
@@ -112,6 +112,6 @@ function save_block(arena, pos, node)
     -- if this block has not been changed yet then save it
     if maps[arena.name].blocks[serialized_pos] == nil then
         maps[arena.name].blocks[serialized_pos] = node
-        skywars.overwrite_maps(maps)
+        skywars.overwrite_table("maps", maps)
     end
 end

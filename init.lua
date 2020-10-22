@@ -1,10 +1,9 @@
 dofile(minetest.get_modpath("skywars") .. "/SETTINGS.lua")
-
 skywars = {}
 skywars.T = minetest.get_translator("skywars")
-
-
 local disabled_damage_types_ = {}
+
+
 if skywars_settings.fall_damage_disabled then
   disabled_damage_types_ = {"fall"}
 end
@@ -18,8 +17,7 @@ arena_lib.register_minigame("skywars", {
   queue_waiting_time = skywars_settings.queue_waiting_time,
   temp_properties = {
     HUDs = {},
-    -- the original amount of players in the arena
-    match_players = 0,
+    players_original_amount = 0,
   },
   properties = {
     chests = {},
