@@ -281,25 +281,20 @@ function(cmd)
 
 
     cmd:sub("copytreasures :fromarena :toarena", function(sender, from, to)
-        local from_arena = get_valid_arena(from, sender)
-        local to_arena = get_valid_arena(to, sender, true)
+        local from_arena, from = get_valid_arena(from, sender)
+        local to_arena, to = get_valid_arena(to, sender, true)
         local found = false
 
         if not to_arena or not from_arena then
-            return
-        elseif not get_valid_arena(to_arena, sender, true) then
             return
         elseif from_arena == to_arena then
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
             return
         end
 
-        to_arena.treasures = {}
-        for i=1, #from_arena.treasures do
-            to_arena.treasures[i] = from_arena.treasures[i]
-        end
+        to_arena.treasures = table.copy(from_arena.treasures)
+
         arena_lib.change_arena_property(sender, "skywars", to, "treasures", to_arena.treasures, false)
-        
         skywars.print_msg(sender, skywars.T("@1 treasures have been copied to @2!", from, to))
     end)
 
@@ -734,22 +729,17 @@ function(cmd)
 
 
     cmd:sub("copykits :fromarena :toarena", function(sender, from, to)
-        local from_arena = get_valid_arena(from, sender)
-        local to_arena = get_valid_arena(to, sender, true)
-        local found = false
+        local from_arena, from = get_valid_arena(from, sender)
+        local to_arena, to = get_valid_arena(to, sender, true)
 
-
-        if not from_arena or to_arena then
+        if not from_arena or not to_arena then
             return
         elseif from_arena == to_arena then
             skywars.print_error(sender, skywars.T("The arenas must be different!"))
             return
         end
 
-        to_arena.kits = {}
-        for i=1, #from_arena.kits do
-            to_arena.kits[i] = from_arena.kits[i]
-        end
+        to_arena.kits = table.copy(from_arena.kits)
 
         arena_lib.change_arena_property(sender, "skywars", to, "kits", to_arena.kits, false)
         skywars.print_msg(sender, skywars.T("@1 kits have been copied to @2!", from, to))
