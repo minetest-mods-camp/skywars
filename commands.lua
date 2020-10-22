@@ -436,7 +436,7 @@ function(cmd)
 
 
     cmd:sub("inspect", function(sender)
-        local arena, arena_name = get_valid_arena("@", sender, true)
+        local arena, arena_name = get_valid_arena("@", sender)
         local found = false
         local pos = get_looking_node_pos(sender)
 
@@ -773,7 +773,6 @@ function(cmd)
         arena_lib.change_arena_property(sender, "skywars", arena.name, "pos1", arena.pos1) 
 
         skywars.print_msg(sender, skywars.T("Position saved!")) 
-
     end)
 
 
