@@ -934,7 +934,7 @@ function get_looking_node_pos(pl_name)
     )
 
     if result then 
-        skywars.print_error(sender, skywars.T("You're not looking at anything!"))
+        skywars.print_error(pl_name, skywars.T("You're not looking at anything!"))
         return nil
     end
 
