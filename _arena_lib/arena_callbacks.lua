@@ -29,15 +29,12 @@ arena_lib.on_start("skywars", function(arena)
 
   skywars.reset_map(arena)
   skywars.place_chests(arena)
-  skywars.fill_chests(arena)
 
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
     skywars.generate_HUD(arena, pl_name)
-     
     player:set_physics_override({speed = skywars_settings.player_speed, gravity=1, jump=1})
-
     skywars.activate_enderpearl(player, arena)
   end
 end)
@@ -105,7 +102,6 @@ end)
 
 arena_lib.on_disconnect("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
-
   skywars.update_players_counter(arena, false)
 end)
 
@@ -150,7 +146,6 @@ end)
 
 arena_lib.on_timeout("skywars", function(arena)
   arena_lib.load_celebration("skywars", arena, skywars.T("Nobody"))
-
   arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("Time is out, the match is over!"))
 end)
 
@@ -162,17 +157,17 @@ function add_privs(pl_name)
   
   -- preventing players with noclip to fall when placing blocks
   if privs.noclip then
-    player:get_meta():set_string("noclip", "true")
+    player:get_meta():set_string("can_noclip", "true")
     privs.noclip = nil
   else
-    player:get_meta():set_string("noclip", "false")
+    player:get_meta():set_string("can_noclip", "false")
   end
 
   if skywars_settings.build_permission ~= "" then
     if privs[skywars_settings.build_permission] then
-      player:get_meta():set_string("build", "true")
+      player:get_meta():set_string("can_build", "true")
     else 
-      player:get_meta():set_string("build", "false")
+      player:get_meta():set_string("can_build", "false")
     end
     privs[skywars_settings.build_permission] = true
   end
@@ -186,10 +181,10 @@ function remove_privs(pl_name)
   local privs = minetest.get_player_privs(pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
-  if player:get_meta():get_string("noclip") == "true" then
+  if player:get_meta():get_string("can_noclip") == "true" then
     privs.noclip = true
   end
-  if player:get_meta():get_string("build") == "false" then
+  if player:get_meta():get_string("can_build") == "false" then
     privs[skywars_settings.build_permission] = nil
   end
 
@@ -202,13 +197,13 @@ function create_glass_cage(player)
   minetest.after(0.1, function()
     local pl_pos = player:get_pos()
     local glass_blocks = {
-      {x = 0,y = -1,z = 0},
-      {x = 0,y = -2,z = 0},
-      {x = 1,y = 1,z = 0},
-      {x = -1,y = 1,z = 0},
-      {x = 0,y = 1,z = 1},
-      {x = 0,y = 1,z = -1},
-      {x = 0,y = 2,z = 0}
+      {x = 0, y = -1, z = 0},
+      {x = 0, y = -2, z = 0},
+      {x = 1, y = 1, z = 0},
+      {x = -1, y = 1, z = 0},
+      {x = 0, y = 1, z = 1},
+      {x = 0, y = 1, z = -1},
+      {x = 0, y = 2, z = 0}
     }
 
     player:set_physics_override({gravity=0, jump=0})

@@ -50,7 +50,7 @@ skywars_settings.build_permission = "build"
 
 
 -- The texture background for the kit menu.
-skywars_settings.hud__kit_background = "Kits.png"
+skywars_settings.hud_kit_background = "Kits.png"
 
 -- The background width in real coordinates
 skywars_settings.background_width = 11

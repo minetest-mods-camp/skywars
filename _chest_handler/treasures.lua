@@ -5,8 +5,8 @@ local function treasure_to_itemstack() end
 
 function skywars.reorder_treasures(arena)
 	-- sorting the table from the rarest to the least rare treasure
-	for j=#arena.treasures, 2, -1 do
-		for i=1, #arena.treasures-1 do
+	for j = #arena.treasures, 2, -1 do
+		for i = 1, #arena.treasures-1 do
 			if arena.treasures[i].rarity < arena.treasures[i+1].rarity then
 				local temp = arena.treasures[i]
 				arena.treasures[i] = arena.treasures[i + 1] 
@@ -18,14 +18,16 @@ end
 
 
 
-function skywars.select_random_treasures(treasure_amount, min_preciousness, max_preciousness, arena)
+function skywars.select_random_treasures(chest, arena)
 	local preciousness_filtered_treasures = {}
 	local generated_treasures = {}
+	local treasure_amount = math.ceil(math.random(chest.min_treasures, chest.max_treasures))
 	local treasures_to_be_generated = treasure_amount
 
 	for i = 1, #arena.treasures do
-		if arena.treasures[i].preciousness >= min_preciousness and arena.treasures[i].preciousness <= max_preciousness then
-			table.insert(preciousness_filtered_treasures, arena.treasures[i])
+		local treasure = arena.treasures[i]
+		if treasure.preciousness >= chest.min_preciousness and treasure.preciousness <= chest.max_preciousness then
+			table.insert(preciousness_filtered_treasures, treasure)
 		end
 	end
 

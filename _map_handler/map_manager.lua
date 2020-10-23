@@ -12,7 +12,7 @@ function skywars.reset_map(arena)
     local maps = skywars.load_table("maps")
     local pos1, pos2 = reorder_positions(arena.pos1, arena.pos2)
     local distance_from_center = vector.distance(pos1, pos2) / 2
-    local map_center = {x = (pos1.x+pos2.x)/2, y = (pos1.y+pos2.y)/2, z = (pos1.z+pos2.z)/2}
+    local map_center = {x = (pos1.x+pos2.x) / 2, y = (pos1.y+pos2.y) / 2, z = (pos1.z+pos2.z) / 2}
 
     -- deleting drops
     for i, obj in pairs(minetest.get_objects_inside_radius(map_center, distance_from_center)) do
