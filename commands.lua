@@ -116,8 +116,8 @@ ChatCmdBuilder.new("skywars", function(cmd)
     -- ! CHEST CMDS ! --
     --------------------
 
-    cmd:sub("addtreasure :arena :treasure :count:int :rarity:number :preciousness:int", 
-    function(sender, arena_name, treasure_name, count, rarity, preciousness )
+    cmd:sub("addtreasure :arena :treasure :count:int :preciousness:int :rarity:number", 
+    function(sender, arena_name, treasure_name, count, preciousness, rarity)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         
         if not arena then 
@@ -152,13 +152,13 @@ ChatCmdBuilder.new("skywars", function(cmd)
     
 
 
-    cmd:sub("addtreasure hand :arena :preciousness:int :rarity:number", 
-    function(sender, arena_name, rarity, preciousness)
+    cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int", 
+    function(sender, arena_name, preciousness, rarity)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
-        local treasure_itemstack = get_wielded_item(sender)
+        local wielded_itemstack = get_wielded_item(sender)
         local treasure = {}
 
-        if not arena or not treasure_itemstack then 
+        if not arena or not wielded_itemstack then 
             return
         elseif rarity < 1 or rarity > 10 then
             skywars.print_error(sender, skywars.T("Rarity has to be between 1 and 10!"))
@@ -168,9 +168,9 @@ ChatCmdBuilder.new("skywars", function(cmd)
         local item_id = 1
         if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
         treasure = {
-            name = treasure_itemstack.name, 
+            name = wielded_itemstack.name, 
             rarity = rarity, 
-            count = treasure_itemstack.count, 
+            count = wielded_itemstack.count, 
             preciousness = preciousness, 
             id = item_id
         }

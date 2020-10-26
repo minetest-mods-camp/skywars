@@ -33,7 +33,7 @@ function skywars.generate_HUD(arena, pl_name)
     players_count_ = player:hud_add({
         hud_elem_type = "text",
         position  = {x = x_pos, y = y_pos},
-        offset = {x = distance_x+background_width+39, y = 50+6},
+        offset = {x = distance_x+background_width+39, y = 50+3},
         text      = tostring(arena.players_amount) .. "/" .. tostring(arena.players_original_amount),
         alignment = {x = 0},
         scale     = {x = 100, y = 100},
@@ -43,7 +43,7 @@ function skywars.generate_HUD(arena, pl_name)
     players_killed_ = player:hud_add({
         hud_elem_type = "text",
         position  = {x = x_pos, y = y_pos},
-        offset = {x = -distance_x+34, y = 50+4},
+        offset = {x = -distance_x+36, y = 50+3},
         text      = 0,
         alignment = {x = 0},
         scale     = {x = 100, y = 100},
