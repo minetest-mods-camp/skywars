@@ -161,17 +161,17 @@ function add_privs(pl_name)
   
   -- preventing players with noclip to fall when placing blocks
   if privs.noclip then
-    player:get_meta():set_string("can_noclip", "true")
+    player:get_meta():set_string("sw_can_noclip", "true")
     privs.noclip = nil
   else
-    player:get_meta():set_string("can_noclip", "false")
+    player:get_meta():set_string("sw_can_noclip", "false")
   end
 
   if skywars_settings.build_permission ~= "" then
     if privs[skywars_settings.build_permission] then
-      player:get_meta():set_string("can_build", "true")
+      player:get_meta():set_string("sw_can_build", "true")
     else 
-      player:get_meta():set_string("can_build", "false")
+      player:get_meta():set_string("sw_can_build", "false")
     end
     privs[skywars_settings.build_permission] = true
   end
@@ -185,10 +185,10 @@ function remove_privs(pl_name)
   local privs = minetest.get_player_privs(pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
-  if player:get_meta():get_string("can_noclip") == "true" then
+  if player:get_meta():get_string("sw_can_noclip") == "true" then
     privs.noclip = true
   end
-  if player:get_meta():get_string("can_build") == "false" then
+  if player:get_meta():get_string("sw_can_build") == "false" then
     privs[skywars_settings.build_permission] = nil
   end
 
