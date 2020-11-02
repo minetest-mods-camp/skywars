@@ -84,6 +84,16 @@ skywars_settings.buttons_height = 1.6
 
 
 
+-- MAP RESET SYSTEM SETTINGS -- 
+
+
+-- The amount of nodes to reset each step, the higher you set it the faster
+-- it will go, but it will make the server lag more.
+skywars_settings.nodes_per_tick = 20
+
+
+
+
 -- ARMOR 3D SETTINGS --
 
 

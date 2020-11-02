@@ -110,4 +110,4 @@ Each arena has a "kits" property that contains the choosable kits, with this com
 Once you've done this you can click the sign and start playing :).
 You should use /help skywars to read all the commands.
 To modify the game settings (such as the messages prefix or the
-hub spawn point) you can edit the "<SKYWARD MOD FOLDER>/SETTINGS.lua" file.
+hub spawn point) you can edit the "<SKYWARS MOD FOLDER>/SETTINGS.lua" file.

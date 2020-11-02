@@ -135,7 +135,7 @@ function async_reset_map(arena, debug, recursive_data)
     local current_index = 1
     local original_map_nodes = original_maps[arena.name].nodes
     local last_index = recursive_data.last_index or 0
-    local nodes_per_tick = recursive_data.nodes_per_tick or 30
+    local nodes_per_tick = recursive_data.nodes_per_tick or skywars_settings.nodes_per_tick
     local current_cycle = recursive_data.current_cycle or 1 
     local initial_time = recursive_data.initial_time or minetest.get_us_time()
     local nodes_to_reset = nodes_per_tick * current_cycle
@@ -174,7 +174,11 @@ function async_reset_map(arena, debug, recursive_data)
     local actual_map_nodes = actual_maps[arena.name].nodes
 
     for serialized_pos, node in pairs(actual_map_nodes) do
-        if original_map_nodes[serialized_pos] then
+        local old_node = original_map_nodes[serialized_pos]
+        local pos = minetest.deserialize(serialized_pos)
+        local actual_node = minetest.get_node(pos)
+
+        if old_node and actual_node.name == old_node.name then
             actual_map_nodes[serialized_pos] = nil
         end
     end
