@@ -15,8 +15,8 @@ an arena can have.
 
 2) Saving the map area using:
 
-/skywars min_pos <arena name>
-/skywars max_pos <arena name>
+/skywars pos1 <arena name>
+/skywars pos2 <arena name>
 
 In order to kill players that go out of the map and to properly recognize
 the arena you have to define a map area; to do so, simply specify its 
