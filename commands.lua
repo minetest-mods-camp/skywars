@@ -748,8 +748,8 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
 
-        arena.pos1 = player:get_pos()
-        arena_lib.change_arena_property(sender, "skywars", arena.name, "pos1", arena.pos1) 
+        arena.min_pos = player:get_pos()
+        arena_lib.change_arena_property(sender, "skywars", arena.name, "min_pos", arena.min_pos) 
 
         skywars.print_msg(sender, skywars.T("Position saved!")) 
     end)
@@ -765,20 +765,10 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
 
-        arena.pos2 = player:get_pos()
-        arena_lib.change_arena_property(sender, "skywars", arena.name, "pos2", arena.pos2) 
+        arena.max_pos = player:get_pos()
+        arena_lib.change_arena_property(sender, "skywars", arena.name, "max_pos", arena.max_pos) 
 
         skywars.print_msg(sender, skywars.T("Position saved!")) 
-    end)
-
-
-
-    cmd:sub("getpos", 
-    function(sender)
-        local pos = minetest.get_player_by_name(sender):get_pos()
-        local readable_pos = "[X Y Z] " .. minetest.pos_to_string(pos, 1)
-
-        skywars.print_msg(sender, readable_pos)
     end)
 
 
@@ -802,10 +792,60 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
+    --------------------
+    -- ! DEBUG CMDS ! --
+    --------------------
+
     cmd:sub("clearmapstable", 
     function(sender)
         skywars.overwrite_table("maps", {})
-        skywars.print_msg(sender, skywars.T("Maps table reset!")) 
+        skywars.print_msg(sender, "Maps table reset!") 
+    end)
+    
+
+
+    cmd:sub("getpos", 
+    function(sender)
+        local pos = minetest.get_player_by_name(sender):get_pos()
+        local readable_pos = "[X Y Z] " .. minetest.pos_to_string(pos, 1)
+
+        skywars.print_msg(sender, readable_pos)
+    end)
+
+
+
+    cmd:sub("test reset :arena", 
+    function(sender, arena_name)
+        local player = minetest.get_player_by_name(sender)
+        local arena, arena_name = get_valid_arena(arena_name, sender)
+
+        if not arena then return end
+
+        if arena.enabled then
+            local result = skywars.map_reset_test(arena)
+            if result then skywars.print_msg(sender, "Reset system working!")
+            else skywars.print_error(sender, "Reset system doesn't work!") end
+        else
+            skywars.print_error(sender, skywars.T("@1 must be enabled!", arena_name))
+        end
+    end)
+
+
+
+    cmd:sub("test asyncspeed :arena", 
+    function(sender, arena_name)
+        local player = minetest.get_player_by_name(sender)
+        local arena, arena_name = get_valid_arena(arena_name, sender)
+
+        if not arena then return end
+        skywars.print_msg(sender, "Placing 1000 nodes, the server may lag...")
+
+        if arena.enabled then
+            skywars.test_async_speed(arena)
+            skywars.print_msg(sender, "Nodes placed at " .. minetest.pos_to_string(arena.min_pos, 0) .. "!")
+        else
+            skywars.print_error(sender, skywars.T("@1 must be enabled!", arena_name))
+        end
     end)
 end, {
 
@@ -850,8 +890,8 @@ end, {
         - additem hand <kit name>
         - removeitem <kit name> <item>
         - removeitem hand <kit name>
-        - arenakit add <arena> <kit name>
-        - arenakit remove <arena> <kit name>
+        - arenakit add <arena name> <kit name>
+        - arenakit remove <arena name> <kit name>
         - getkits
         - resetkit <kit name>
         - getitems <kit name>
@@ -860,8 +900,12 @@ end, {
 
         Debug (don't use them if you don't know what you're doing):
 
-        - clearmapstable: clears the changed blocks table of each map without resetting them
+        - clearmapstable: clears the changed nodes table of each map without resetting them
         - getpos
+        - test reset <arena name>: tests the reset system, make sure your map is properly reset
+          before using it, 'cause it will clear the maps table first
+        - test asyncspeed <arena name>: places a 10x10 area full of nodes, useful to test the
+          async reset system speed (read the server logs to know the reset speed) 
         ]],
     privs = { skywars_admin = true }
 })

@@ -1,6 +1,6 @@
 local function add_privs() end
 local function remove_privs() end
-local function create_glass_cage()end
+local function create_glass_cage() end
 
 
 minetest.register_on_joinplayer(function(player)
@@ -10,7 +10,7 @@ end)
 
 
 arena_lib.on_load("skywars", function(arena)
-  skywars.load_map_mapblocks(arena)
+  skywars.load_mapblocks(arena)
   skywars.reset_map(arena)
 
   for pl_name in pairs(arena.players) do
@@ -65,6 +65,8 @@ arena_lib.on_end("skywars", function(arena, players)
     skywars.remove_armor(player)
     skywars.block_enderpearl(player, arena)
   end
+
+  skywars.reset_map(arena)
 end)
 
 
@@ -130,7 +132,7 @@ arena_lib.on_enable("skywars", function(arena, pl_name)
   elseif arena.chests[1] == nil then
     skywars.print_error(pl_name, skywars.T("You didn't set the chests!"))
     return false
-  elseif arena.pos1.x == nil or arena.pos2.x == nil then
+  elseif arena.min_pos.x == nil or arena.max_pos.x == nil then
     skywars.print_error(pl_name, skywars.T("You didn't set the map corners!"))
     return false
   end
@@ -159,7 +161,7 @@ function add_privs(pl_name)
   local privs = minetest.get_player_privs(pl_name)
   local player = minetest.get_player_by_name(pl_name)
   
-  -- preventing players with noclip to fall when placing blocks
+  -- preventing players with noclip to fall when placing nodes
   if privs.noclip then
     player:get_meta():set_string("sw_can_noclip", "true")
     privs.noclip = nil
@@ -200,7 +202,7 @@ end
 function create_glass_cage(player)
   minetest.after(0.1, function()
     local pl_pos = player:get_pos()
-    local glass_blocks = {
+    local glass_nodes = {
       {x = 0, y = -1, z = 0},
       {x = 0, y = -2, z = 0},
       {x = 1, y = 1, z = 0},
@@ -213,7 +215,7 @@ function create_glass_cage(player)
     player:set_physics_override({gravity=0, jump=0})
     player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
 
-    for _, relative_pos in pairs(glass_blocks) do
+    for _, relative_pos in pairs(glass_nodes) do
       local node_pos = vector.round(vector.add(pl_pos, relative_pos))
       if minetest.get_node(node_pos).name == "air" then 
         minetest.add_node(node_pos, {name="default:glass"})
@@ -222,6 +224,9 @@ function create_glass_cage(player)
     
     -- teleports the player back in the glass
     minetest.after(1, function()
+      player:set_pos(pl_pos)
+    end)
+    minetest.after(2, function()
       player:set_pos(pl_pos)
     end)
   end)

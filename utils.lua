@@ -12,10 +12,10 @@ end
 
 function skywars.get_arena_by_pos(pos)
     for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
-        if arena.pos1.x == nil or arena.pos2.x == nil then goto continue end
+        if arena.min_pos.x == nil or arena.max_pos.x == nil then goto continue end
 
-        reorder_positions(arena.pos1, arena.pos2)
-        local map_area = VoxelArea:new{MinEdge = arena.pos1, MaxEdge = arena.pos2}
+        skywars.reorder_positions(arena.min_pos, arena.max_pos)
+        local map_area = VoxelArea:new{MinEdge = arena.min_pos, MaxEdge = arena.max_pos}
 
         if map_area:contains(pos.x, pos.y, pos.z) then
             return arena
@@ -27,27 +27,27 @@ end
 
 
 
--- reordering the corners positions so that pos1 is smaller than pos2
-function reorder_positions(pos1, pos2)
+-- reordering the corners positions so that min_pos is smaller than max_pos
+function skywars.reorder_positions(min_pos, max_pos)
     local temp
 
-    if pos1.z > pos2.z then
-        temp = pos1.z
-        pos1.z = pos2.z
-        pos2.z = temp
+    if min_pos.z > max_pos.z then
+        temp = min_pos.z
+        min_pos.z = max_pos.z
+        max_pos.z = temp
     end
 
-    if pos1.y > pos2.y then
-        temp = pos1.y
-        pos1.y = pos2.y
-        pos2.y = temp
+    if min_pos.y > max_pos.y then
+        temp = min_pos.y
+        min_pos.y = max_pos.y
+        max_pos.y = temp
     end
 
-    if pos1.x > pos2.x then
-        temp = pos1.x
-        pos1.x = pos2.x
-        pos2.x = temp
+    if min_pos.x > max_pos.x then
+        temp = min_pos.x
+        min_pos.x = max_pos.x
+        max_pos.x = temp
     end
 
-    return pos1, pos2
+    return min_pos, max_pos
 end

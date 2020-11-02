@@ -35,7 +35,7 @@ skywars_settings.player_speed = 1.5
 -- true = on/false = off (case sensitive).
 skywars_settings.fall_damage_disabled = true
 
--- The name of the permission to allow players to break blocks 
+-- The name of the permission to allow players to break nodes 
 -- (if there's none just set it to "").
 skywars_settings.build_permission = "build"
 

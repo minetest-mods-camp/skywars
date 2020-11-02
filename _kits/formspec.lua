@@ -18,7 +18,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     local arena = arena_lib.get_arena_by_player(pl_name)
     local kits = skywars.load_table("kits") 
 
-    -- if the pressed button name is equal to one of the kits in the arena then select it
+    -- If the pressed button name is equal to one of the kits in the arena then select it.
     for i = 1, #arena.kits do
         local kit_name = arena.kits[i]
         if fields[kit_name] then
@@ -60,7 +60,7 @@ function create_formspec(arena)
     local offset_y = 0
     local kits = skywars.load_table("kits") 
 
-    -- generates the formspec buttons
+    -- Generates the formspec buttons.
     for i=1, #arena.kits do
         local kit_name = arena.kits[i]
         local kit = kits[kit_name]
@@ -77,7 +77,7 @@ function create_formspec(arena)
         end
 
         if kit.items and kit.items[1] then
-            -- if offset_x has reached its maximum amount then reset it and increase offset_y
+            -- If offset_x has reached its maximum amount then reset it and increase offset_y.
             if offset_x == distance_x * (buttons_per_row-1) then 
                 offset_y = offset_y + distance_y
                 offset_x = 0
@@ -85,11 +85,11 @@ function create_formspec(arena)
                 offset_x = offset_x + distance_x
             end 
 
-            -- generating the kit description (a list of all the items in the kit) 
+            -- Generating the kit description (a list of all the items in the kit).
             for j = 1, #kit.items do
                 local item_name = kit.items[j].name
 
-                -- if the string is "mod:item_name" it becomes "item name"
+                -- If the string is "mod:item_name" it becomes "item name".
                 if string.match(item_name, ":") then
                     local split_name = string.split(item_name, ":")
                     item_name = string.gsub(split_name[2], "_", " ")

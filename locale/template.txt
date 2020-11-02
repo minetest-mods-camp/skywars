@@ -42,4 +42,3 @@ x@1 @2 added to @3!=
 Time is out, the match is over!=
 Nobody=
 Nobody must be in the editor!=
-Maps table reset!=

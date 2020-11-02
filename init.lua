@@ -21,10 +21,11 @@ arena_lib.register_minigame("skywars", {
   },
   properties = {
     chests = {},
-    treasures = {}, -- items to put in the chests
-    pos1 = {},
-    pos2 = {},
-    kits = {}
+    treasures = {}, -- Items to put in the chests.
+    min_pos = {},
+    max_pos = {},
+    kits = {},
+    is_resetting = false
   },
   time_mode = 2,
   disabled_damage_types = disabled_damage_types_
@@ -34,6 +35,7 @@ arena_lib.register_minigame("skywars", {
 
 dofile(minetest.get_modpath("skywars") .. "/chatcmdbuilder.lua")
 dofile(minetest.get_modpath("skywars") .. "/utils.lua")
+dofile(minetest.get_modpath("skywars") .. "/_tests/map_reset.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/enderpearl/init_enderpearl.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/3d_armor/init_3d_armor.lua")
 dofile(minetest.get_modpath("skywars") .. "/_storage/storage_manager.lua")
