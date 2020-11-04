@@ -104,3 +104,11 @@ minetest.register_node("skywars:test_node", {
     groups = {crumbly=1, soil=1},
     tiles = {"test_node.png"},
 })
+
+
+
+minetest.register_on_mods_loaded(function() 
+    for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
+      arena.is_resetting = false
+    end
+end)

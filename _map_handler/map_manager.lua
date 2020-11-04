@@ -165,7 +165,7 @@ function async_reset_map(arena, debug, recursive_data)
     end
     arena.is_resetting = false
 
-    -- Removing the original map nodes from the actual map to preserve eventual changes made 
+    -- Removing the reset nodes from the actual map to preserve eventual changes made 
     -- to the latter during the reset.
     local actual_maps = skywars.load_table("maps")
     if not actual_maps[arena.name] or not actual_maps[arena.name].nodes then
@@ -177,8 +177,9 @@ function async_reset_map(arena, debug, recursive_data)
         local old_node = original_map_nodes[serialized_pos]
         local pos = minetest.deserialize(serialized_pos)
         local actual_node = minetest.get_node(pos)
+        local is_old_node_still_reset = (actual_node.name == old_node.name)
 
-        if old_node and actual_node.name == old_node.name then
+        if old_node and is_old_node_still_reset then
             actual_map_nodes[serialized_pos] = nil
         end
     end
