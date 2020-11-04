@@ -174,14 +174,18 @@ function async_reset_map(arena, debug, recursive_data)
     local actual_map_nodes = actual_maps[arena.name].nodes
 
     for serialized_pos, node in pairs(actual_map_nodes) do
-        local old_node = original_map_nodes[serialized_pos] or {name="@no_value"}
+        if not original_map_nodes[serialized_pos] then goto continue end
+        
+        local old_node = original_map_nodes[serialized_pos]
         local pos = minetest.deserialize(serialized_pos)
         local actual_node = minetest.get_node(pos)
         local is_old_node_still_reset = (actual_node.name == old_node.name)
 
-        if old_node and is_old_node_still_reset then
+        if is_old_node_still_reset then
             actual_map_nodes[serialized_pos] = nil
         end
+
+        ::continue::
     end
     
     skywars.overwrite_table("maps", actual_maps)
