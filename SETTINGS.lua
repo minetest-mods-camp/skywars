@@ -14,7 +14,7 @@ Don't change the variables names if you don't know what you're doing!
 skywars_settings = {}
 
 -- Where players will be teleported when a match ends.
-skywars_settings.hub_spawn_point = {x = -177, y = 8.5, z = 247}
+skywars_settings.hub_spawn_point = {x = 81, y = 25, z = 102}
 
 --  The time between the loading state and the start of the match.
 skywars_settings.loading_time = 10
