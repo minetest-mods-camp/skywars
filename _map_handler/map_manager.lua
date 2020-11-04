@@ -174,7 +174,7 @@ function async_reset_map(arena, debug, recursive_data)
     local actual_map_nodes = actual_maps[arena.name].nodes
 
     for serialized_pos, node in pairs(actual_map_nodes) do
-        local old_node = original_map_nodes[serialized_pos]
+        local old_node = original_map_nodes[serialized_pos] or {name="@no_value"}
         local pos = minetest.deserialize(serialized_pos)
         local actual_node = minetest.get_node(pos)
         local is_old_node_still_reset = (actual_node.name == old_node.name)
