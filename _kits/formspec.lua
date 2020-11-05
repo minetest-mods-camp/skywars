@@ -32,6 +32,8 @@ end)
 
 function select_kit(pl_name, kit)
     local player_inv = minetest.get_player_by_name(pl_name):get_inventory()
+    player_inv:set_list("main", {})
+    player_inv:set_list("craft", {})
 
     for i=1, #kit.items do
         player_inv:add_item("main", ItemStack(kit.items[i]))

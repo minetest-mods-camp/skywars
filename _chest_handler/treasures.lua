@@ -4,7 +4,7 @@ local function treasure_to_itemstack() end
 
 
 function skywars.reorder_treasures(arena)
-	-- sorting the table from the rarest to the least rare treasure
+	-- Sorting the table from the rarest to the least rare treasure.
 	for j = #arena.treasures, 2, -1 do
 		for i = 1, #arena.treasures-1 do
 			if arena.treasures[i].rarity < arena.treasures[i+1].rarity then

@@ -5,13 +5,13 @@ Don't change the variables names if you don't know what you're doing!
 (skywars_settings.variable_name = value)
 ]]
 
+-- The table that stores all the global variables, don't touch this.
+skywars_settings = {}
+
 
 
 -- ARENA LIB'S SETTINGS --
 
-
--- The table that stores all the global variables, don't touch this.
-skywars_settings = {}
 
 -- Where players will be teleported when a match ends.
 skywars_settings.hub_spawn_point = {x = 81, y = 25, z = 102}
@@ -26,10 +26,10 @@ skywars_settings.queue_waiting_time = 10
 -- The time between the end of the match and the respawn at the hub.
 skywars_settings.celebration_time = 5
 
--- What's going to appear in most of the lines printed by murder.
+-- What's going to appear in most of the lines printed by skywars.
 skywars_settings.prefix = "Skywars > "
 
--- The players walking speed when ther're playing a match.
+-- The players walking speed when they're playing a match.
 skywars_settings.player_speed = 1.5
 
 -- true = on/false = off (case sensitive).
