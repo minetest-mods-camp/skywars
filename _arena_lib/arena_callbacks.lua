@@ -16,7 +16,6 @@ arena_lib.on_load("skywars", function(arena)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
-    add_privs(pl_name)
     skywars.show_kit_selector(pl_name, arena)
     create_glass_cage(player)
   end
@@ -33,6 +32,7 @@ arena_lib.on_start("skywars", function(arena)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
+    add_privs(pl_name)
     skywars.generate_HUD(arena, pl_name)
     player:set_physics_override({
       speed = skywars_settings.player_speed, 
