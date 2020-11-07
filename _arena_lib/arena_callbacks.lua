@@ -142,7 +142,7 @@ end)
 
 
 
-arena_lib.on_timer_tick("skywars", function(arena)
+arena_lib.on_time_tick("skywars", function(arena)
   if arena.current_time % 3 == 0 then
     skywars.kill_players_out_map(arena)
   end
