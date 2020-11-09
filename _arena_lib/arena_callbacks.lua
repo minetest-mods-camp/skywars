@@ -50,6 +50,7 @@ arena_lib.on_celebration("skywars", function(arena, winner_name)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
+    skywars.block_enderpearl(player, arena)
     remove_privs(pl_name)
     skywars.remove_HUD(arena, pl_name)
     skywars.remove_armor(player)
@@ -64,7 +65,6 @@ arena_lib.on_end("skywars", function(arena, players)
     
     remove_privs(pl_name)
     skywars.remove_armor(player)
-    skywars.block_enderpearl(player, arena)
   end
 
   skywars.reset_map(arena)
