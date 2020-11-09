@@ -1,6 +1,7 @@
 local function add_privs() end
 local function remove_privs() end
 local function create_glass_cage() end
+local function drop_items() end
 
 
 minetest.register_on_joinplayer(function(player)
@@ -84,8 +85,8 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
     end
   end
 
+  drop_items(player)
   remove_privs(pl_name)
-
   skywars.remove_armor(player)
   arena_lib.remove_player_from_arena(pl_name, 1)
   skywars.update_players_counter(arena)
@@ -230,4 +231,24 @@ function create_glass_cage(player)
       player:set_pos(pl_pos)
     end)
   end)
+end
+
+
+
+function drop_items(player)
+  local inv = player:get_inventory():get_list("main")
+  local noise = 2
+
+  for i, itemstack in pairs(inv) do
+    local pl_pos = player:get_pos()
+    local random_x = pl_pos.x + math.random() + math.random(-noise, noise-1)
+    local random_z = pl_pos.z + math.random() + math.random(-noise, noise-1)
+    local random_pos = {
+      x = random_x, 
+      y = pl_pos.y,
+      z = random_z
+    }
+
+    minetest.item_drop(itemstack, player, random_pos)
+  end
 end
