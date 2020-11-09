@@ -21,7 +21,7 @@ skywars_settings.loading_time = 10
 
 -- The time to wait before the loading phase starts. 
 -- It gets triggered when the minimium amount of players has been reached to start the queue.
-skywars_settings.queue_waiting_time = 10
+skywars_settings.queue_waiting_time = 30
 
 -- The time between the end of the match and the respawn at the hub.
 skywars_settings.celebration_time = 5
