@@ -13,13 +13,13 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
     cmd:sub("create :arena", function(name, arena_name)
-        arena_lib.create_arena(name, "skywars", arena.name)
+        arena_lib.create_arena(name, "skywars", arena_name)
     end)
 
 
 
     cmd:sub("create :arena :minplayers:int :maxplayers:int", function(name, arena_name, min_players, max_players)
-        arena_lib.create_arena(name, "skywars", arena.name, min_players, max_players)
+        arena_lib.create_arena(name, "skywars", arena_name, min_players, max_players)
     end)
 
 
