@@ -321,6 +321,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
     function(sender, min_preciousness, max_preciousness, min_treasures, max_treasures)
         local arena, arena_name = get_valid_arena("@", sender, true)
         local pos = get_looking_node_pos(sender)
+        local exists = false
 
         if not pos then 
             return
