@@ -13,20 +13,12 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
     cmd:sub("create :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
         arena_lib.create_arena(name, "skywars", arena.name)
     end)
 
 
 
     cmd:sub("create :arena :minplayers:int :maxplayers:int", function(name, arena_name, min_players, max_players)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
         arena_lib.create_arena(name, "skywars", arena.name, min_players, max_players)
     end)
 
