@@ -1,6 +1,7 @@
 local function add_privs() end
 local function remove_privs() end
 local function create_glass_cage() end
+local function keep_teleporting() end
 local function drop_items() end
 
 
@@ -204,7 +205,7 @@ end
 
 function create_glass_cage(player)
   minetest.after(0.1, function()
-    local pl_pos = player:get_pos()
+    local original_pos = player:get_pos()
     local glass_nodes = {
       {x = 0, y = -1, z = 0},
       {x = 0, y = -2, z = 0},
@@ -219,19 +220,13 @@ function create_glass_cage(player)
     player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
 
     for _, relative_pos in pairs(glass_nodes) do
-      local node_pos = vector.round(vector.add(pl_pos, relative_pos))
+      local node_pos = vector.round(vector.add(original_pos, relative_pos))
       if minetest.get_node(node_pos).name == "air" then 
         minetest.add_node(node_pos, {name="default:glass"})
       end
     end
-    
-    -- teleports the player back in the glass
-    minetest.after(1, function()
-      player:set_pos(pl_pos)
-    end)
-    minetest.after(2, function()
-      player:set_pos(pl_pos)
-    end)
+
+    keep_teleporting(player, original_pos, skywars_settings.loading_time)
   end)
 end
 
@@ -253,4 +248,17 @@ function drop_items(player)
 
     minetest.item_drop(itemstack, player, random_pos)
   end
+end
+
+
+
+function keep_teleporting(player, pos, seconds, current_second)
+  current_second = current_second or 1
+
+  if current_second > seconds then return end
+
+  minetest.after(1, function()
+    player:set_pos(pos)
+    keep_teleporting(player, pos, seconds, current_second + 1)
+  end)
 end
