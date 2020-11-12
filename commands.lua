@@ -329,6 +329,11 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
 
+        if min_treasures <= 0 or max_treasures <= 0 then
+            skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
+            return
+        end
+        
         local chest_id = 1
         if arena.chests[#arena.chests] then chest_id = arena.chests[#arena.chests].id+1 end
         local chest = 
@@ -340,11 +345,6 @@ ChatCmdBuilder.new("skywars", function(cmd)
             max_treasures = max_treasures,
             id = chest_id
         }
-
-        if min_treasures <= 0 or max_treasures <= 0 then
-            skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
-            return
-        end
 
         for i=1, #arena.chests do
             if vector.equals(arena.chests[i].pos, pos) then

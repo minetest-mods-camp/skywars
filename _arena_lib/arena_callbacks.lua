@@ -253,12 +253,13 @@ end
 
 
 function keep_teleporting(player, pos, seconds, current_second)
+  local step = 3
   current_second = current_second or 1
 
   if current_second > seconds then return end
 
-  minetest.after(1, function()
+  minetest.after(step, function()
     player:set_pos(pos)
-    keep_teleporting(player, pos, seconds, current_second + 1)
+    keep_teleporting(player, pos, seconds, current_second + step)
   end)
 end
