@@ -226,7 +226,7 @@ function create_glass_cage(player)
       end
     end
 
-    keep_teleporting(player, original_pos, skywars_settings.loading_time)
+    keep_teleporting(player, original_pos, skywars_settings.loading_time-1)
   end)
 end
 
