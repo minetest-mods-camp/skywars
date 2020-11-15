@@ -12,6 +12,7 @@ end
 function skywars.reset_map(arena, debug, debug_data)
     if not arena.enabled or arena.is_resetting then return end
 
+    skywars.load_mapblocks(arena)
     delete_drops(arena)
     async_reset_map(arena, debug, debug_data)
 end

@@ -12,7 +12,6 @@ end)
 
 
 arena_lib.on_load("skywars", function(arena)
-  skywars.load_mapblocks(arena)
   skywars.reset_map(arena)
 
   for pl_name in pairs(arena.players) do
