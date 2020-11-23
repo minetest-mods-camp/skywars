@@ -13,15 +13,8 @@ skywars_settings = {}
 -- ARENA LIB'S SETTINGS --
 
 
--- Where players will be teleported when a match ends.
-skywars_settings.hub_spawn_point = {x = 81, y = 25, z = 102}
-
 --  The time between the loading state and the start of the match.
 skywars_settings.loading_time = 10
-
--- The time to wait before the loading phase starts. 
--- It gets triggered when the minimium amount of players has been reached to start the queue.
-skywars_settings.queue_waiting_time = 30
 
 -- The time between the end of the match and the respawn at the hub.
 skywars_settings.celebration_time = 5
@@ -35,7 +28,7 @@ skywars_settings.player_speed = 1.5
 -- true = on/false = off (case sensitive).
 skywars_settings.fall_damage_disabled = true
 
--- The name of the permission to allow players to break nodes 
+-- The name of the permission to allow players to break nodes
 -- (if there's none just set it to "").
 skywars_settings.build_permission = "build"
 
@@ -45,7 +38,7 @@ skywars_settings.build_permission = "build"
 -- HUDS SETTINGS --
 
 -- Real coordinates:
--- a unit of measurement which is roughly around 64 pixels, but 
+-- a unit of measurement which is roughly around 64 pixels, but
 -- varies based on the screen density and scaling settings of the client.
 
 
@@ -58,11 +51,11 @@ skywars_settings.background_width = 11
 -- The background height in real coordinates
 skywars_settings.background_height = 11
 
--- The x position offset from the background border of the first buttons row 
+-- The x position offset from the background border of the first buttons row
 -- in real coordinates, the bigger it is the righter the row will be placed.
 skywars_settings.starting_x = 1.7
 
--- The y position offset from the background border of the first buttons row 
+-- The y position offset from the background border of the first buttons row
 -- in real coordinates, the bigger it is the lower the row will be placed.
 skywars_settings.starting_y = 6.6
 
@@ -84,7 +77,7 @@ skywars_settings.buttons_height = 1.6
 
 
 
--- MAP RESET SYSTEM SETTINGS -- 
+-- MAP RESET SYSTEM SETTINGS --
 
 
 -- The amount of nodes to reset each step, the higher you set it the faster
