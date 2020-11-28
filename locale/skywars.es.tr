@@ -1,0 +1,44 @@
+# version 1.0.0
+# author(s): Dragonop
+# reviewer(s):
+# textdomain: skywars
+# @n means "newline"
+# @<number> (@1, @2, ecc) is a value that the mod will pass at runtime 
+
+Count has to be greater than 0!=¡La cantidad tiene que ser mayor a 0!
+Rarity has to be between 1 and 10!=¡La rareza debe ser un valor entre 1 y 10!
+@1 doesn't exist!=¡@1 no existe!
+Your hand is empty!=¡Tu mano está vacía!
+Treasure not found!=¡Tesoro no encontrado!
+The minimum or maximum amount of treasures has to be greater than 0!=¡La mínima o máxima cantidad de tesoros tiene que ser mayor a 0!
+Treasures list:=Lista de tesoros:
+@1 treasures have been copied to @2!=¡El tesoro de @1 ha sido copiado a @2!
+The arenas must be different!=¡Las arenas tienen que ser diferentes!
+ID: @1, name: @2, rarity: @3, preciousness: @4, count: @5=ID: @1, nombre: @2, rareza: @3, preciocidad: @4, cantidad: @5
+Chest removed!=¡Cofre eliminado!
+Chest not found!=¡Cofre no encontrado!
+The chest already exists!=¡El cofre ya existe!
+Chest list:=Lista de cofres:
+You're not looking at anything!=¡No estás mirando nada!
+ID: @1, position: @2, preciousness: @3-@4, treasures amount: @5-@6=ID: @1, posición: @2, preciocidad: @3-@4, cantidad de tesoros: @5-@6
+Position saved!=¡Posición guardada!
+You didn't set the treasures!=¡No colocaste los tesoros!
+You didn't set the chests!=¡No colocaste los cofres!
+You didn't set the map corners!=¡No estableciste las esquinas del mapa!
+@1 must be disabled!=¡@1 debe estar desactivada!
+@1 must be enabled!=¡@1 debe estar activada!
+@1 was killed by @2=@1 fue asesinado por @2
+@1 already exists!=¡@1 ya existe!
+@1 added to @2!=¡@1 añadido a @2!
+@1 removed from @2!=¡@1 eliminado de @2!
+Kit @1 created!=¡Kit @1 creado!
+Kit @1 deleted!=¡Kit @1 borrado!
+Kits list:=Lista de kits:
+@1 items:=Objetos de @1:
+Kit not found!=¡Kit no encontrado!
+x@1 @2 added to @3!=¡x@1 @2 añadidos a @3!
+@1 reset!=¡@1 reiniciado!
+@1 kits have been copied to @2!=¡El kit de @1 ha sido copiado en @2!
+Time is out, the match is over!=¡Tiempo terminado, la partida ha finalizado!
+Nobody=Nadie
+Nobody must be in the editor!=¡Nadie debe estar en el editor!
