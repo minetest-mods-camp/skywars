@@ -35,10 +35,6 @@ ChatCmdBuilder.new("skywars", function(cmd)
     
     
     cmd:sub("list", function(name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
         arena_lib.print_arenas(arena.name, "skywars")
     end)
 

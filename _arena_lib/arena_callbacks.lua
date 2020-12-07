@@ -49,12 +49,11 @@ end)
 arena_lib.on_celebration("skywars", function(arena, winner_name)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
-
-    skywars.block_enderpearl(player, arena)
     remove_privs(pl_name)
-    skywars.remove_HUD(arena, pl_name)
-    skywars.remove_armor(player)
+    skywars.block_enderpearl(player, arena)
   end
+
+  skywars.reset_map(arena)
 end)
 
 
@@ -64,10 +63,9 @@ arena_lib.on_end("skywars", function(arena, players)
     local player = minetest.get_player_by_name(pl_name)
     
     remove_privs(pl_name)
+    skywars.remove_HUD(arena, pl_name)
     skywars.remove_armor(player)
   end
-
-  skywars.reset_map(arena)
 end)
 
 
@@ -86,7 +84,6 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
   end
 
   drop_items(player)
-  remove_privs(pl_name)
   skywars.remove_armor(player)
   arena_lib.remove_player_from_arena(pl_name, 1)
   skywars.update_players_counter(arena)
