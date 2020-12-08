@@ -1,3 +1,6 @@
+local saved_huds = {}  -- id = hud
+
+
 function skywars.generate_HUD(arena, pl_name)
     local player = minetest.get_player_by_name(pl_name)
     local players_count_
@@ -72,7 +75,7 @@ function skywars.generate_HUD(arena, pl_name)
         number    = 0xdff6f5,
     })
 
-    arena.HUDs[pl_name] = {
+    saved_huds[pl_name] = {
         background_players_counter = background_players_counter_,
         players_count = players_count_,
         players_killed = {id = players_killed_, amount = 0},
@@ -88,12 +91,12 @@ end
 function skywars.remove_HUD(arena, pl_name)
     local player = minetest.get_player_by_name(pl_name)
     
-    player:hud_remove(arena.HUDs[pl_name].background_players_counter)
-    player:hud_remove(arena.HUDs[pl_name].background_kill_counter)
-    player:hud_remove(arena.HUDs[pl_name].players_count)
-    player:hud_remove(arena.HUDs[pl_name].players_killed.id)
-    player:hud_remove(arena.HUDs[pl_name].timer)
-    player:hud_remove(arena.HUDs[pl_name].background_timer)
+    for name, id in pairs(saved_huds[pl_name]) do
+        if type(id) == "table" then id = id.id end
+        player:hud_remove(id)
+    end
+
+    saved_huds[pl_name] = {}
 end
 
 
@@ -111,8 +114,18 @@ function skywars.update_players_counter(arena, players_amount_updated)
         if arena.players_original_amount == nil then return end 
         
         local players_counter = tostring(arena.players_amount) .. "/" .. tostring(arena.players_original_amount)
-        player:hud_change(arena.HUDs[pl_name].players_count, "text", players_counter)
+        player:hud_change(saved_huds[pl_name].players_count, "text", players_counter)
     end
+end
+
+
+
+function skywars.increment_players_killed(pl_name)
+    local player = minetest.get_player_by_name(pl_name)
+    local players_killed = saved_huds[pl_name].players_killed.amount + 1
+    saved_huds[pl_name].players_killed.amount = players_killed
+
+    player:hud_change(saved_huds[pl_name].players_killed.id, "text", players_killed)
 end
 
 
@@ -120,6 +133,6 @@ end
 function skywars.update_timer_hud(arena)
     for pl_name in pairs(arena.players) do
         local player = minetest.get_player_by_name(pl_name)
-        player:hud_change(arena.HUDs[pl_name].timer, "text", arena.current_time)
+        player:hud_change(saved_huds[pl_name].timer, "text", arena.current_time)
     end
 end

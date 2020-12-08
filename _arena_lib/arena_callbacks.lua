@@ -59,10 +59,10 @@ end)
 
 
 arena_lib.on_end("skywars", function(arena, players)
-  for pl_name in pairs(arena.players) do
+  for pl_name in pairs(players) do
     local player = minetest.get_player_by_name(pl_name)
     
-    remove_privs(pl_name)
+    remove_privs(pl_name) 
     skywars.remove_HUD(arena, pl_name)
     skywars.remove_armor(player)
   end
@@ -78,8 +78,7 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
       local killer = reason.object:get_player_name()
 
       arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("@1 was killed by @2", pl_name, killer))
-      arena.HUDs[killer].players_killed.amount = arena.HUDs[killer].players_killed.amount + 1 
-      reason.object:hud_change(arena.HUDs[killer].players_killed.id, "text", tostring(arena.HUDs[killer].players_killed.amount))
+      skywars.increment_players_killed(killer)
     end
   end
 
@@ -89,6 +88,15 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
   skywars.update_players_counter(arena)
 end)
 
+
+
+arena_lib.on_prequit("skywars", function(arena, pl_name)
+  if arena.in_loading then
+    return false
+  else
+    return true
+  end
+end)
 
 
 arena_lib.on_quit("skywars", function(arena, pl_name)
@@ -169,14 +177,7 @@ function add_privs(pl_name)
     player:get_meta():set_string("sw_can_noclip", "false")
   end
 
-  if skywars_settings.build_permission ~= "" then
-    if privs[skywars_settings.build_permission] then
-      player:get_meta():set_string("sw_can_build", "true")
-    else 
-      player:get_meta():set_string("sw_can_build", "false")
-    end
-    privs[skywars_settings.build_permission] = true
-  end
+  privs[skywars_settings.build_permission] = true
 
   minetest.set_player_privs(pl_name, privs)
 end
@@ -190,7 +191,7 @@ function remove_privs(pl_name)
   if player:get_meta():get_string("sw_can_noclip") == "true" then
     privs.noclip = true
   end
-  if player:get_meta():get_string("sw_can_build") == "false" then
+  if not privs.server and not privs["privs"] then
     privs[skywars_settings.build_permission] = nil
   end
 
@@ -249,12 +250,13 @@ end
 
 
 function keep_teleporting(player, pos, seconds, current_second)
-  local step = 3
+  local step = 2
   current_second = current_second or 1
 
   if current_second > seconds then return end
 
   minetest.after(step, function()
+    player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
     player:set_pos(pos)
     keep_teleporting(player, pos, seconds, current_second + step)
   end)

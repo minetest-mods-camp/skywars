@@ -14,7 +14,6 @@ arena_lib.register_minigame("skywars", {
   celebration_time = skywars_settings.celebration_time,
   load_time = skywars_settings.loading_time,
   temp_properties = {
-    HUDs = {},
     players_original_amount = 0,
   },
   properties = {
