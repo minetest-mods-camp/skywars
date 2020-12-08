@@ -35,7 +35,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
     
     
     cmd:sub("list", function(name)
-        arena_lib.print_arenas(arena.name, "skywars")
+        arena_lib.print_arenas(name, "skywars")
     end)
 
 
