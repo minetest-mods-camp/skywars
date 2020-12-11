@@ -17,8 +17,8 @@ arena_lib.on_load("skywars", function(arena)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
-    skywars.show_kit_selector(pl_name, arena)
     create_glass_cage(player)
+    player:get_inventory():add_item("main", "skywars:kit_selector")
   end
 end)
 
@@ -41,6 +41,7 @@ arena_lib.on_start("skywars", function(arena)
       jump=1
     })
     skywars.activate_enderpearl(player, arena)
+    player:get_inventory():remove_item("main", "skywars:kit_selector") 
   end
 end)
 
@@ -49,6 +50,7 @@ end)
 arena_lib.on_celebration("skywars", function(arena, winner_name)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
+    
     remove_privs(pl_name)
     skywars.block_enderpearl(player, arena)
   end
