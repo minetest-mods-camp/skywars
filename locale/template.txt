@@ -1,4 +1,4 @@
-# version 1.0.0
+# version 1.1.3
 # author(s):
 # reviewer(s):
 # textdomain: skywars
@@ -31,6 +31,7 @@ You didn't set the map corners!=
 @1 already exists!=
 @1 added to @2!=
 @1 removed from @2!=
+Kit Selector=
 Kit @1 created!=
 Kit @1 deleted!=
 Kits list:=
@@ -39,6 +40,6 @@ Kit not found!=
 x@1 @2 added to @3!=
 @1 reset!=
 @1 kits have been copied to @2!=
-Time is out, the match is over!=
 Nobody=
 Nobody must be in the editor!=
+Time is out, the match is over!=
