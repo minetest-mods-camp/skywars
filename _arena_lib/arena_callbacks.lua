@@ -104,8 +104,11 @@ end)
 arena_lib.on_quit("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
 
-  remove_privs(pl_name)
+  for pl_name, _ in pairs(arena.players) do
+    minetest.sound_play("sw_pl_dead", {to_player = pl_name})
+  end
 
+  remove_privs(pl_name)
   skywars.update_players_counter(arena, false)
   skywars.remove_HUD(arena, pl_name)
   skywars.remove_armor(player)
@@ -151,10 +154,7 @@ end)
 
 
 arena_lib.on_time_tick("skywars", function(arena)
-  if arena.current_time % 1 == 0 then
-    skywars.kill_players_out_map(arena)
-  end
-  
+  skywars.kill_players_out_map(arena)
   skywars.update_timer_hud(arena)
 end)
 
