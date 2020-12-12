@@ -84,6 +84,10 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
     end
   end
 
+  for pl_name, _ in pairs(arena.players) do
+    minetest.sound_play("sw_pl_dead", {to_player = pl_name})
+  end
+
   drop_items(player)
   skywars.remove_armor(player)
   arena_lib.remove_player_from_arena(pl_name, 1)
@@ -103,10 +107,6 @@ end)
 
 arena_lib.on_quit("skywars", function(arena, pl_name)
   local player = minetest.get_player_by_name(pl_name)
-
-  for pl_name, _ in pairs(arena.players) do
-    minetest.sound_play("sw_pl_dead", {to_player = pl_name})
-  end
 
   remove_privs(pl_name)
   skywars.update_players_counter(arena, false)
