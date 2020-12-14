@@ -20,6 +20,13 @@ arena_lib.on_load("skywars", function(arena)
     create_glass_cage(player)
     player:get_inventory():add_item("main", "skywars:kit_selector")
   end
+
+  arena_lib.HUD_send_msg_all(
+    "broadcast", 
+    arena, 
+    skywars.T("Select a kit using the item in your inventory"), 
+    skywars_settings.loading_time
+  )
 end)
 
 
@@ -89,6 +96,7 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
   end
 
   drop_items(player)
+  skywars.block_enderpearl(player, arena)
   skywars.remove_armor(player)
   arena_lib.remove_player_from_arena(pl_name, 1)
   skywars.update_players_counter(arena)

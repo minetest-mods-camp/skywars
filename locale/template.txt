@@ -35,6 +35,7 @@ Kit Selector=
 Kit @1 created!=
 Kit @1 deleted!=
 Kits list:=
+Select a kit using the item in your inventory=
 @1 items:=
 Kit not found!=
 x@1 @2 added to @3!=
