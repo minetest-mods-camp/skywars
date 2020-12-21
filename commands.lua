@@ -385,8 +385,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
         
-        local chest_id = 1
-        if arena.chests[#arena.chests] then chest_id = arena.chests[#arena.chests].id+1 end
+        local chest_id = skywars.generate_chest_id(arena)
         local chest = 
         {
             pos = pos,
