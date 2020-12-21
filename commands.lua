@@ -121,8 +121,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
 
-        local item_id = 1
-        if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
+        local item_id = skywars.generate_treasure_id(arena)
         local treasure = {
             name = treasure_name, 
             rarity = rarity, 
@@ -153,8 +152,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
 
-        local item_id = 1
-        if arena.treasures[#arena.treasures] then item_id = arena.treasures[#arena.treasures].id+1 end
+        local item_id = skywars.generate_treasure_id(arena)
         treasure = {
             name = wielded_itemstack.name, 
             rarity = rarity, 

@@ -3,6 +3,20 @@ local mod = "skywars"
 local function treasure_to_itemstack() end
 
 
+function skywars.generate_treasure_id(arena)
+	local max_id = 1
+	
+	for i = 1, #arena.treasures do
+		if arena.treasures[i].id > max_id then
+			max_id = arena.treasures[i].id
+		end
+	end
+
+	return max_id+1
+end
+
+
+
 function skywars.reorder_treasures(arena)
 	-- Sorting the table from the rarest to the least rare treasure.
 	for j = #arena.treasures, 2, -1 do
