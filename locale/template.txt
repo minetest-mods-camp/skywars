@@ -33,6 +33,7 @@ You didn't set the map corners!=
 @1 removed from @2!=
 Kit Selector=
 Kit @1 created!=
+@1 texture set to @2!=
 Kit @1 deleted!=
 Kits list:=
 Select a kit using the item in your inventory=

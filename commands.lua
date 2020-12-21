@@ -665,6 +665,22 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
+    cmd:sub("kittexture :kit :texture", 
+    function(sender, kit_name, texture_name)
+        local kits = skywars.load_table("kits")
+
+        if kits[kit_name] == nil then
+            skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
+            return
+        end
+
+        kits[kit_name].texture = texture_name
+        skywars.overwrite_table("kits", kits)
+
+        skywars.print_msg(sender, skywars.T("@1 texture set to @2!", kit_name, texture_name))
+    end)
+
+
     cmd:sub("resetkit :kit", 
     function(sender, kit_name)
         local kits = skywars.load_table("kits")
@@ -753,7 +769,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
         end
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "kits", arena.kits, false)
-        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!!", kit_name, arena_name)) 
+        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!", kit_name, arena_name)) 
         else skywars.print_error(sender, skywars.T("Kit not found!")) end
     end)
 
@@ -937,6 +953,7 @@ end, {
         - deletekit <kit name>
         - additem <kit name> <item> <count>
         - additem hand <kit name>
+        - kittexture <kit name> <texture name>
         - removeitem <kit name> <item>
         - removeitem hand <kit name>
         - arenakit add <arena name> <kit name>

@@ -52,7 +52,7 @@ function create_formspec(arena)
         "anchor[0.5,0.5]",
         "no_prepend[]",
         "bgcolor[#00000000;]",
-        "background[0,0;1,1;"..settings.hud_kit_background..";true]",
+        "background[0,0;1,1;image_kits.png;true]",
         "style_type[image_button;border=false]"
     }
     local buttons_per_row = settings.buttons_per_row

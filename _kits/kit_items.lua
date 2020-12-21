@@ -1,6 +1,6 @@
 minetest.register_craftitem("skywars:kit_selector", {
     description = skywars.T("Kit Selector"),
-    inventory_image = "kit_selector.png",
+    inventory_image = "item_kit_selector.png",
     stack_max = 1,
     on_drop = function() return nil end,
     on_use =

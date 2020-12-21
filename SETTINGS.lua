@@ -42,9 +42,6 @@ skywars_settings.build_permission = "build"
 -- varies based on the screen density and scaling settings of the client.
 
 
--- The texture background for the kit menu.
-skywars_settings.hud_kit_background = "Kits.png"
-
 -- The background width in real coordinates
 skywars_settings.background_width = 11
 
