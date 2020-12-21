@@ -296,7 +296,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
     cmd:sub("searchtreasure :arena :treasure", 
     function(sender, arena_name, treasure_name)
-        local arena, arena_name = get_valid_arena(arena_name, sender, true)
+        local arena, arena_name = get_valid_arena(arena_name, sender)
 
         if not arena then 
             return
@@ -306,6 +306,63 @@ ChatCmdBuilder.new("skywars", function(cmd)
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
             if treasure.name:match(treasure_name) then
+                skywars.print_msg(sender, from_treasure_to_string(treasure)  .. "\n\n")
+            end
+        end
+    end)
+
+
+
+    cmd:sub("filter treasures rarity :arena :rarity:number", 
+    function(sender, arena_name, rarity)
+        local arena, arena_name = get_valid_arena(arena_name, sender)
+
+        if not arena then 
+            return
+        end
+
+        skywars.print_msg(sender, skywars.T("Treasures list:"))
+        for i=1, #arena.treasures do
+            local treasure = arena.treasures[i]
+            if treasure.rarity == rarity then
+                skywars.print_msg(sender, from_treasure_to_string(treasure)  .. "\n\n")
+            end
+        end
+    end)
+
+
+
+    cmd:sub("filter treasures preciousness :arena :preciousness:number", 
+    function(sender, arena_name, preciousness)
+        local arena, arena_name = get_valid_arena(arena_name, sender)
+
+        if not arena then 
+            return
+        end
+
+        skywars.print_msg(sender, skywars.T("Treasures list:"))
+        for i=1, #arena.treasures do
+            local treasure = arena.treasures[i]
+            if treasure.preciousness == preciousness then
+                skywars.print_msg(sender, from_treasure_to_string(treasure)  .. "\n\n")
+            end
+        end
+    end)
+
+
+
+    cmd:sub("filter treasures preciousness+rarity :arena :preciousness:number :rarity:number", 
+    function(sender, arena_name, preciousness, rarity)
+        local arena, arena_name = get_valid_arena(arena_name, sender)
+
+        if not arena then 
+            return
+        end
+
+        skywars.print_msg(sender, skywars.T("Treasures list:"))
+        for i=1, #arena.treasures do
+            local treasure = arena.treasures[i]
+            if treasure.preciousness == preciousness and treasure.rarity == rarity then
                 skywars.print_msg(sender, from_treasure_to_string(treasure)  .. "\n\n")
             end
         end
@@ -840,7 +897,9 @@ ChatCmdBuilder.new("skywars", function(cmd)
 end, {
 
     description = [[
-        (/help skywars)
+
+        ADMIN COMMANDS
+        (Use /help skywars to read it all)
 
         Arena_lib:
 
@@ -863,6 +922,9 @@ end, {
           <rarity (min 1.0, max 10.0)> 
         - gettreasures <arena name>
         - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
+        - filter treasures rarity <arena name> <rarity>
+        - filter treasures preciousness <arena name> <preciousness>
+        - filter treasures preciousness+rarity <arena name> <preciousness> <rarity>
         - removetreasure <arena name> <treasure name>: remove all treasures with that name
         - removetreasure hand <arena name>
         - removetreasure id <arena name> <treasure id>
