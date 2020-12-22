@@ -24,6 +24,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         if fields[kit_name] then
             select_kit(pl_name, kits[kit_name])
             minetest.close_formspec(pl_name, "skywars:kit_selector")
+            arena_lib.HUD_hide("broadcast", pl_name)
         end
     end
 end)
