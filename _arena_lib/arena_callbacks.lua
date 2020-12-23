@@ -85,8 +85,10 @@ arena_lib.on_death("skywars", function(arena, pl_name, reason)
   if reason.type == "punch" then
     if reason.object and reason.object:is_player() then
       local killer = reason.object:get_player_name()
+      local killer_health = reason.object:get_hp()
 
       arena_lib.send_message_players_in_arena(arena, skywars_settings.prefix .. skywars.T("@1 was killed by @2", pl_name, killer))
+      skywars.print_msg(pl_name, skywars.T("@1 killed you with @2 HPs", killer, killer_health))
       skywars.increment_players_killed(killer)
     end
   end

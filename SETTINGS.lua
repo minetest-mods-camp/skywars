@@ -88,3 +88,18 @@ skywars_settings.nodes_per_tick = 20
 
 
 skywars_settings.remove_armors_on_join = true
+
+-- The armors importances that are used by the auto equip system:
+-- when a player takes an armor from a chest, if it has a greater
+-- importance that the already equipped one the latter gets replaced.
+-- If the armor name contains one of this materials then the
+-- corresponding importance will be associated with it.
+skywars_settings.armors_importances = {
+    ["cactus"] = 0,
+    ["wood"] = 1,
+    ["gold"] = 2,
+    ["bronze"] = 3,
+    ["steel"] = 4,
+    ["mithril"] = 5,
+    ["diamond"] = 6
+}

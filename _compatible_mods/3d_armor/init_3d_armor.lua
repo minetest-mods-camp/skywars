@@ -36,6 +36,9 @@ minetest.register_on_player_inventory_action(function(player, action, inventory,
             if equipped_armor then
                 local armor_importance = get_armor_importance(armor_name)
                 local weared_armor_importance = get_armor_importance(equipped_armor)
+
+                if not armor_importance or not weared_armor_importance then return end
+            
                 -- Returning if the just taken armor is worse or as good as the equipped one.
                 if armor_importance <= weared_armor_importance then return end
             end
@@ -51,14 +54,9 @@ end)
 
 
 function get_armor_importance(armor_name)
-    local importance
-
-    if (armor_name:match("wood")) then importance = 1
-    elseif (armor_name:match("gold")) then importance = 2
-    elseif (armor_name:match("bronze")) then importance = 3
-    elseif (armor_name:match("steel")) then importance = 4
-    elseif (armor_name:match("diamond")) then importance = 5
+    for material, importance in pairs(skywars_settings.armors_importances) do
+        if armor_name:match(material) then
+            return importance
+        end
     end
-
-    return importance
 end
