@@ -65,7 +65,7 @@ end
 
 function skywars.save_nodes_with_inventories(arena)
     local maps = skywars.load_table("maps")
-    maps[arena.name].always_to_be_reset_nodes = {}
+    initialize_map_data(maps, arena)
     skywars.overwrite_table("maps", maps)
 
     skywars.iterate_area_nodes(arena.min_pos, arena.max_pos, function(node, node_pos)
@@ -85,9 +85,7 @@ function save_node(arena, pos, node, has_inventory)
     local serialized_pos = minetest.serialize(pos)
 
     if not arena then return end
-    if not maps then maps = {} end
-    if not maps[arena.name] then maps[arena.name] = {} end
-    if not maps[arena.name].changed_nodes then maps[arena.name].changed_nodes = {} end
+    initialize_map_data(maps, arena)
 
     -- If this block has not been changed yet then save it.
     if maps[arena.name].changed_nodes[serialized_pos] == nil then
@@ -97,4 +95,13 @@ function save_node(arena, pos, node, has_inventory)
         maps[arena.name].changed_nodes[serialized_pos] = node
         skywars.overwrite_table("maps", maps)
     end
+end
+
+
+
+function initialize_map_data(maps, arena)
+    if not maps then maps = {} end
+    if not maps[arena.name] then maps[arena.name] = {} end
+    if not maps[arena.name].changed_nodes then maps[arena.name].changed_nodes = {} end
+    if not maps[arena.name].always_to_be_reset_nodes then maps[arena.name].always_to_be_reset_nodes = {} end
 end

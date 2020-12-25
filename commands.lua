@@ -866,10 +866,14 @@ ChatCmdBuilder.new("skywars", function(cmd)
     -- ! DEBUG CMDS ! --
     --------------------
 
-    cmd:sub("clearmapstable", 
-    function(sender)
-        skywars.overwrite_table("maps", {})
-        skywars.print_msg(sender, "Maps table reset!") 
+    cmd:sub("clearchangednodes :arena", 
+    function(sender, arena_name)
+        local maps = skywars.load_table("maps")
+
+        maps[arena_name].changed_nodes = {}
+        skywars.overwrite_table("maps", maps)
+
+        skywars.print_msg(sender, arena_name .. " changed nodes table reset!") 
     end)
     
 
@@ -977,7 +981,7 @@ end, {
 
         Debug (don't use them if you don't know what you're doing):
 
-        - clearmapstable: clears the changed nodes table of each map without resetting them
+        - clearchangednodes <arena name>: clears the changed nodes table of each map without resetting them
         - getpos
         - test reset <arena name>: tests the reset system, make sure your map is properly reset
           before using it, 'cause it will clear the maps table first
