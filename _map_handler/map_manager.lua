@@ -1,6 +1,7 @@
-local function save_block() end
+local function save_node() end
 local function delete_drops() end
 local function async_reset_map() end
+local function reset_node_inventory() end
 
 function skywars.load_mapblocks(arena)
     minetest.load_area(arena.min_pos, arena.max_pos)
@@ -35,12 +36,12 @@ end
 
 minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack, pointed_thing)
     local arena = arena_lib.get_arena_by_player(player:get_player_name())
-    save_block(arena, pos, oldnode)
+    save_node(arena, pos, oldnode)
 
     if arena == nil then 
         arena = skywars.get_arena_by_pos(pos)
         if arena and arena.enabled then 
-            save_block(arena, pos, oldnode)
+            save_node(arena, pos, oldnode)
         end
     end
 end)
@@ -49,26 +50,27 @@ end)
 
 minetest.register_on_dignode(function(pos, oldnode, player)
     local arena = arena_lib.get_arena_by_player(player:get_player_name())
-    save_block(arena, pos, oldnode)
+    save_node(arena, pos, oldnode)
 
     if arena == nil then 
         arena = skywars.get_arena_by_pos(pos)
         if arena and arena.enabled then 
-            save_block(arena, pos, oldnode)
+            save_node(arena, pos, oldnode)
         end
     end
 end)
 
 
 
--- minetest.set_node override.
+-- Minetest functions overrides.
+
 local set_node = minetest.set_node
 function minetest.set_node(pos, node)
     local arena = skywars.get_arena_by_pos(pos)
     local oldnode = minetest.get_node(pos)
     
     if arena and arena.enabled then 
-        save_block(arena, pos, oldnode) 
+        save_node(arena, pos, oldnode) 
     end
 
 	return set_node(pos, node)
@@ -80,20 +82,32 @@ function minetest.remove_node(pos)
     minetest.set_node(pos, {name="air"})
 end
 
+local swap_node = minetest.swap_node
+function minetest.swap_node(pos, node)
+    local arena = skywars.get_arena_by_pos(pos)
+    local oldnode = minetest.get_node(pos)
+    
+    if arena and arena.enabled then 
+        save_node(arena, pos, oldnode) 
+    end
+
+    return swap_node(pos, node)
+end
 
 
-function save_block(arena, pos, node)
+
+function save_node(arena, pos, node)
     local maps = skywars.load_table("maps")
     local serialized_pos = minetest.serialize(pos)
 
     if not arena then return end
     if not maps then maps = {} end
     if not maps[arena.name] then maps[arena.name] = {} end
-    if not maps[arena.name].nodes then maps[arena.name].nodes = {} end
+    if not maps[arena.name].changed_nodes then maps[arena.name].changed_nodes = {} end
 
     -- If this block has not been changed yet then save it.
-    if maps[arena.name].nodes[serialized_pos] == nil then
-        maps[arena.name].nodes[serialized_pos] = node
+    if maps[arena.name].changed_nodes[serialized_pos] == nil then
+        maps[arena.name].changed_nodes[serialized_pos] = node
         skywars.overwrite_table("maps", maps)
     end
 end
@@ -127,35 +141,34 @@ function async_reset_map(arena, debug, recursive_data)
 
     -- When the function gets called again it uses the same maps table.
     local original_maps = recursive_data.original_maps or skywars.load_table("maps")
-    if not original_maps[arena.name] or not original_maps[arena.name].nodes then
+    if not original_maps[arena.name] or not original_maps[arena.name].changed_nodes then
         return 
     end
 
-    -- The indexes are useful to count the reset nodes.
     debug = debug or false
+    -- The indexes are useful to count the reset nodes.
     local current_index = 1
-    local original_map_nodes = original_maps[arena.name].nodes
     local last_index = recursive_data.last_index or 0
+    local original_nodes_to_reset = original_maps[arena.name].changed_nodes
     local nodes_per_tick = recursive_data.nodes_per_tick or skywars_settings.nodes_per_tick
-    local current_cycle = recursive_data.current_cycle or 1 
     local initial_time = recursive_data.initial_time or minetest.get_us_time()
-    local nodes_to_reset = nodes_per_tick * current_cycle
 
-    -- Resets a node if it hasn't been reset yet and, if it reset more than "nodes_per_tick" 
-    -- nodes, it invokes this function again after one step.
+    -- Resets a node if it hasn't been reset yet and if it resets more than "nodes_per_tick" 
+    -- nodes it invokes this function again after one step.
     arena.is_resetting = true
-    for serialized_pos, node in pairs(original_map_nodes) do
+    for serialized_pos, node in pairs(original_nodes_to_reset) do
         if current_index > last_index then
             local pos = minetest.deserialize(serialized_pos)
             minetest.add_node(pos, node)
+            reset_node_inventory(pos)
         end
-        if current_index >= nodes_to_reset then
+        -- If more than nodes_per_tick nodes have been reset this cycle.
+        if current_index - last_index >= nodes_per_tick then
             minetest.after(0, function()
                 async_reset_map(arena, debug, {
                     last_index = current_index, 
                     nodes_per_tick = nodes_per_tick, 
                     original_maps = original_maps, 
-                    current_cycle = current_cycle+1,
                     initial_time = initial_time
                 })
             end)
@@ -166,33 +179,47 @@ function async_reset_map(arena, debug, recursive_data)
     end
     arena.is_resetting = false
 
-    -- Removing the reset nodes from the actual map to preserve eventual changes made 
-    -- to the latter during the reset.
-    local actual_maps = skywars.load_table("maps")
-    if not actual_maps[arena.name] or not actual_maps[arena.name].nodes then
+    -- Removing the reset nodes from the current map table to preserve eventual
+    -- changes made to the latter during the reset.
+    local current_maps = skywars.load_table("maps")
+    if not current_maps[arena.name] or not current_maps[arena.name].changed_nodes then
         return 
     end
-    local actual_map_nodes = actual_maps[arena.name].nodes
+    local current_nodes_to_reset = current_maps[arena.name].changed_nodes
 
-    for serialized_pos, node in pairs(actual_map_nodes) do
-        if not original_map_nodes[serialized_pos] then goto continue end
+    for serialized_pos, node in pairs(current_nodes_to_reset) do
+        if not original_nodes_to_reset[serialized_pos] then goto continue end
         
-        local old_node = original_map_nodes[serialized_pos]
+        local old_node = original_nodes_to_reset[serialized_pos]
         local pos = minetest.deserialize(serialized_pos)
-        local actual_node = minetest.get_node(pos)
-        local is_old_node_still_reset = (actual_node.name == old_node.name)
+        local current_node = minetest.get_node(pos)
+        local is_old_node_still_reset = (current_node.name == old_node.name)
 
+        -- Checking if the node was modified again DURING the reset process but 
+        -- AFTER being reset already.
         if is_old_node_still_reset then
-            actual_map_nodes[serialized_pos] = nil
+            current_nodes_to_reset[serialized_pos] = nil
         end
 
         ::continue::
     end
     
-    skywars.overwrite_table("maps", actual_maps)
+    skywars.overwrite_table("maps", current_maps)
 
     if debug then
         local duration = minetest.get_us_time() - initial_time
         minetest.log("[Skywars Reset Debug] The reset took " .. duration/1000000 .. " seconds!")
+    end
+end
+
+
+
+function reset_node_inventory(pos)
+    local location = {type="node", pos = pos}
+    local inv = minetest.get_inventory(location)
+    if inv then 
+        for index, list in ipairs(inv:get_lists()) do
+            inv:set_list(list, {}) 
+        end
     end
 end

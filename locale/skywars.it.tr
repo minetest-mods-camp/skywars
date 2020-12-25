@@ -1,9 +1,22 @@
-# version 1.1.3
+# version 1.1.4
 # author(s): Giov4
 # reviewer(s):
 # textdomain: skywars
 # @n means "newline"
 # @<number> (@1, @2, ecc) is a value that the mod will pass at runtime 
+
+
+# In-game messages
+
+Time is out, the match is over!=Tempo terminato, la partita è finita!
+@1 was killed by @2=@1 è stato ucciso da @2
+@1 killed you with @2 HPs=@1 ti ha ucciso con @2 HP
+Nobody=Nessuno
+Select a kit using the item in your inventory=Seleziona un kit usando l'oggetto nell'inventario
+Kit Selector=Selettore Kit
+
+
+# Arena configuration
 
 Count has to be greater than 0!=La quantità deve essere maggiore di 0
 Rarity has to be between 1 and 10!=La rarità deve essere compresa tra 1 e 10!
@@ -30,19 +43,13 @@ You didn't set the map corners!=Non hai impostato gli angoli della mappa!
 @1 already exists!=@1 esiste già!
 @1 added to @2!=@1 aggiunto a @2
 @1 removed from @2!=@1 rimosso da @2!
-Kit Selector=Selettore Kit
 Kit @1 created!=Kit @1 creato!
 @1 texture set to @2!=Texture di @1 impostata a @2
 Kit @1 deleted!=Kit @1 eliminato!
 Kits list:=Lista dei kit:
-Select a kit using the item in your inventory=Seleziona un kit usando l'oggetto nell'inventario
 @1 items:=Oggetti di @1:
 Kit not found!=Kit non trovato!
 x@1 @2 added to @3!=x@1 @2 aggiunto a @3!
 @1 reset!=@1 resettata!
 @1 kits have been copied to @2!=I kit di @1 sono stati copiati in @2!
-Nobody=Nessuno
 Nobody must be in the editor!=Nessuno deve essere nell'editor!
-Time is out, the match is over!=Tempo terminato, la partita è finita!
-@1 was killed by @2=@1 è stato ucciso da @2
-@1 killed you with @2 HPs=@1 ti ha ucciso con @2 HP

@@ -1,9 +1,22 @@
-# version 1.1.3
+# version 1.1.4
 # author(s):
 # reviewer(s):
 # textdomain: skywars
 # @n means "newline"
 # @<number> (@1, @2, ecc) is a value that the mod will pass at runtime 
+
+
+# In-game messages
+
+Time is out, the match is over!=
+@1 was killed by @2=
+@1 killed you with @2 HPs=
+Nobody=
+Select a kit using the item in your inventory=
+Kit Selector=
+
+
+# Arena configuration
 
 Count has to be greater than 0!=
 Rarity has to be between 1 and 10!=
@@ -30,19 +43,13 @@ You didn't set the map corners!=
 @1 already exists!=
 @1 added to @2!=
 @1 removed from @2!=
-Kit Selector=
 Kit @1 created!=
 @1 texture set to @2!=
 Kit @1 deleted!=
 Kits list:=
-Select a kit using the item in your inventory=
 @1 items:=
 Kit not found!=
 x@1 @2 added to @3!=
 @1 reset!=
 @1 kits have been copied to @2!=
-Nobody=
 Nobody must be in the editor!=
-Time is out, the match is over!=
-@1 was killed by @2=
-@1 killed you with @2 HPs=
