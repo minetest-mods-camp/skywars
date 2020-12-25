@@ -90,6 +90,16 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
+    cmd:sub("fast enable :arena", function(name, arena_name)
+        local arena = get_valid_arena(arena_name, name)
+
+        if not arena then return end
+
+        arena_lib.enable_arena(name.."@", "skywars", arena.name)
+    end)
+
+
+
     cmd:sub("disable :arena", function(name, arena_name)
         local arena = get_valid_arena(arena_name, name)
 
@@ -921,6 +931,7 @@ end, {
         - remove <arena name>
         - list
         - enable <arena name>
+        - fast enable <arena name>
         - disable <arena name>
 
 

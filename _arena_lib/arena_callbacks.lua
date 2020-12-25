@@ -147,6 +147,9 @@ end)
 
 
 arena_lib.on_enable("skywars", function(arena, pl_name)
+  local fast_enable = pl_name:match("@") 
+  pl_name = pl_name:gsub("@", "")
+
   if arena.treasures[1] == nil then
     skywars.print_error(pl_name, skywars.T("You didn't set the treasures!"))
     return false
@@ -158,7 +161,10 @@ arena_lib.on_enable("skywars", function(arena, pl_name)
     return false
   end
   
-  skywars.save_nodes_with_inventories(arena)
+  if not fast_enable then
+    skywars.print_msg(pl_name, skywars.T("The enabling process may take a few moments, please wait..."))
+    skywars.save_nodes_with_inventories(arena)
+  end
 
   return true
 end)
