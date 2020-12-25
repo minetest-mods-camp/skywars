@@ -242,6 +242,9 @@ function create_glass_cage(player)
       local node_pos = vector.round(vector.add(original_pos, relative_pos))
       if minetest.get_node(node_pos).name == "air" then 
         minetest.add_node(node_pos, {name="default:glass"})
+        minetest.after(skywars_settings.loading_time, function()         
+          minetest.remove_node(node_pos)
+        end)
       end
     end
 
