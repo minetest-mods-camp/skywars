@@ -148,6 +148,7 @@ end)
 
 arena_lib.on_enable("skywars", function(arena, pl_name)
   local fast_enable = pl_name:match("@") 
+  local arena_lib_translator = minetest.get_translator("arena_lib")
   pl_name = pl_name:gsub("@", "")
 
   if arena.treasures[1] == nil then
@@ -165,6 +166,8 @@ arena_lib.on_enable("skywars", function(arena, pl_name)
     skywars.print_msg(pl_name, skywars.T("The enabling process may take a few moments, please wait..."))
     skywars.save_nodes_with_inventories(arena)
   end
+
+  skywars.print_msg(pl_name, arena_lib_translator("Arena @1 successfully enabled", arena.name))
 
   return true
 end)

@@ -935,7 +935,10 @@ end, {
         - remove <arena name>
         - list
         - enable <arena name>
-        - fast enable <arena name>
+        - fast enable <arena name>: 
+            enables the arena without checking if there are nodes with inventories;
+            use this just if after disabling the arena you didn't add nodes with an
+            inventory (e.g. a chest or a furnace)
         - disable <arena name>
 
 
