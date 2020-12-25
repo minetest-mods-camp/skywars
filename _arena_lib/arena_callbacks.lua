@@ -157,6 +157,8 @@ arena_lib.on_enable("skywars", function(arena, pl_name)
     skywars.print_error(pl_name, skywars.T("You didn't set the map corners!"))
     return false
   end
+  
+  skywars.save_nodes_with_inventories(arena)
 
   return true
 end)

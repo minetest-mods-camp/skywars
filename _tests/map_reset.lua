@@ -14,23 +14,13 @@ function skywars.test_async_speed(arena)
     skywars.reorder_positions(arena.min_pos, arena.max_pos)
     skywars.load_mapblocks(arena)
 
-    local max_pos = arena.max_pos
-    local min_pos = arena.min_pos
     local area_size = 10
-    max_pos = vector.add(min_pos, area_size)
-    
-    for x = 1, max_pos.x - min_pos.x do
-        for y = 1, max_pos.y - min_pos.y do
-            for z = 1, max_pos.z - min_pos.z do
-                local node_pos = {
-                    x = min_pos.x+x, 
-                    y = min_pos.y+y, 
-                    z = min_pos.z+z
-                }
-                minetest.set_node(node_pos, {name="skywars:test_node"})
-            end
-        end
-    end
+    local min_pos = arena.min_pos
+    local max_pos = vector.add(min_pos, area_size)
+
+    skywars.iterate_area_nodes(min_pos, max_pos, function(node, node_pos)
+        minetest.set_node(node_pos, {name="skywars:test_node"})
+    end)
 
     minetest.after(1, function() skywars.reset_map(arena, true) end)
 end

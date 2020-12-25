@@ -1,13 +1,6 @@
-local function save_node() end
 local function delete_drops() end
 local function async_reset_map() end
 local function reset_node_inventory() end
-
-function skywars.load_mapblocks(arena)
-    minetest.load_area(arena.min_pos, arena.max_pos)
-    minetest.emerge_area(arena.min_pos, arena.max_pos)
-end
-
 
 
 function skywars.reset_map(arena, debug, debug_data)
@@ -16,100 +9,6 @@ function skywars.reset_map(arena, debug, debug_data)
     skywars.load_mapblocks(arena)
     delete_drops(arena)
     async_reset_map(arena, debug, debug_data)
-end
-
-
-
-function skywars.kill_players_out_map(arena)
-    for pl_name in pairs(arena.players) do
-        local player = minetest.get_player_by_name(pl_name)
-        local pl_pos = player:get_pos()
-        local map_area = VoxelArea:new{MinEdge = arena.min_pos, MaxEdge = arena.max_pos}
-
-        if map_area:contains(pl_pos.x, pl_pos.y, pl_pos.z) == false then
-            player:set_hp(0)
-        end
-    end
-end
-
-
-
-minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack, pointed_thing)
-    local arena = arena_lib.get_arena_by_player(player:get_player_name())
-    save_node(arena, pos, oldnode)
-
-    if arena == nil then 
-        arena = skywars.get_arena_by_pos(pos)
-        if arena and arena.enabled then 
-            save_node(arena, pos, oldnode)
-        end
-    end
-end)
-
-
-
-minetest.register_on_dignode(function(pos, oldnode, player)
-    local arena = arena_lib.get_arena_by_player(player:get_player_name())
-    save_node(arena, pos, oldnode)
-
-    if arena == nil then 
-        arena = skywars.get_arena_by_pos(pos)
-        if arena and arena.enabled then 
-            save_node(arena, pos, oldnode)
-        end
-    end
-end)
-
-
-
--- Minetest functions overrides.
-
-local set_node = minetest.set_node
-function minetest.set_node(pos, node)
-    local arena = skywars.get_arena_by_pos(pos)
-    local oldnode = minetest.get_node(pos)
-    
-    if arena and arena.enabled then 
-        save_node(arena, pos, oldnode) 
-    end
-
-	return set_node(pos, node)
-end
-function minetest.add_node(pos, node)
-    minetest.set_node(pos, node)
-end
-function minetest.remove_node(pos)
-    minetest.set_node(pos, {name="air"})
-end
-
-local swap_node = minetest.swap_node
-function minetest.swap_node(pos, node)
-    local arena = skywars.get_arena_by_pos(pos)
-    local oldnode = minetest.get_node(pos)
-    
-    if arena and arena.enabled then 
-        save_node(arena, pos, oldnode) 
-    end
-
-    return swap_node(pos, node)
-end
-
-
-
-function save_node(arena, pos, node)
-    local maps = skywars.load_table("maps")
-    local serialized_pos = minetest.serialize(pos)
-
-    if not arena then return end
-    if not maps then maps = {} end
-    if not maps[arena.name] then maps[arena.name] = {} end
-    if not maps[arena.name].changed_nodes then maps[arena.name].changed_nodes = {} end
-
-    -- If this block has not been changed yet then save it.
-    if maps[arena.name].changed_nodes[serialized_pos] == nil then
-        maps[arena.name].changed_nodes[serialized_pos] = node
-        skywars.overwrite_table("maps", maps)
-    end
 end
 
 
@@ -188,7 +87,10 @@ function async_reset_map(arena, debug, recursive_data)
     local current_nodes_to_reset = current_maps[arena.name].changed_nodes
 
     for serialized_pos, node in pairs(current_nodes_to_reset) do
-        if not original_nodes_to_reset[serialized_pos] then goto continue end
+        local always_to_be_reset = original_maps[arena.name].always_to_be_reset_nodes[serialized_pos]
+        if not original_nodes_to_reset[serialized_pos] or always_to_be_reset then 
+            goto continue
+        end
         
         local old_node = original_nodes_to_reset[serialized_pos]
         local pos = minetest.deserialize(serialized_pos)
