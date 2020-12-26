@@ -49,8 +49,8 @@ minetest.register_on_player_inventory_action(function(player, action, inventory,
     if minetest.get_modpath("3d_armor") and arena_lib.is_player_in_arena(pl_name, "skywars") then
         -- The armor that the player's taking.
         local armor_itemstack = inventory_info.stack
-        local armor_name = armor_itemstack:get_name()
         if not armor_itemstack then return end
+        local armor_name = armor_itemstack:get_name()
         -- The body part that the armor's assigned to, returns nil if it's not an armor.
         local is_an_armor = armor:get_element(armor_name)
 
