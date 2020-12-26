@@ -33,6 +33,7 @@ end)
 
 arena_lib.on_start("skywars", function(arena)
   arena.players_original_amount = arena.players_amount
+  arena.match_id = math.random(1, 9999999999)
 
   skywars.place_chests(arena)
 
@@ -168,6 +169,17 @@ arena_lib.on_enable("skywars", function(arena, pl_name)
 
   skywars.print_msg(pl_name, arena_lib_translator("Arena @1 successfully enabled", arena.name))
 
+  return true
+end)
+
+
+
+arena_lib.on_disable("skywars", function(arena, pl_name)
+  if arena.is_resetting then 
+    skywars.print_error(pl_name, skywars.T("@1 is being reset!", arena.name))
+    return false
+  end
+  
   return true
 end)
 

@@ -15,6 +15,7 @@ arena_lib.register_minigame("skywars", {
   load_time = skywars_settings.loading_time,
   temp_properties = {
     players_original_amount = 0,
+    match_id = -1,
   },
   properties = {
     chests = {},

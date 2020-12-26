@@ -1,36 +1,37 @@
 local function delete_drops() end
 local function async_reset_map() end
 local function reset_node_inventory() end
+local on_step = minetest.registered_entities["__builtin:item"].on_step
+minetest.registered_entities["__builtin:item"].match_id = -2
 
 
 function skywars.reset_map(arena, debug, debug_data)
     if not arena.enabled or arena.is_resetting then return end
 
     skywars.load_mapblocks(arena)
-    delete_drops(arena)
     async_reset_map(arena, debug, debug_data)
 end
 
 
 
-function delete_drops(arena)
-    local min_pos, max_pos = skywars.reorder_positions(arena.min_pos, arena.max_pos)
-    local distance_from_center = vector.distance(min_pos, max_pos) / 2
-    local map_center = {
-        x = (min_pos.x + max_pos.x) / 2, 
-        y = (min_pos.y + max_pos.y) / 2, 
-        z = (min_pos.z + max_pos.z) / 2
-    }
-    
-    for i, obj in pairs(minetest.get_objects_inside_radius(map_center, distance_from_center)) do
-        if not obj:is_player() then
-            local props = obj:get_properties()
-            local entity_texture = props.textures[1]
-            if props.automatic_rotate > 0 and ItemStack(entity_texture):is_known() then
-                obj:remove()
-            end 
+-- Removing drops based on the match_id. 
+minetest.registered_entities["__builtin:item"].on_step = function(self, dtime, moveresult)
+    local pos = self.object:get_pos()
+    local arena = skywars.get_arena_by_pos(pos)
+
+    if arena and arena.match_id then
+        if self.match_id == -2 then 
+            self.match_id = arena.match_id
+        elseif self.match_id ~= arena.match_id then
+            self.object:remove()
+            return
         end
+    elseif arena then
+        self.object:remove()
+        return
     end
+
+    on_step(self, dtime, moveresult)
 end
 
 

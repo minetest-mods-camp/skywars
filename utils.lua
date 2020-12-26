@@ -1,11 +1,11 @@
-function skywars.print_error(player, msg)
-    minetest.chat_send_player(player, minetest.colorize("#e6482e", skywars_settings.prefix .. msg))
+function skywars.print_error(pl_name, msg)
+    minetest.chat_send_player(pl_name, minetest.colorize("#e6482e", skywars_settings.prefix .. msg))
 end
-  
-  
-  
-function skywars.print_msg(player, msg)
-    minetest.chat_send_player(player, skywars_settings.prefix .. msg)
+
+
+
+function skywars.print_msg(pl_name, msg)
+    minetest.chat_send_player(pl_name, skywars_settings.prefix .. msg)
 end
 
 

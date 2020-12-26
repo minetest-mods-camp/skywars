@@ -54,3 +54,4 @@ x@1 @2 added to @3!=
 @1 kits have been copied to @2!=
 Nobody must be in the editor!=
 The enabling process may take a few moments, please wait...=
+@1 is being reset!=
