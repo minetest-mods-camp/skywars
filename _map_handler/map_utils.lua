@@ -19,6 +19,26 @@ end
 
 
 
+minetest.register_node("skywars:barrier", {
+    description = "Unbreakable transparent node",
+    drawtype = "airlike",
+    paramtype = "light",
+    sunlight_propagates = true,
+    air_equivalent = true,
+    drop = "",
+    inventory_image = "sw_node_barrier.png",
+    wield_image = "sw_node_barrier.png",
+    groups = {oddly_breakable_by_hand = 2},
+    can_dig = function(pos, player)
+        if minetest.get_player_privs(player:get_player_name()).skywars_admin then
+            return true
+        end
+        return false
+    end
+})
+
+
+
 function skywars.iterate_area_nodes(min_pos, max_pos, func)
     for x = 1, max_pos.x - min_pos.x do
         for y = 1, max_pos.y - min_pos.y do

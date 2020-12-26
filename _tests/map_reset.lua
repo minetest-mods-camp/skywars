@@ -90,9 +90,9 @@ end
 
 
 minetest.register_node("skywars:test_node", {
-    description = "Skywars test block, don't use it!",
+    description = "Skywars test node, don't use it!",
     groups = {crumbly=1, soil=1, dig_immediate=3},
-    tiles = {"node_test.png"},
+    tiles = {"sw_node_test.png"},
 })
 
 

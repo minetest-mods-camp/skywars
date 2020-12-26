@@ -1,6 +1,6 @@
 local function add_privs() end
 local function remove_privs() end
-local function create_glass_cage() end
+local function create_barrier_cage() end
 local function keep_teleporting() end
 local function drop_items() end
 
@@ -17,7 +17,7 @@ arena_lib.on_load("skywars", function(arena)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
-    create_glass_cage(player)
+    create_barrier_cage(player)
     player:get_inventory():add_item("main", "skywars:kit_selector")
   end
 
@@ -40,6 +40,7 @@ arena_lib.on_start("skywars", function(arena)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
 
+    minetest.sound_play("sw_start", {to_player = pl_name})
     add_privs(pl_name)
     skywars.generate_HUD(arena, pl_name)
     player:set_physics_override({
@@ -48,7 +49,7 @@ arena_lib.on_start("skywars", function(arena)
       jump=1
     })
     skywars.activate_enderpearl(player, arena)
-    player:get_inventory():remove_item("main", "skywars:kit_selector") 
+    player:get_inventory():remove_item("main", "skywars:kit_selector")
   end
 end)
 
@@ -58,6 +59,7 @@ arena_lib.on_celebration("skywars", function(arena, winner_name)
   for pl_name in pairs(arena.players) do
     local player = minetest.get_player_by_name(pl_name)
     
+    minetest.sound_play("sw_win", {to_player = pl_name})
     remove_privs(pl_name)
     skywars.block_enderpearl(player, arena)
   end
@@ -234,7 +236,7 @@ end
 
 
 
-function create_glass_cage(player)
+function create_barrier_cage(player)
   minetest.after(0.1, function()
     local original_pos = player:get_pos()
     local glass_nodes = {
@@ -253,7 +255,7 @@ function create_glass_cage(player)
     for _, relative_pos in pairs(glass_nodes) do
       local node_pos = vector.round(vector.add(original_pos, relative_pos))
       if minetest.get_node(node_pos).name == "air" then 
-        minetest.add_node(node_pos, {name="default:glass"})
+        minetest.add_node(node_pos, {name="skywars:barrier"})
         minetest.after(skywars_settings.loading_time, function()         
           minetest.remove_node(node_pos)
         end)

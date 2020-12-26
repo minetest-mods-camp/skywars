@@ -52,6 +52,8 @@ function skywars.select_random_treasures(chest, arena)
 					local random = math.random(1, 100)
 					local treasure_itemstack = treasure_to_itemstack(preciousness_filtered_treasures[j])
 
+					if treasure_itemstack == "error" then return generated_treasures end
+
 					if treasure_itemstack and random % (preciousness_filtered_treasures[j].rarity * 10) == 0 then
 						table.insert(generated_treasures, treasure_itemstack)
 						break
@@ -73,7 +75,7 @@ function treasure_to_itemstack(treasure)
 
 	if ItemStack(itemstack):is_known() == false then
 		minetest.log("error","[Skywars Treasures] I was asked to put "..treasure.name.." inside a chest, but it doesn't exist.")
-		return nil
+		return "error"
 	end
 	return ItemStack(itemstack)
 end
