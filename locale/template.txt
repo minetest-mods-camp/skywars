@@ -16,6 +16,11 @@ Select a kit using the item in your inventory=
 Kit Selector=
 
 
+# Nodes
+
+Unbreakable without skywars_admin priv transparent node=
+
+
 # Arena configuration
 
 Count has to be greater than 0!=

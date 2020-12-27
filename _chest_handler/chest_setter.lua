@@ -1,4 +1,5 @@
 local function fill_chests() end
+local function generate_particles() end
 
 
 function skywars.place_chests(arena)
@@ -34,5 +35,27 @@ function fill_chests(arena)
     for i=1, #treasures do
       inv:set_stack("main", i, treasures[i])
     end
+    
+    generate_particles(chest.pos)
   end
+end
+
+
+
+function generate_particles(pos)
+  minetest.add_particlespawner({
+      amount = 7,
+      time = 0.25,
+      minpos = vector.add({x=0, y=-0.3, z=0}, pos),
+      maxpos = vector.add({x=0, y=0, z=0}, pos),
+      minvel = {x=-2, y=0.5, z=-2},
+      maxvel = {x=2, y=1, z=2},
+      minacc = {x=-2, y=0.5, z=-2},
+      maxacc = {x=2, y=1, z=2},
+      minexptime = 1,
+      maxexptime = 1.5,
+      minsize = 1.5,
+      maxsize = 3,
+      texture = "particle_chest_filled.png",
+  })
 end

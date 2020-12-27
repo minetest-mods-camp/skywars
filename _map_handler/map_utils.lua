@@ -20,7 +20,7 @@ end
 
 
 minetest.register_node("skywars:barrier", {
-    description = "Unbreakable transparent node",
+    description = skywars.T("Unbreakable without skywars_admin priv transparent node"),
     drawtype = "airlike",
     paramtype = "light",
     sunlight_propagates = true,

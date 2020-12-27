@@ -16,6 +16,11 @@ Select a kit using the item in your inventory=Seleziona un kit usando l'oggetto 
 Kit Selector=Selettore Kit
 
 
+# Nodes
+
+Unbreakable without skywars_admin priv transparent node=Nodo trasparente ed indistruttibile senza il permesso skywars_admin
+
+
 # Arena configuration
 
 Count has to be greater than 0!=La quantità deve essere maggiore di 0
