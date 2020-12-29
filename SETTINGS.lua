@@ -37,6 +37,7 @@ skywars_settings.build_permission = "build"
 
 -- HUDS SETTINGS --
 
+
 -- Real coordinates:
 -- a unit of measurement which is roughly around 64 pixels, but
 -- varies based on the screen density and scaling settings of the client.
@@ -71,6 +72,44 @@ skywars_settings.buttons_width = 1.8
 -- The buttons height in real coordinates.
 skywars_settings.buttons_height = 1.6
 
+-- The items importances that are used by the auto equip system:
+-- when a player takes an item from a chest, if it has a greater
+-- importance and it's in the same group of the one in the hotbar,
+-- the latter gets replaced.
+skywars_settings.items_importances = {
+    pickaxe = {
+        ["default:pick_wood"] = 0,
+        ["default:pick_stone"] = 1,
+        ["default:pick_bronze"] = 2,
+        ["default:pick_steel"] = 3,
+        ["default:pick_diamond"] = 4,
+        ["default:pick_mese"] = 5,
+    },
+    sword = {
+        ["default:sword_wood"] = 0,
+        ["default:sword_stone"] = 1,
+        ["default:sword_bronze"] = 2,
+        ["default:sword_steel"] = 3,
+        ["default:sword_diamond"] = 4,
+        ["default:sword_mese"] = 5,
+    },
+    shovel = {
+        ["default:shovel_wood"] = 0,
+        ["default:shovel_stone"] = 1,
+        ["default:shovel_bronze"] = 2,
+        ["default:shovel_steel"] = 3,
+        ["default:shovel_diamond"] = 4,
+        ["default:shovel_mese"] = 5,
+    },
+    axe = {
+        ["default:axe_wood"] = 0,
+        ["default:axe_stone"] = 1,
+        ["default:axe_bronze"] = 2,
+        ["default:axe_steel"] = 3,
+        ["default:axe_diamond"] = 4,
+        ["default:axe_mese"] = 5,
+    }
+}
 
 
 
@@ -91,7 +130,7 @@ skywars_settings.remove_armors_on_join = true
 
 -- The armors importances that are used by the auto equip system:
 -- when a player takes an armor from a chest, if it has a greater
--- importance that the already equipped one the latter gets replaced.
+-- importance that the already equipped one, the latter gets replaced.
 -- If the armor name contains one of this materials then the
 -- corresponding importance will be associated with it.
 skywars_settings.armors_importances = {
