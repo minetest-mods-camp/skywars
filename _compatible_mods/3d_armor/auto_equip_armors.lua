@@ -72,7 +72,7 @@ end
 
 function get_armor_importance(armor_name)
     for material, importance in pairs(skywars_settings.armors_importances) do
-        if armor_name:match(material) then
+        if armor_name:find(material) then
             return importance
         end
     end

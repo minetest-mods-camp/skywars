@@ -149,7 +149,7 @@ end)
 
 
 arena_lib.on_enable("skywars", function(arena, pl_name)
-  local fast_enable = pl_name:match("@") 
+  local fast_enable = pl_name:find("@") 
   local arena_lib_translator = minetest.get_translator("arena_lib")
   pl_name = pl_name:gsub("@", "")
 

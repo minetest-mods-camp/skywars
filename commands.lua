@@ -190,6 +190,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
 
+        -- Removing all the treasures with that name.
         while found[1] do
             found[1] = false
             for i, treasure in pairs(arena.treasures) do
@@ -219,6 +220,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
             return
         end
 
+        -- Removing all the treasures with that name.
         while found[1] do
             found[1] = false
             for i, treasure in pairs(arena.treasures) do
@@ -313,7 +315,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
         skywars.print_msg(sender, skywars.T("Treasures list:"))
         for i=1, #arena.treasures do
             local treasure = arena.treasures[i]
-            if treasure.name:match(treasure_name) then
+            if treasure.name:find(treasure_name) then
                 skywars.print_msg(sender, from_treasure_to_string(treasure)  .. "\n\n")
             end
         end

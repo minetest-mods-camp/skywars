@@ -54,8 +54,8 @@ function generate_particles(pos)
       maxacc = {x=2, y=1, z=2},
       minexptime = 1,
       maxexptime = 1.5,
-      minsize = 1.5,
-      maxsize = 3,
+      minsize = 5.5,
+      maxsize = 6.5,
       texture = "particle_chest_filled.png",
   })
 end
