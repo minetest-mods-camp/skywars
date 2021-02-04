@@ -930,7 +930,7 @@ end, {
         ADMIN COMMANDS
         (Use /help skywars to read it all)
 
-        Arena_lib:
+    Arena_lib:
 
         - create <arena name> [min players] [max players]
         - edit <arena name>
@@ -944,11 +944,20 @@ end, {
         - disable <arena name>
 
 
-        Skywars:
+    Skywars:
 
         - tutorial
+
+
+        MAP:
+        
         - pos1 <arena name>
         - pos2 <arena name>
+        - reset <arena name>
+
+
+        TREASURES:
+
         - addtreasure <arena name> <item> <count> <preciousness> 
           <rarity (min 1.0, max 10.0)> 
         - addtreasure hand <arena name> <preciousness>
@@ -962,13 +971,20 @@ end, {
         - removetreasure hand <arena name>
         - removetreasure id <arena name> <treasure id>
         - copytreasures <(from) arena name> <(to) arena name>
+
+
+        CHESTS:
+
         - addchest <min_preciousness> <max_preciousness> <min_treasures_amount (min. 1)>
           <max_treasures_amount>
         - getchests <arena name>
         - inspect: gives you information about the chest you're looking at
         - removechest
         - removechest id <arena name> <id>
-        - reset <arena name>
+
+
+        KITS:
+
         - createkit <kit name> <texture name>
         - deletekit <kit name>
         - additem <kit name> <item> <count>
@@ -984,7 +1000,7 @@ end, {
         - copykits <(from) arena name> <(to) arena name>
 
 
-        Debug (don't use them if you don't know what you're doing):
+        DEBUG (don't use them if you don't know what you're doing):
 
         - clearchangednodes <arena name>: clears the changed nodes table of each map without resetting them
         - getpos
