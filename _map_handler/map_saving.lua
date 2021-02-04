@@ -68,26 +68,41 @@ end
 
 
 function skywars.save_nodes_with_inventories(arena)
-    local maps = skywars.load_table("maps")
-
     skywars.load_mapblocks(arena)
+
+    local maps = skywars.load_table("maps")
+    local manip = minetest.get_voxel_manip()
+	local emerged_pos1, emerged_pos2 = manip:read_from_map(arena.min_pos, arena.max_pos)
+	local area = VoxelArea:new({MinEdge=emerged_pos1, MaxEdge=emerged_pos2})
+    local nodes = manip:get_data()
+    local get_inventory = minetest.get_inventory
+    local get_name_from_content_id = minetest.get_name_from_content_id
+    local serialize = minetest.serialize
+    local get_node = minetest.get_node
+
     initialize_map_data(maps, arena)
     maps[arena.name].always_to_be_reset_nodes = {}
-    skywars.overwrite_table("maps", maps)
 
-    skywars.iterate_area_nodes(arena.min_pos, arena.max_pos, function(node, node_pos)
+    -- Saving every node with an inventory.
+	for i in area:iterp(emerged_pos1, emerged_pos2) do
+        local node_pos = area:position(i)
         local location = {type="node", pos=node_pos}
-        local node_inv = minetest.get_inventory(location)
 
-        if node_inv then
-            save_node(arena, node_pos, node, "has_inventory")
+        if get_inventory(location) then
+            local node = get_node(node_pos)
+            local serialized_pos = serialize(node_pos)
+ 
+            maps[arena.name].always_to_be_reset_nodes[serialized_pos] = true
+            maps[arena.name].changed_nodes[serialized_pos] = node
         end
-    end)
+	end
+
+    skywars.overwrite_table("maps", maps)
 end
 
 
 
-function save_node(arena, pos, node, has_inventory)
+function save_node(arena, pos, node)
     local maps = skywars.load_table("maps")
     local serialized_pos = minetest.serialize(pos)
 
@@ -97,13 +112,8 @@ function save_node(arena, pos, node, has_inventory)
     -- If this block has not been changed yet then save it.
     if maps[arena.name].changed_nodes[serialized_pos] == nil then
         maps[arena.name].changed_nodes[serialized_pos] = node
+        skywars.overwrite_table("maps", maps)
     end
-
-    if has_inventory then
-        maps[arena.name].always_to_be_reset_nodes[serialized_pos] = true
-    end
-
-    skywars.overwrite_table("maps", maps)
 end
 
 

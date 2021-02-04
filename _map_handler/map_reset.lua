@@ -1,6 +1,9 @@
 local function delete_drops() end
 local function async_reset_map() end
 local function reset_node_inventory() end
+local deserialize = minetest.deserialize
+local add_node = minetest.add_node
+local get_node = minetest.get_node
 local on_step = minetest.registered_entities["__builtin:item"].on_step
 minetest.registered_entities["__builtin:item"].match_id = -2
 
@@ -59,8 +62,8 @@ function async_reset_map(arena, debug, recursive_data)
     arena.is_resetting = true
     for serialized_pos, node in pairs(original_nodes_to_reset) do
         if current_index > last_index then
-            local pos = minetest.deserialize(serialized_pos)
-            minetest.add_node(pos, node)
+            local pos = deserialize(serialized_pos)
+            add_node(pos, node)
             reset_node_inventory(pos)
         end
         -- If more than nodes_per_tick nodes have been reset this cycle.
@@ -95,8 +98,8 @@ function async_reset_map(arena, debug, recursive_data)
         end
         
         local old_node = original_nodes_to_reset[serialized_pos]
-        local pos = minetest.deserialize(serialized_pos)
-        local current_node = minetest.get_node(pos)
+        local pos = deserialize(serialized_pos)
+        local current_node = get_node(pos)
         local is_old_node_still_reset = (current_node.name == old_node.name)
 
         -- Checking if the node was modified again DURING the reset process but 

@@ -167,9 +167,11 @@ arena_lib.on_enable("skywars", function(arena, pl_name)
   if not fast_enable then
     skywars.print_msg(pl_name, skywars.T("The enabling process may take a few moments, please wait..."))
     skywars.save_nodes_with_inventories(arena)
+  else
+    -- arena_lib, usually, sends this message using pl_name passed in the enable function.
+    -- but, since there's a "@" at the end of it, it won't get recognized.
+    skywars.print_msg(pl_name, arena_lib_translator("Arena @1 successfully enabled", arena.name))
   end
-
-  skywars.print_msg(pl_name, arena_lib_translator("Arena @1 successfully enabled", arena.name))
 
   return true
 end)
