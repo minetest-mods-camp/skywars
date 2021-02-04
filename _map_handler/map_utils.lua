@@ -4,7 +4,7 @@ function skywars.kill_players_out_map(arena)
         local pl_pos = player:get_pos()
         local map_area = VoxelArea:new{MinEdge = arena.min_pos, MaxEdge = arena.max_pos}
 
-        if map_area:contains(pl_pos.x, pl_pos.y, pl_pos.z) == false then
+        if not map_area:contains(pl_pos.x, pl_pos.y, pl_pos.z) then
             player:set_hp(0)
         end
     end

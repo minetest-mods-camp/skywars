@@ -20,6 +20,7 @@ minetest.registered_entities["__builtin:item"].on_step = function(self, dtime, m
     local arena = skywars.get_arena_by_pos(pos)
 
     if arena and arena.match_id then
+        -- If the drop has not been initializated yet.
         if self.match_id == -2 then 
             self.match_id = arena.match_id
         elseif self.match_id ~= arena.match_id then

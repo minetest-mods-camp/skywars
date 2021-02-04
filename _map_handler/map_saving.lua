@@ -2,10 +2,12 @@ local function save_node() end
 
 
 minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack, pointed_thing)
-    local arena = arena_lib.get_arena_by_player(player:get_player_name())
+    local pl_name = player:get_player_name()
+    local arena = arena_lib.get_arena_by_player(pl_name)
+    if arena_lib.get_mod_by_player(pl_name) ~= "skywars" then return end
     save_node(arena, pos, oldnode)
 
-    if arena == nil then 
+    if not arena then 
         arena = skywars.get_arena_by_pos(pos)
         if arena and arena.enabled then 
             save_node(arena, pos, oldnode)
@@ -16,7 +18,9 @@ end)
 
 
 minetest.register_on_dignode(function(pos, oldnode, player)
-    local arena = arena_lib.get_arena_by_player(player:get_player_name())
+    local pl_name = player:get_player_name()
+    local arena = arena_lib.get_arena_by_player(pl_name)
+    if arena_lib.get_mod_by_player(pl_name) ~= "skywars" then return end
     save_node(arena, pos, oldnode)
 
     if arena == nil then 
@@ -65,7 +69,10 @@ end
 
 function skywars.save_nodes_with_inventories(arena)
     local maps = skywars.load_table("maps")
+
+    skywars.load_mapblocks(arena)
     initialize_map_data(maps, arena)
+    maps[arena.name].always_to_be_reset_nodes = {}
     skywars.overwrite_table("maps", maps)
 
     skywars.iterate_area_nodes(arena.min_pos, arena.max_pos, function(node, node_pos)
@@ -89,12 +96,14 @@ function save_node(arena, pos, node, has_inventory)
 
     -- If this block has not been changed yet then save it.
     if maps[arena.name].changed_nodes[serialized_pos] == nil then
-        if has_inventory then
-            maps[arena.name].always_to_be_reset_nodes[serialized_pos] = true
-        end
         maps[arena.name].changed_nodes[serialized_pos] = node
-        skywars.overwrite_table("maps", maps)
     end
+
+    if has_inventory then
+        maps[arena.name].always_to_be_reset_nodes[serialized_pos] = true
+    end
+
+    skywars.overwrite_table("maps", maps)
 end
 
 

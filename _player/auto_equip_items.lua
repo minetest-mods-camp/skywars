@@ -17,7 +17,7 @@ function skywars.auto_equip_item(player, picked_itemstack, picked_itemstack_slot
         local hotbar_item_name = hotbar_itemstack:get_name()
         local best_item_name = compare_items(hotbar_item_name, picked_item_name)
         -- Returning if the picked item is in the hotbar already.
-        if not picked_item_name == hotbar_item_name then return end
+        if picked_item_name == hotbar_item_name then return end
 
         if best_item_name == picked_item_name then
             local first_empty_slot = picked_itemstack_slot or get_first_empty_slot(hotbar)
