@@ -17,9 +17,10 @@ function skywars.test_async_speed(arena)
     local area_size = 10
     local min_pos = arena.min_pos
     local max_pos = vector.add(min_pos, area_size)
+    local set_node = minetest.set_node
 
     skywars.iterate_area_nodes(min_pos, max_pos, function(node, node_pos)
-        minetest.set_node(node_pos, {name="skywars:test_node"})
+        set_node(node_pos, {name="skywars:test_node"})
     end)
 
     minetest.after(1, function() skywars.reset_map(arena, true) end)
@@ -86,19 +87,3 @@ function get_nodes_at_arena_edges(arena)
 
     return node1, node2
 end
-
-
-
-minetest.register_node("skywars:test_node", {
-    description = "Skywars test node, don't use it!",
-    groups = {crumbly=1, soil=1, dig_immediate=3},
-    tiles = {"sw_node_test.png"},
-})
-
-
-
-minetest.register_on_mods_loaded(function() 
-    for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
-      arena.is_resetting = false
-    end
-end)

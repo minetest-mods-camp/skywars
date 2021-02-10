@@ -27,7 +27,7 @@ end
 
 
 
--- reordering the corners positions so that min_pos is smaller than max_pos
+-- Reordering the corners positions so that min_pos is smaller than max_pos.
 function skywars.reorder_positions(min_pos, max_pos)
     local temp
 

@@ -71,11 +71,9 @@ function compare_items(item1, item2)
     local item1_category, item1_importance = get_item_importance(item1)
     local item2_category, item2_importance = get_item_importance(item2)
 
-    if item1_category and item2_category then
-        if item1_category == item2_category then
-            if item1_importance > item2_importance then return item1
-            elseif item1_importance < item2_importance then return item2 end
-        end
+    if (item1_category and item2_category) and (item1_category == item2_category) then
+        if item1_importance > item2_importance then return item1
+        elseif item1_importance < item2_importance then return item2 end
     end
 end
 

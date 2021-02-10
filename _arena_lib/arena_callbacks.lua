@@ -3,6 +3,11 @@ local function remove_privs() end
 local function create_barrier_cage() end
 local function keep_teleporting() end
 local function drop_items() end
+local update_timer_hud = skywars.update_timer_hud
+local kill_players_out_map = skywars.kill_players_out_map
+local add_node = minetest.add_node
+local get_node = minetest.get_node
+local remove_node = minetest.remove_node
 
 
 minetest.register_on_joinplayer(function(player)
@@ -45,7 +50,7 @@ arena_lib.on_start("skywars", function(arena)
     skywars.generate_HUD(arena, pl_name)
     player:set_physics_override({
       speed = skywars_settings.player_speed, 
-      gravity=1, 
+      gravity=1,
       jump=1
     })
     skywars.activate_enderpearl(player, arena)
@@ -149,7 +154,7 @@ end)
 
 
 arena_lib.on_enable("skywars", function(arena, pl_name)
-  local fast_enable = pl_name:find("@") 
+  local fast_enable = pl_name:find("@")
   local arena_lib_translator = minetest.get_translator("arena_lib")
   pl_name = pl_name:gsub("@", "")
 
@@ -190,8 +195,8 @@ end)
 
 
 arena_lib.on_time_tick("skywars", function(arena)
-  skywars.kill_players_out_map(arena)
-  skywars.update_timer_hud(arena)
+  kill_players_out_map(arena)
+  update_timer_hud(arena)
 end)
 
 
@@ -207,7 +212,7 @@ function add_privs(pl_name)
   local privs = minetest.get_player_privs(pl_name)
   local player = minetest.get_player_by_name(pl_name)
   
-  -- preventing players with noclip to fall when placing nodes
+  -- Preventing players with noclip to fall when placing nodes.
   if privs.noclip then
     player:get_meta():set_string("sw_can_noclip", "true")
     privs.noclip = nil
@@ -256,10 +261,11 @@ function create_barrier_cage(player)
 
     for _, relative_pos in pairs(glass_nodes) do
       local node_pos = vector.round(vector.add(original_pos, relative_pos))
-      if minetest.get_node(node_pos).name == "air" then 
-        minetest.add_node(node_pos, {name="skywars:barrier"})
+
+      if get_node(node_pos).name == "air" then 
+        add_node(node_pos, {name="skywars:barrier"})
         minetest.after(skywars_settings.loading_time, function()         
-          minetest.remove_node(node_pos)
+          remove_node(node_pos)
         end)
       end
     end
@@ -276,8 +282,8 @@ function drop_items(player)
 
   for i, itemstack in pairs(inv) do
     local pl_pos = player:get_pos()
-    local random_x = pl_pos.x + math.random() + math.random(-noise, noise-1)
-    local random_z = pl_pos.z + math.random() + math.random(-noise, noise-1)
+    local random_x = pl_pos.x + math.random() + math.random(-noise-1, noise-1)
+    local random_z = pl_pos.z + math.random() + math.random(-noise-1, noise-1)
     local random_pos = {
       x = random_x, 
       y = pl_pos.y,

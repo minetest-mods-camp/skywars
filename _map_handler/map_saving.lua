@@ -1,4 +1,5 @@
 local function save_node() end
+local get_inventory = minetest.get_inventory
 
 
 minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack, pointed_thing)
@@ -73,7 +74,8 @@ function skywars.save_nodes_with_inventories(arena)
     local maps = skywars.load_table("maps")
     local manip = minetest.get_voxel_manip()
 	local emerged_pos1, emerged_pos2 = manip:read_from_map(arena.min_pos, arena.max_pos)
-	local area = VoxelArea:new({MinEdge=emerged_pos1, MaxEdge=emerged_pos2})
+	local emerged_area = VoxelArea:new({MinEdge=emerged_pos1, MaxEdge=emerged_pos2})
+    local original_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
     local nodes = manip:get_data()
     local get_inventory = minetest.get_inventory
     local get_name_from_content_id = minetest.get_name_from_content_id
@@ -84,11 +86,11 @@ function skywars.save_nodes_with_inventories(arena)
     maps[arena.name].always_to_be_reset_nodes = {}
 
     -- Saving every node with an inventory.
-	for i in area:iterp(emerged_pos1, emerged_pos2) do
-        local node_pos = area:position(i)
-        local location = {type="node", pos=node_pos}
+	for i in emerged_area:iterp(emerged_pos1, emerged_pos2) do
+        local node_pos = emerged_area:position(i)
+        local location = {type = "node", pos = node_pos}
 
-        if get_inventory(location) then
+        if original_area:containsp(node_pos) and get_inventory(location) then
             local node = get_node(node_pos)
             local serialized_pos = serialize(node_pos)
  

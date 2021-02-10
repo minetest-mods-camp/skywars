@@ -1,5 +1,8 @@
 -- Select the treasures to put in the chests inventory
 local mod = "skywars"
+local random = math.random
+local ceil = math.ceil
+local table_insert = table.insert
 local function treasure_to_itemstack() end
 
 
@@ -35,13 +38,13 @@ end
 function skywars.select_random_treasures(chest, arena)
 	local preciousness_filtered_treasures = {}
 	local generated_treasures = {}
-	local treasure_amount = math.ceil(math.random(chest.min_treasures, chest.max_treasures))
+	local treasure_amount = ceil(random(chest.min_treasures, chest.max_treasures))
 	local treasures_to_be_generated = treasure_amount
 
 	for i = 1, #arena.treasures do
 		local treasure = arena.treasures[i]
 		if treasure.preciousness >= chest.min_preciousness and treasure.preciousness <= chest.max_preciousness then
-			table.insert(preciousness_filtered_treasures, treasure)
+			table_insert(preciousness_filtered_treasures, treasure)
 		end
 	end
 
@@ -49,13 +52,13 @@ function skywars.select_random_treasures(chest, arena)
 		for i = 1, treasures_to_be_generated do
 			if not generated_treasures[i] then 
 				for j = 1, #preciousness_filtered_treasures do
-					local random = math.random(1, 100)
+					local random = random(1, 100)
 					local treasure_itemstack = treasure_to_itemstack(preciousness_filtered_treasures[j])
 
 					if treasure_itemstack == "error" then return generated_treasures end
 
 					if treasure_itemstack and random % (preciousness_filtered_treasures[j].rarity * 10) == 0 then
-						table.insert(generated_treasures, treasure_itemstack)
+						table_insert(generated_treasures, treasure_itemstack)
 						break
 					end
 				end

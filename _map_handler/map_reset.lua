@@ -4,6 +4,7 @@ local function reset_node_inventory() end
 local deserialize = minetest.deserialize
 local add_node = minetest.add_node
 local get_node = minetest.get_node
+local get_inventory = minetest.get_inventory
 local on_step = minetest.registered_entities["__builtin:item"].on_step
 minetest.registered_entities["__builtin:item"].match_id = -2
 
@@ -123,10 +124,18 @@ end
 
 function reset_node_inventory(pos)
     local location = {type="node", pos = pos}
-    local inv = minetest.get_inventory(location)
+    local inv = get_inventory(location)
     if inv then 
         for index, list in ipairs(inv:get_lists()) do
             inv:set_list(list, {}) 
         end
     end
 end
+
+
+
+minetest.register_on_mods_loaded(function() 
+    for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
+      arena.is_resetting = false
+    end
+end)

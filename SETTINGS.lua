@@ -51,6 +51,21 @@ skywars_settings.background_height = 11
 
 -- The x position offset from the background border of the first buttons row
 -- in real coordinates, the bigger it is the righter the row will be placed.
+--[[
+              1.7
+       |------|--------------------> x
+       |      |
+	   |  * * * Background  * * *
+       |  *   |                 *
+       |  *   |                 *  
+   6.6 ---*-- Button1 Button2   *  --> FIRST ROW
+       |  *   Button3 Button4   *
+       |  *                     *
+       |  *                     *
+       |  * * * * * * * * * * * *
+       |
+	   \/ y     
+]]
 skywars_settings.starting_x = 1.7
 
 -- The y position offset from the background border of the first buttons row
@@ -71,6 +86,12 @@ skywars_settings.buttons_width = 1.8
 
 -- The buttons height in real coordinates.
 skywars_settings.buttons_height = 1.6
+
+
+
+
+-- AUTO EQUIP. SYSTEM --
+
 
 -- The items importances that are used by the auto equip system:
 -- when a player takes an item from a chest, if it has a greater
@@ -110,6 +131,7 @@ skywars_settings.items_importances = {
         ["default:axe_mese"] = 5,
     }
 }
+
 
 
 

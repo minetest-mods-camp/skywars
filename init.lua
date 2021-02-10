@@ -32,6 +32,7 @@ arena_lib.register_minigame("skywars", {
 
 
 dofile(minetest.get_modpath("skywars") .. "/chatcmdbuilder.lua")
+dofile(minetest.get_modpath("skywars") .. "/nodes.lua")
 dofile(minetest.get_modpath("skywars") .. "/utils.lua")
 dofile(minetest.get_modpath("skywars") .. "/_map_handler/map_utils.lua")
 dofile(minetest.get_modpath("skywars") .. "/_map_handler/map_reset.lua")

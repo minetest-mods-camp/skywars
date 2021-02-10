@@ -1,10 +1,11 @@
 local function fill_chests() end
 local function generate_particles() end
 
-
 function skywars.place_chests(arena)
+  local add_node = minetest.add_node
+
   for i=1, #arena.chests do
-    minetest.add_node(arena.chests[i].pos, {name="default:chest"})
+    add_node(arena.chests[i].pos, {name="default:chest"})
   end
   fill_chests(arena)
 end
@@ -26,9 +27,12 @@ end
 
 
 function fill_chests(arena)
+  local get_meta = minetest.get_meta
+  local select_random_treasures = skywars.select_random_treasures
+
   for i, chest in pairs(arena.chests) do
-    local treasures = skywars.select_random_treasures(chest, arena)
-    local meta = minetest.get_meta(chest.pos)
+    local treasures = select_random_treasures(chest, arena)
+    local meta = get_meta(chest.pos)
     local inv = meta:get_inventory()
 
     inv:set_list("main", {})
