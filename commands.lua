@@ -955,7 +955,7 @@ end, {
         - pos2 <arena name>
         - reset <arena name>
 
-
+        
         TREASURES:
 
         - addtreasure <arena name> <item> <count> <preciousness> 

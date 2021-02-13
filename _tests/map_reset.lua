@@ -74,9 +74,6 @@ function place_nodes_at_arena_edges(arena)
 
     minetest.set_node(arena.min_pos, {name="skywars:test_node"})
     minetest.set_node(arena.max_pos, {name="skywars:test_node"})
-
-    node1 = minetest.get_node(arena.min_pos)
-    node2 = minetest.get_node(arena.max_pos)
 end
 
 

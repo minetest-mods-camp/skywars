@@ -32,6 +32,7 @@ arena_lib.register_minigame("skywars", {
 
 
 dofile(minetest.get_modpath("skywars") .. "/chatcmdbuilder.lua")
+dofile(minetest.get_modpath("skywars") .. "/_storage/storage_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/nodes.lua")
 dofile(minetest.get_modpath("skywars") .. "/utils.lua")
 dofile(minetest.get_modpath("skywars") .. "/_map_handler/map_utils.lua")
@@ -42,7 +43,6 @@ dofile(minetest.get_modpath("skywars") .. "/_map_handler/chests/treasures.lua")
 dofile(minetest.get_modpath("skywars") .. "/_tests/map_reset.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/enderpearl/init_enderpearl.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/3d_armor/init_3d_armor.lua")
-dofile(minetest.get_modpath("skywars") .. "/_storage/storage_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/_hud/hud_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/commands.lua")
 dofile(minetest.get_modpath("skywars") .. "/_arena_lib/arena_callbacks.lua")

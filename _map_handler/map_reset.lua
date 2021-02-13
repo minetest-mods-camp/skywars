@@ -1,6 +1,8 @@
 local function delete_drops() end
 local function async_reset_map() end
 local function reset_node_inventory() end
+local get_position_from_hash =  minetest.get_position_from_hash
+local hash_node_position = minetest.hash_node_position
 local deserialize = minetest.deserialize
 local add_node = minetest.add_node
 local get_node = minetest.get_node
@@ -61,9 +63,10 @@ function async_reset_map(arena, debug, recursive_data)
     -- Resets a node if it hasn't been reset yet and if it resets more than "nodes_per_tick" 
     -- nodes it invokes this function again after one step.
     arena.is_resetting = true
-    for serialized_pos, node in pairs(original_nodes_to_reset) do
+    for hash_pos, node in pairs(original_nodes_to_reset) do
         if current_index > last_index then
-            local pos = deserialize(serialized_pos)
+            local pos = get_position_from_hash(hash_pos)
+
             add_node(pos, node)
             reset_node_inventory(pos)
         end
@@ -92,21 +95,22 @@ function async_reset_map(arena, debug, recursive_data)
     end
     local current_nodes_to_reset = current_maps[arena.name].changed_nodes
 
-    for serialized_pos, node in pairs(current_nodes_to_reset) do
-        local always_to_be_reset = original_maps[arena.name].always_to_be_reset_nodes[serialized_pos]
-        if not original_nodes_to_reset[serialized_pos] or always_to_be_reset then 
+    for hash_pos, node in pairs(current_nodes_to_reset) do
+        local always_to_be_reset = original_maps[arena.name].always_to_be_reset_nodes[hash_pos]
+        if not original_nodes_to_reset[hash_pos] or always_to_be_reset then
             goto continue
         end
         
-        local old_node = original_nodes_to_reset[serialized_pos]
-        local pos = deserialize(serialized_pos)
+        local old_node = original_nodes_to_reset[hash_pos]
+        local pos = get_position_from_hash(hash_pos)
+
         local current_node = get_node(pos)
         local is_old_node_still_reset = (current_node.name == old_node.name)
 
         -- Checking if the node was modified again DURING the reset process but 
         -- AFTER being reset already.
         if is_old_node_still_reset then
-            current_nodes_to_reset[serialized_pos] = nil
+            current_nodes_to_reset[hash_pos] = nil
         end
 
         ::continue::

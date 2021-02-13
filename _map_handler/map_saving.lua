@@ -1,5 +1,6 @@
 local function save_node() end
 local get_inventory = minetest.get_inventory
+local hash_node_position = minetest.hash_node_position
 
 
 minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack, pointed_thing)
@@ -37,9 +38,10 @@ end)
 -- Minetest functions overrides.
 
 local set_node = minetest.set_node
+local get_node = minetest.get_node
 function minetest.set_node(pos, node)
     local arena = skywars.get_arena_by_pos(pos)
-    local oldnode = minetest.get_node(pos)
+    local oldnode = get_node(pos)
     
     if arena and arena.enabled then 
         save_node(arena, pos, oldnode) 
@@ -76,26 +78,26 @@ function skywars.save_nodes_with_inventories(arena)
 	local emerged_pos1, emerged_pos2 = manip:read_from_map(arena.min_pos, arena.max_pos)
 	local emerged_area = VoxelArea:new({MinEdge=emerged_pos1, MaxEdge=emerged_pos2})
     local original_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
-    local nodes = manip:get_data()
     local get_inventory = minetest.get_inventory
-    local get_name_from_content_id = minetest.get_name_from_content_id
-    local serialize = minetest.serialize
+    local hash_node_position = minetest.hash_node_position
     local get_node = minetest.get_node
 
     initialize_map_data(maps, arena)
-    maps[arena.name].always_to_be_reset_nodes = {}
+    local map = maps[arena.name]
+    map.always_to_be_reset_nodes = {}
+    map.changed_nodes = {}
 
     -- Saving every node with an inventory.
 	for i in emerged_area:iterp(emerged_pos1, emerged_pos2) do
         local node_pos = emerged_area:position(i)
+        local hash_pos = hash_node_position(node_pos)
         local location = {type = "node", pos = node_pos}
 
         if original_area:containsp(node_pos) and get_inventory(location) then
             local node = get_node(node_pos)
-            local serialized_pos = serialize(node_pos)
- 
-            maps[arena.name].always_to_be_reset_nodes[serialized_pos] = true
-            maps[arena.name].changed_nodes[serialized_pos] = node
+
+            map.always_to_be_reset_nodes[hash_pos] = true
+            map.changed_nodes[hash_pos] = node
         end
 	end
 
@@ -106,14 +108,14 @@ end
 
 function save_node(arena, pos, node)
     local maps = skywars.load_table("maps")
-    local serialized_pos = minetest.serialize(pos)
+    local hash_pos = hash_node_position(vector.round(pos))
 
     if not arena then return end
     initialize_map_data(maps, arena)
 
     -- If this block has not been changed yet then save it.
-    if maps[arena.name].changed_nodes[serialized_pos] == nil then
-        maps[arena.name].changed_nodes[serialized_pos] = node
+    if not maps[arena.name].changed_nodes[hash_pos] then
+        maps[arena.name].changed_nodes[hash_pos] = node
         skywars.overwrite_table("maps", maps)
     end
 end
@@ -126,3 +128,33 @@ function initialize_map_data(maps, arena)
     if not maps[arena.name].changed_nodes then maps[arena.name].changed_nodes = {} end
     if not maps[arena.name].always_to_be_reset_nodes then maps[arena.name].always_to_be_reset_nodes = {} end
 end
+
+
+
+--
+-- ! LEGACY SUPPORT FOR SERIALIZED POSITIONS.
+-- Converting all the serialized positions into
+-- hashes.
+--
+local maps = skywars.load_table("maps")
+
+for arena_name, map in pairs(maps) do
+    initialize_map_data(maps, {name = arena_name})
+
+    for pos, node in pairs(map.changed_nodes) do
+        if minetest.deserialize(pos) then
+            local hash_pos = minetest.hash_node_position()
+            map.changed_nodes[pos] = nil
+            map.changed_nodes[hash_pos] = node
+        end
+    end
+    for pos, bool in pairs(map.always_to_be_reset_nodes) do
+        if type(pos) == "string" then
+            local hash_pos = minetest.hash_node_position(minetest.deserialize(pos))
+            map.always_to_be_reset_nodes[pos] = nilf
+            map.always_to_be_reset_nodes[hash_pos] = bool
+        end
+    end
+end
+
+skywars.overwrite_table("maps", maps)
