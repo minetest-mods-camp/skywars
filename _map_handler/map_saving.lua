@@ -143,7 +143,7 @@ for arena_name, map in pairs(maps) do
 
     for pos, node in pairs(map.changed_nodes) do
         if minetest.deserialize(pos) then
-            local hash_pos = minetest.hash_node_position()
+            local hash_pos = minetest.hash_node_position(minetest.deserialize(pos))
             map.changed_nodes[pos] = nil
             map.changed_nodes[hash_pos] = node
         end
