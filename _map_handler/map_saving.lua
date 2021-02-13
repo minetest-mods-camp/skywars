@@ -151,7 +151,7 @@ for arena_name, map in pairs(maps) do
     for pos, bool in pairs(map.always_to_be_reset_nodes) do
         if minetest.deserialize(pos) then
             local hash_pos = minetest.hash_node_position(minetest.deserialize(pos))
-            map.always_to_be_reset_nodes[pos] = nilf
+            map.always_to_be_reset_nodes[pos] = nil
             map.always_to_be_reset_nodes[hash_pos] = bool
         end
     end
