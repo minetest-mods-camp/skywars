@@ -25,7 +25,7 @@ arena_lib.register_minigame("skywars", {
     kits = {},
     is_resetting = false
   },
-  time_mode = 2,
+  time_mode = "decremental",
   disabled_damage_types = disabled_damage_types_
 })
 
@@ -37,14 +37,14 @@ dofile(minetest.get_modpath("skywars") .. "/utils.lua")
 dofile(minetest.get_modpath("skywars") .. "/_map_handler/map_utils.lua")
 dofile(minetest.get_modpath("skywars") .. "/_map_handler/map_reset.lua")
 dofile(minetest.get_modpath("skywars") .. "/_map_handler/map_saving.lua")
+dofile(minetest.get_modpath("skywars") .. "/_map_handler/chests/chest_setter.lua")
+dofile(minetest.get_modpath("skywars") .. "/_map_handler/chests/treasures.lua")
 dofile(minetest.get_modpath("skywars") .. "/_tests/map_reset.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/enderpearl/init_enderpearl.lua")
 dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/3d_armor/init_3d_armor.lua")
 dofile(minetest.get_modpath("skywars") .. "/_storage/storage_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/_hud/hud_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/commands.lua")
-dofile(minetest.get_modpath("skywars") .. "/_chest_handler/chest_setter.lua")
-dofile(minetest.get_modpath("skywars") .. "/_chest_handler/treasures.lua")
 dofile(minetest.get_modpath("skywars") .. "/_arena_lib/arena_callbacks.lua")
 dofile(minetest.get_modpath("skywars") .. "/_kits/formspec.lua")
 dofile(minetest.get_modpath("skywars") .. "/_kits/kit_items.lua")

@@ -73,9 +73,7 @@ starts, this will set the position to the node you're looking at (not over it).
 To modify a map you must use use /skywars reset <arena name> and then disable 
 the arena, otherwise your changes may get lost.
 Everything you change when the arena's disabled won't be saved, so make
-sure to properly reset your map before doing so (e.g. if when you reset the arena
-flowing lava and water created some stone it won't be reset the first time, so
-you'll have to reset it until the map is clear).
+sure to properly reset your map before doing so.
 
 
 

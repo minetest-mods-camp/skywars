@@ -1,4 +1,3 @@
--- Select the treasures to put in the chests inventory
 local mod = "skywars"
 local random = math.random
 local ceil = math.ceil
