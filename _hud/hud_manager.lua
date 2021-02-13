@@ -91,6 +91,8 @@ end
 function skywars.remove_HUD(arena, pl_name)
     local player = get_player_by_name(pl_name)
     
+    if not saved_huds[pl_name] then return end
+    
     for name, id in pairs(saved_huds[pl_name]) do
         if type(id) == "table" then id = id.id end
         player:hud_remove(id)
