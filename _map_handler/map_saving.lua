@@ -142,14 +142,14 @@ for arena_name, map in pairs(maps) do
     initialize_map_data(maps, {name = arena_name})
 
     for pos, node in pairs(map.changed_nodes) do
-        if minetest.deserialize(pos) then
+        if minetest.deserialize(pos) and pos then
             local hash_pos = minetest.hash_node_position(minetest.deserialize(pos))
             map.changed_nodes[pos] = nil
             map.changed_nodes[hash_pos] = node
         end
     end
     for pos, bool in pairs(map.always_to_be_reset_nodes) do
-        if minetest.deserialize(pos) then
+        if minetest.deserialize(pos) and pos then
             local hash_pos = minetest.hash_node_position(minetest.deserialize(pos))
             map.always_to_be_reset_nodes[pos] = nil
             map.always_to_be_reset_nodes[hash_pos] = bool
