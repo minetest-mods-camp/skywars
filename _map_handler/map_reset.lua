@@ -9,6 +9,7 @@ local get_node = minetest.get_node
 local get_inventory = minetest.get_inventory
 local on_step = minetest.registered_entities["__builtin:item"].on_step
 minetest.registered_entities["__builtin:item"].match_id = -2
+minetest.registered_entities["__builtin:item"].last_age = 0
 
 
 function skywars.reset_map(arena, debug, debug_data)
@@ -22,8 +23,15 @@ end
 
 -- Removing drops based on the match_id. 
 minetest.registered_entities["__builtin:item"].on_step = function(self, dtime, moveresult)
+    -- Returning if it passed less than 1s from the last check.
+    if self.age - self.last_age < 1 then 
+        on_step(self, dtime, moveresult)
+        return
+    end
+
     local pos = self.object:get_pos()
     local arena = skywars.get_arena_by_pos(pos)
+    self.last_age = self.age
 
     if arena and arena.match_id then
         -- If the drop has not been initializated yet.
@@ -70,6 +78,7 @@ function async_reset_map(arena, debug, recursive_data)
             add_node(pos, node)
             reset_node_inventory(pos)
         end
+        
         -- If more than nodes_per_tick nodes have been reset this cycle.
         if current_index - last_index >= nodes_per_tick then
             minetest.after(0, function()
@@ -97,6 +106,7 @@ function async_reset_map(arena, debug, recursive_data)
 
     for hash_pos, node in pairs(current_nodes_to_reset) do
         local always_to_be_reset = original_maps[arena.name].always_to_be_reset_nodes[hash_pos]
+        
         if not original_nodes_to_reset[hash_pos] or always_to_be_reset then
             goto continue
         end
