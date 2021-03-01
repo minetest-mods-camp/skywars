@@ -257,7 +257,7 @@ function create_barrier_cage(player)
     }
 
     player:set_physics_override({gravity=0, jump=0})
-    player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
+    player:add_velocity(vector.multiply(player:get_velocity(), -1))
 
     for _, relative_pos in pairs(glass_nodes) do
       local node_pos = vector.round(vector.add(original_pos, relative_pos))
@@ -303,7 +303,7 @@ function keep_teleporting(player, pos, seconds, current_second)
   if current_second > seconds then return end
 
   minetest.after(step, function()
-    player:add_player_velocity(vector.multiply(player:get_player_velocity(), -1))
+    player:add_velocity(vector.multiply(player:get_velocity(), -1))
     player:set_pos(pos)
     keep_teleporting(player, pos, seconds, current_second + step)
   end)

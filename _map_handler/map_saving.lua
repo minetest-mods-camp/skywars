@@ -3,7 +3,7 @@ local get_inventory = minetest.get_inventory
 local hash_node_position = minetest.hash_node_position
 
 
-minetest.register_on_placenode(function(pos, newnode, player, oldnode, itemstack, pointed_thing)
+minetest.register_on_placenode(function(pos, newnode, player, oldnode)
     local pl_name = player:get_player_name()
     local arena = arena_lib.get_arena_by_player(pl_name)
     if arena_lib.get_mod_by_player(pl_name) ~= "skywars" then return end
@@ -113,7 +113,7 @@ function save_node(arena, pos, node)
     if not arena then return end
     initialize_map_data(maps, arena)
 
-    -- If this block has not been changed yet then save it.
+    -- If this node has not been changed yet then save it.
     if not maps[arena.name].changed_nodes[hash_pos] then
         maps[arena.name].changed_nodes[hash_pos] = node
         skywars.overwrite_table("maps", maps)
@@ -128,33 +128,3 @@ function initialize_map_data(maps, arena)
     if not maps[arena.name].changed_nodes then maps[arena.name].changed_nodes = {} end
     if not maps[arena.name].always_to_be_reset_nodes then maps[arena.name].always_to_be_reset_nodes = {} end
 end
-
-
-
---
--- ! LEGACY SUPPORT FOR SERIALIZED POSITIONS.
--- Converting all the serialized positions into
--- hashes.
---
-local maps = skywars.load_table("maps")
-
-for arena_name, map in pairs(maps) do
-    initialize_map_data(maps, {name = arena_name})
-
-    for pos, node in pairs(map.changed_nodes) do
-        if minetest.deserialize(pos) and pos then
-            local hash_pos = minetest.hash_node_position(minetest.deserialize(pos))
-            map.changed_nodes[pos] = nil
-            map.changed_nodes[hash_pos] = node
-        end
-    end
-    for pos, bool in pairs(map.always_to_be_reset_nodes) do
-        if minetest.deserialize(pos) and pos then
-            local hash_pos = minetest.hash_node_position(minetest.deserialize(pos))
-            map.always_to_be_reset_nodes[pos] = nil
-            map.always_to_be_reset_nodes[hash_pos] = bool
-        end
-    end
-end
-
-skywars.overwrite_table("maps", maps)

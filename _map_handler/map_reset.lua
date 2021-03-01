@@ -1,15 +1,14 @@
-local function delete_drops() end
 local function async_reset_map() end
 local function reset_node_inventory() end
+local on_step = minetest.registered_entities["__builtin:item"].on_step
+minetest.registered_entities["__builtin:item"].match_id = -2
+minetest.registered_entities["__builtin:item"].last_age = 0
 local get_position_from_hash =  minetest.get_position_from_hash
 local hash_node_position = minetest.hash_node_position
 local deserialize = minetest.deserialize
 local add_node = minetest.add_node
 local get_node = minetest.get_node
 local get_inventory = minetest.get_inventory
-local on_step = minetest.registered_entities["__builtin:item"].on_step
-minetest.registered_entities["__builtin:item"].match_id = -2
-minetest.registered_entities["__builtin:item"].last_age = 0
 
 
 function skywars.reset_map(arena, debug, debug_data)
