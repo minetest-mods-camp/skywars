@@ -81,6 +81,7 @@ arena_lib.on_end("skywars", function(arena, players)
     remove_privs(pl_name) 
     skywars.remove_HUD(arena, pl_name)
     skywars.remove_armor(player)
+    minetest.close_formspec(pl_name, "")
   end
 end)
 
