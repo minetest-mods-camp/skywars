@@ -67,8 +67,8 @@ function async_reset_map(arena, debug, recursive_data)
     local nodes_per_tick = recursive_data.nodes_per_tick or skywars_settings.nodes_per_tick
     local initial_time = recursive_data.initial_time or minetest.get_us_time()
 
-    -- Resets a node if it hasn't been reset yet and if it resets more than "nodes_per_tick" 
-    -- nodes it invokes this function again after one step.
+    -- Resets a node if it hasn't been reset yet and, if it resets more than "nodes_per_tick" 
+    -- nodes, invokes this function again after one step.
     arena.is_resetting = true
     for hash_pos, node in pairs(original_nodes_to_reset) do
         if current_index > last_index then
@@ -99,13 +99,15 @@ function async_reset_map(arena, debug, recursive_data)
     -- changes made to the latter during the reset.
     local current_maps = skywars.load_table("maps")
     if not current_maps[arena.name] or not current_maps[arena.name].changed_nodes then
-        return 
+        return
     end
     local current_nodes_to_reset = current_maps[arena.name].changed_nodes
 
     for hash_pos, node in pairs(current_nodes_to_reset) do
         local always_to_be_reset = original_maps[arena.name].always_to_be_reset_nodes[hash_pos]
         
+        -- If in the old map this block hadn't been changed or it always has
+        -- to be reset, continue.
         if not original_nodes_to_reset[hash_pos] or always_to_be_reset then
             goto continue
         end

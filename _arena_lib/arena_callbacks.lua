@@ -136,7 +136,6 @@ end)
 
 
 arena_lib.on_disconnect("skywars", function(arena, pl_name)
-  local player = minetest.get_player_by_name(pl_name)
   skywars.update_players_counter(arena, false)
 end)
 

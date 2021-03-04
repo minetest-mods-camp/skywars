@@ -1,6 +1,7 @@
 local saved_huds = {}  -- id = hud
 local get_player_by_name = minetest.get_player_by_name
 
+
 function skywars.generate_HUD(arena, pl_name)
     local player = get_player_by_name(pl_name)
     local players_count_
@@ -113,7 +114,7 @@ function skywars.update_players_counter(arena, players_amount_updated)
     for pl_name in pairs(arena.players) do
         local player = get_player_by_name(pl_name)
 
-        if arena.players_original_amount == nil then return end 
+        if not arena.players_original_amount or not saved_huds[pl_name].players_count then return end 
         
         local players_counter = tostring(arena.players_amount) .. "/" .. tostring(arena.players_original_amount)
         player:hud_change(saved_huds[pl_name].players_count, "text", players_counter)
