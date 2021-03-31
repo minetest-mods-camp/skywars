@@ -1,0 +1,62 @@
+# version 1.1.4
+# author(s): Tirifto
+# reviewer(s):
+# textdomain: skywars
+# @n means "newline"
+# @<number> (@1, @2, ecc) is a value that the mod will pass at runtime
+
+
+# In-game messages
+
+Time is out, the match is over!=Tempo plenumiĝis, ludo finiĝis!
+@1 was killed by @2=@2 mortigis ludanton @1
+@1 killed you with @2 HPs=@1 vin mortigis kun @2 saneroj
+Nobody=Neniu
+Select a kit using the item in your inventory=Elektu ilaron per la portaĵo en via portaĵujo
+Kit Selector=Elektilo de ilaroj
+
+
+# Nodes
+
+Unbreakable without skywars_admin priv transparent node=Travidebla mondero, nerompebla sen la rajto skywars_admin
+
+
+# Arena configuration
+
+Count has to be greater than 0!=Kvanto devas esti super 0!
+Rarity has to be between 1 and 10!=Malofteco devas esti inter 1 kaj 10!
+@1 doesn't exist!=@1 ne ekzistas!
+Your hand is empty!=Via mano malplenas!
+Treasure not found!=Trezoro ne troviĝis!
+Treasures list:=Listo de trezoroj:
+You're not looking at anything!=Vi nenion rigardas!
+The minimum or maximum amount of treasures has to be greater than 0!=La minimuma kaj maksimuma kvantoj de trezoroj devas esti super 0!
+@1 treasures have been copied to @2!=@1 trezoroj kopiiĝis al @2!
+The arenas must be different!=La arenoj devas esti malsamaj!
+ID: @1, name: @2, rarity: @3, preciousness: @4, count: @5=Identigilo: @1, nomo: @2, malofteco: @3, valoreco: @4, kvanto: @5
+Chest removed!=Kesto foriĝis!
+Chest not found!=Kesto ne troviĝis!
+Chest list:=Listo de kestoj:
+The chest already exists!=La kesto jam ekzistas!
+ID: @1, position: @2, preciousness: @3-@4, treasures amount: @5-@6=Identigilo: @1, pozicio: @2, valoreco: @3-@4, kvanto de trezoroj: @5-@6
+Position saved!=Pozicio konserviĝis!
+You didn't set the treasures!=Vi ne agordis la trezorojn!
+You didn't set the chests!=Vi ne agordis la kestojn!
+You didn't set the map corners!=Vi ne agordis angulojn de la mapo!
+@1 must be disabled!=@1 devas esti malŝaltita!
+@1 must be enabled!=@1 devas esti ŝaltita!
+@1 already exists!=@1 jam ekzistas!
+@1 added to @2!=@1 aldoniĝis al @2!
+@1 removed from @2!=@1 foriĝis de @2!
+Kit @1 created!=Ilaro @1 kreiĝis!
+@1 texture set to @2!=Teksturo de @1 agordiĝis al @2!
+Kit @1 deleted!=Ilaro @1 foriĝis!
+Kits list:=Listo de ilaroj:
+@1 items:=@1 portaĵoj:
+Kit not found!=Ilaro ne troviĝis!
+x@1 @2 added to @3!=×@1 @2 aldoniĝis al @3!
+@1 reset!=@1 restariĝis!
+@1 kits have been copied to @2!=@1 ilaroj kopiiĝis al @2!
+Nobody must be in the editor!=Neniu estu en la redaktilo!
+The enabling process may take a few moments, please wait...=La proceso de ŝaltado eble daŭros kelkan tempon, bonvolu atendi…
+@1 is being reset!=@1 rekomenciĝas!
