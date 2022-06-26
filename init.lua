@@ -9,6 +9,8 @@ if skywars_settings.fall_damage_disabled then
 end
 
 arena_lib.register_minigame("skywars", {
+  name = "Skywars",
+  icon = "skywars_icon.png",
   prefix = skywars_settings.prefix,
   join_while_in_progress = false,
   celebration_time = skywars_settings.celebration_time,
