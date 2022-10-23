@@ -114,7 +114,7 @@ function skywars.update_players_counter(arena, players_amount_updated)
     for pl_name in pairs(arena.players) do
         local player = get_player_by_name(pl_name)
 
-        if not arena.players_original_amount or not saved_huds[pl_name].players_count then return end 
+        if not arena.players_original_amount or not saved_huds[pl_name] or not saved_huds[pl_name].players_count then return end 
         
         local players_counter = tostring(arena.players_amount) .. "/" .. tostring(arena.players_original_amount)
         player:hud_change(saved_huds[pl_name].players_count, "text", players_counter)
