@@ -99,7 +99,7 @@ function skywars.remove_HUD(arena, pl_name)
         player:hud_remove(id)
     end
 
-    saved_huds[pl_name] = {}
+    saved_huds[pl_name] = nil
 end
 
 
@@ -111,13 +111,15 @@ function skywars.update_players_counter(arena, players_amount_updated)
         pl_amount = pl_amount-1
     end
 
-    for pl_name in pairs(arena.players) do
-        local player = get_player_by_name(pl_name)
+    for pl_name in pairs(arena.players_and_spectators) do
+        if saved_huds[pl_name] then
+            local player = get_player_by_name(pl_name)
 
-        if not arena.players_original_amount or not saved_huds[pl_name] or not saved_huds[pl_name].players_count then return end 
-        
-        local players_counter = tostring(arena.players_amount) .. "/" .. tostring(arena.players_original_amount)
-        player:hud_change(saved_huds[pl_name].players_count, "text", players_counter)
+            if not arena.players_original_amount or not saved_huds[pl_name] or not saved_huds[pl_name].players_count then return end 
+            
+            local players_counter = tostring(arena.players_amount) .. "/" .. tostring(arena.players_original_amount)
+            player:hud_change(saved_huds[pl_name].players_count, "text", players_counter)
+        end
     end
 end
 
@@ -134,8 +136,10 @@ end
 
 
 function skywars.update_timer_hud(arena)
-    for pl_name in pairs(arena.players) do
-        local player = get_player_by_name(pl_name)
-        player:hud_change(saved_huds[pl_name].timer, "text", arena.current_time)
+    for pl_name in pairs(arena.players_and_spectators) do
+        if saved_huds[pl_name] then
+            local player = get_player_by_name(pl_name)
+            player:hud_change(saved_huds[pl_name].timer, "text", arena.current_time)
+        end
     end
 end
