@@ -3,6 +3,8 @@ local get_player_by_name = minetest.get_player_by_name
 
 
 function skywars.generate_HUD(arena, pl_name)
+    if saved_huds[pl_name] then return end
+
     local player = get_player_by_name(pl_name)
     local players_count_
     local players_killed_

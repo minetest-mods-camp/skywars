@@ -16,6 +16,12 @@ end)
 
 
 
+arena_lib.on_join("skywars", function(pl_name, arena, as_spectator, was_spectator)
+  skywars.generate_HUD(arena, pl_name)
+end)
+
+
+
 arena_lib.on_load("skywars", function(arena)
   skywars.reset_map(arena)
 
