@@ -12,84 +12,6 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("create :arena", function(name, arena_name)
-        arena_lib.create_arena(name, "skywars", arena_name)
-    end)
-
-
-
-    cmd:sub("create :arena :minplayers:int :maxplayers:int", function(name, arena_name, min_players, max_players)
-        arena_lib.create_arena(name, "skywars", arena_name, min_players, max_players)
-    end)
-
-
-
-    cmd:sub("remove :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
-        arena_lib.remove_arena(name, "skywars", arena.name)
-    end)
-
-    
-    
-    cmd:sub("list", function(name)
-        arena_lib.print_arenas(name, "skywars")
-    end)
-
-
-
-    cmd:sub("info :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
-        arena_lib.print_arena_info(name, "skywars", arena.name)
-    end)
-
-
-
-    cmd:sub("setspawn :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
-        arena_lib.set_spawner(name, "skywars", arena.name)
-    end)
-
-
-
-    cmd:sub("setsign :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
-        arena_lib.set_sign(name, nil, nil, "skywars", arena.name)
-    end)
-
-
-    
-    cmd:sub("edit :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
-        arena_lib.enter_editor(name, "skywars", arena.name)
-    end)
-
-
-
-    cmd:sub("enable :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
-        arena_lib.enable_arena(name, "skywars", arena.name)
-    end)
-
-
-
     cmd:sub("fast enable :arena", function(name, arena_name)
         local arena = get_valid_arena(arena_name, name)
 
@@ -100,26 +22,16 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("disable :arena", function(name, arena_name)
-        local arena = get_valid_arena(arena_name, name)
-
-        if not arena then return end
-
-        arena_lib.disable_arena(name, "skywars", arena.name)
-    end)
-
-
-
     --------------------
     -- ! CHEST CMDS ! --
     --------------------
 
-    cmd:sub("addtreasure :arena :treasure :count:int :preciousness:int :rarity:number", 
+    cmd:sub("addtreasure :arena :treasure :count:int :preciousness:int :rarity:number",
     function(sender, arena_name, treasure_name, count, preciousness, rarity)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
-        
-        if not arena then 
-            return       
+
+        if not arena then
+            return
         elseif count < 1 then
             skywars.print_error(sender, skywars.T("Count has to be greater than 0!"))
             return
@@ -133,10 +45,10 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
         local item_id = skywars.generate_treasure_id(arena)
         local treasure = {
-            name = treasure_name, 
-            rarity = rarity, 
-            count = count, 
-            preciousness = preciousness, 
+            name = treasure_name,
+            rarity = rarity,
+            count = count,
+            preciousness = preciousness,
             id = item_id
         }
         table.insert(arena.treasures, treasure)
@@ -146,16 +58,16 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
         skywars.reorder_treasures(arena)
     end)
-    
 
 
-    cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int", 
+
+    cmd:sub("addtreasure hand :arena :rarity:number :preciousness:int",
     function(sender, arena_name, preciousness, rarity)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local wielded_itemstack = get_wielded_item(sender)
         local treasure = {}
 
-        if not arena or not wielded_itemstack then 
+        if not arena or not wielded_itemstack then
             return
         elseif rarity < 1 or rarity > 10 then
             skywars.print_error(sender, skywars.T("Rarity has to be between 1 and 10!"))
@@ -164,10 +76,10 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
         local item_id = skywars.generate_treasure_id(arena)
         treasure = {
-            name = wielded_itemstack.name, 
-            rarity = rarity, 
-            count = wielded_itemstack.count, 
-            preciousness = preciousness, 
+            name = wielded_itemstack.name,
+            rarity = rarity,
+            count = wielded_itemstack.count,
+            preciousness = preciousness,
             id = item_id
         }
         table.insert(arena.treasures, treasure)
@@ -180,13 +92,13 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("removetreasure hand :arena", 
+    cmd:sub("removetreasure hand :arena",
     function(sender, arena_name)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
         local wielded_itemstack = get_wielded_item(sender)
 
-        if not arena or not wielded_itemstack then 
+        if not arena or not wielded_itemstack then
             return
         end
 
@@ -198,7 +110,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
                     table.remove(arena.treasures, i)
                     found[1] = true
                     found[2] = true
-                end 
+                end
             end
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
@@ -210,13 +122,13 @@ ChatCmdBuilder.new("skywars", function(cmd)
     end)
 
 
-    
-    cmd:sub("removetreasure :arena :treasure", 
+
+    cmd:sub("removetreasure :arena :treasure",
     function(sender, arena_name, treasure_name)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = {true, false} -- the first is used to repeat the for until nothing is found
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -229,7 +141,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
                     i = i-1
                     found[1] = true
                     found[2] = true
-                end 
+                end
             end
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
@@ -242,12 +154,12 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("removetreasure id :arena :id:int", 
+    cmd:sub("removetreasure id :arena :id:int",
     function(sender, arena_name, treasure_id)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local treasure_name = ""
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -256,7 +168,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
                 treasure_name = arena.treasures[i].name
                 table.remove(arena.treasures, i)
                 break
-            end 
+            end
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "treasures", arena.treasures, false)
 
@@ -268,7 +180,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("copytreasures :fromarena :toarena", 
+    cmd:sub("copytreasures :fromarena :toarena",
     function(sender, from_name, to_name)
         local from_arena, from_name = get_valid_arena(from_name, sender)
         local to_arena, to_name = get_valid_arena(to_name, sender, true)
@@ -288,11 +200,11 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("gettreasures :arena", 
+    cmd:sub("gettreasures :arena",
     function(sender, arena_name)
         local arena = get_valid_arena(arena_name, sender)
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -304,11 +216,11 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("searchtreasure :arena :treasure", 
+    cmd:sub("searchtreasure :arena :treasure",
     function(sender, arena_name, treasure_name)
         local arena, arena_name = get_valid_arena(arena_name, sender)
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -323,11 +235,11 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("filter treasures rarity :arena :rarity:number", 
+    cmd:sub("filter treasures rarity :arena :rarity:number",
     function(sender, arena_name, rarity)
         local arena, arena_name = get_valid_arena(arena_name, sender)
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -342,11 +254,11 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("filter treasures preciousness :arena :preciousness:number", 
+    cmd:sub("filter treasures preciousness :arena :preciousness:number",
     function(sender, arena_name, preciousness)
         local arena, arena_name = get_valid_arena(arena_name, sender)
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -361,11 +273,11 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("filter treasures preciousness+rarity :arena :preciousness:number :rarity:number", 
+    cmd:sub("filter treasures preciousness+rarity :arena :preciousness:number :rarity:number",
     function(sender, arena_name, preciousness, rarity)
         local arena, arena_name = get_valid_arena(arena_name, sender)
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -380,15 +292,15 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("addchest :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int", 
+    cmd:sub("addchest :minpreciousness:int :maxpreciousness:int :tmin:int :tmax:int",
     function(sender, min_preciousness, max_preciousness, min_treasures, max_treasures)
         local arena, arena_name = get_valid_arena("@", sender, true)
         local pos = get_looking_node_pos(sender)
         local exists = false
 
-        if not pos then 
+        if not pos then
             return
-        elseif not arena then 
+        elseif not arena then
             return
         end
 
@@ -396,12 +308,12 @@ ChatCmdBuilder.new("skywars", function(cmd)
             skywars.print_error(sender, skywars.T("The minimum or maximum amount of treasures has to be greater than 0!"))
             return
         end
-        
+
         local chest_id = skywars.generate_chest_id(arena)
-        local chest = 
+        local chest =
         {
             pos = pos,
-            min_preciousness = min_preciousness, 
+            min_preciousness = min_preciousness,
             max_preciousness = max_preciousness,
             min_treasures = min_treasures,
             max_treasures = max_treasures,
@@ -412,8 +324,8 @@ ChatCmdBuilder.new("skywars", function(cmd)
             if vector.equals(arena.chests[i].pos, pos) then
                 exists = true
                 break
-            end 
-        end 
+            end
+        end
 
         if exists then
             skywars.print_error(sender, skywars.T("The chest already exists!"))
@@ -427,11 +339,11 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("getchests :arena", 
+    cmd:sub("getchests :arena",
     function(sender, arena_name)
         local arena = get_valid_arena(arena_name, sender)
 
-        if not arena then 
+        if not arena then
             return
         end
 
@@ -439,19 +351,19 @@ ChatCmdBuilder.new("skywars", function(cmd)
         for i=1, #arena.chests do
             skywars.print_msg(sender, from_chest_to_string(arena.chests[i]) .. "\n\n")
         end
-    end) 
-    
+    end)
 
-    
-    cmd:sub("removechest", 
+
+
+    cmd:sub("removechest",
     function(sender)
         local arena, arena_name = get_valid_arena("@", sender, true)
         local found = false
         local pos = get_looking_node_pos(sender)
 
-        if not pos then 
+        if not pos then
             return
-        elseif not arena then 
+        elseif not arena then
             return
         end
 
@@ -460,7 +372,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
                 table.remove(arena.chests, i)
                 found = true
                 break
-            end 
+            end
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
 
@@ -473,15 +385,15 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("inspect", 
+    cmd:sub("inspect",
     function(sender)
         local arena, arena_name = get_valid_arena("@", sender)
         local found = false
         local pos = get_looking_node_pos(sender)
 
-        if not pos then 
+        if not pos then
             return
-        elseif not arena then 
+        elseif not arena then
             return
         end
 
@@ -491,7 +403,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
                 skywars.print_msg(sender, from_chest_to_string(chest) .. "\n\n")
                 found = true
                 break
-            end 
+            end
         end
 
         if not found then
@@ -501,12 +413,12 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("removechest id :arena :id:int", 
+    cmd:sub("removechest id :arena :id:int",
     function(sender, arena_name, chest_id)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
         local found = false
-        
-        if not arena then 
+
+        if not arena then
             return
         end
 
@@ -515,7 +427,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
                 table.remove(arena.chests, i)
                 found = true
                 break
-            end 
+            end
         end
         arena_lib.change_arena_property(sender, "skywars", arena_name, "chests", arena.chests, false)
 
@@ -532,7 +444,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
     -- ! KITS CMDS ! --
     -------------------
 
-    cmd:sub("createkit :name :texture", 
+    cmd:sub("createkit :name :texture",
     function(sender, kit_name, texture)
         local kits = skywars.load_table("kits")
 
@@ -542,14 +454,14 @@ ChatCmdBuilder.new("skywars", function(cmd)
         end
 
         kits[kit_name] = {texture = texture, items={}}
-        skywars.overwrite_table("kits", kits) 
+        skywars.overwrite_table("kits", kits)
 
         skywars.print_msg(sender, skywars.T("Kit @1 created!", kit_name))
     end)
 
 
 
-    cmd:sub("additem :kit :item :count:int", 
+    cmd:sub("additem :kit :item :count:int",
     function(sender, kit_name, item_name, item_count)
         local kits = skywars.load_table("kits")
         local itemstack = {}
@@ -564,25 +476,25 @@ ChatCmdBuilder.new("skywars", function(cmd)
             skywars.print_error(sender, skywars.T("Count has to be greater than 0!"))
             return
         end
-        
+
         itemstack.name = item_name
         itemstack.count = item_count
 
         table.insert(kits[kit_name].items, itemstack)
-        skywars.overwrite_table("kits", kits) 
-        
+        skywars.overwrite_table("kits", kits)
+
         skywars.print_msg(sender, skywars.T("x@1 @2 added to @3!", item_count, item_name, kit_name))
 
     end)
 
 
 
-    cmd:sub("additem hand :kit", 
+    cmd:sub("additem hand :kit",
     function(sender, kit_name)
         local kits = skywars.load_table("kits")
         local wielded_itemstack = get_wielded_item(sender)
 
-        if not wielded_itemstack then 
+        if not wielded_itemstack then
             return
         elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
@@ -590,14 +502,14 @@ ChatCmdBuilder.new("skywars", function(cmd)
         end
 
         table.insert(kits[kit_name].items, wielded_itemstack)
-        skywars.overwrite_table("kits", kits) 
-        
+        skywars.overwrite_table("kits", kits)
+
         skywars.print_msg(sender, skywars.T("x@1 @2 added to @3!", wielded_itemstack.count, wielded_itemstack.name, kit_name))
     end)
 
 
 
-    cmd:sub("deletekit :kit", 
+    cmd:sub("deletekit :kit",
     function(sender, kit_name)
         local kits = skywars.load_table("kits")
 
@@ -607,20 +519,20 @@ ChatCmdBuilder.new("skywars", function(cmd)
         end
 
         kits[kit_name] = nil
-        skywars.overwrite_table("kits", kits) 
+        skywars.overwrite_table("kits", kits)
 
         skywars.print_msg(sender, skywars.T("Kit @1 deleted!", kit_name))
     end)
 
 
 
-    cmd:sub("removeitem hand :kit", 
+    cmd:sub("removeitem hand :kit",
     function(sender, kit_name)
         local kits = skywars.load_table("kits")
         local wielded_itemstack = get_wielded_item(sender)
         local found = false
 
-        if not wielded_itemstack then 
+        if not wielded_itemstack then
             return
         elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", wielded_itemstack.name))
@@ -631,12 +543,12 @@ ChatCmdBuilder.new("skywars", function(cmd)
             if kits[kit_name].items[i].name == wielded_itemstack.name then
                 table.remove(kits[kit_name].items, i)
                 found = true
-                break 
+                break
             end
         end
         skywars.overwrite_table("kits", kits)
 
-        if found then 
+        if found then
             skywars.print_msg(sender, skywars.T("@1 removed from @2!", wielded_itemstack.name, kit_name))
         else
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", wielded_itemstack.name))
@@ -645,7 +557,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("removeitem :kit :item", 
+    cmd:sub("removeitem :kit :item",
     function(sender, kit_name, item_name)
         local kits = skywars.load_table("kits")
         local itemstack = {}
@@ -655,7 +567,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
             return
         end
-        
+
         itemstack.name = item_name
         itemstack.count = item_count
 
@@ -663,12 +575,12 @@ ChatCmdBuilder.new("skywars", function(cmd)
             if kits[kit_name].items[i].name == item_name then
                 table.remove(kits[kit_name].items, i)
                 found = true
-                break 
+                break
             end
         end
         skywars.overwrite_table("kits", kits)
 
-        if found then 
+        if found then
             skywars.print_msg(sender, skywars.T("@1 removed from @2!", item_name, kit_name))
         else
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", item_name))
@@ -677,7 +589,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("kittexture :kit :texture", 
+    cmd:sub("kittexture :kit :texture",
     function(sender, kit_name, texture_name)
         local kits = skywars.load_table("kits")
 
@@ -693,7 +605,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
     end)
 
 
-    cmd:sub("resetkit :kit", 
+    cmd:sub("resetkit :kit",
     function(sender, kit_name)
         local kits = skywars.load_table("kits")
 
@@ -710,7 +622,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("getkits", 
+    cmd:sub("getkits",
     function(sender)
         local kits = skywars.load_table("kits")
 
@@ -721,8 +633,8 @@ ChatCmdBuilder.new("skywars", function(cmd)
     end)
 
 
-    
-    cmd:sub("getitems :kit", 
+
+    cmd:sub("getitems :kit",
     function(sender, kit_name)
         local kits = skywars.load_table("kits")
 
@@ -733,18 +645,18 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
         skywars.print_msg(sender, skywars.T("@1 items:", kit_name))
         for i=1, #kits[kit_name].items do
-            skywars.print_msg(sender, "x" .. kits[kit_name].items[i].count .. " " .. kits[kit_name].items[i].name)            
+            skywars.print_msg(sender, "x" .. kits[kit_name].items[i].count .. " " .. kits[kit_name].items[i].name)
         end
     end)
 
 
 
-    cmd:sub("arenakit add :arena :kit", 
+    cmd:sub("arenakit add :arena :kit",
     function(sender, arena_name, kit_name)
         local kits = skywars.load_table("kits")
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
 
-        if not arena then 
+        if not arena then
             return
         elseif kits[kit_name] == nil then
             skywars.print_error(sender, skywars.T("@1 doesn't exist!", kit_name))
@@ -759,7 +671,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("arenakit remove :arena :kit", 
+    cmd:sub("arenakit remove :arena :kit",
     function(sender, arena_name, kit_name)
         local kits = skywars.load_table("kits")
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
@@ -777,17 +689,17 @@ ChatCmdBuilder.new("skywars", function(cmd)
                 table.remove(arena.kits, i)
                 found = true
                 break
-            end 
+            end
         end
 
         arena_lib.change_arena_property(sender, "skywars", arena_name, "kits", arena.kits, false)
-        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!", kit_name, arena_name)) 
+        if found then skywars.print_msg(sender, skywars.T("@1 removed from @2!", kit_name, arena_name))
         else skywars.print_error(sender, skywars.T("Kit not found!")) end
     end)
 
 
 
-    cmd:sub("copykits :fromarena :toarena", 
+    cmd:sub("copykits :fromarena :toarena",
     function(sender, from_name, to_name)
         local from_arena, from_name = get_valid_arena(from_name, sender)
         local to_arena, to_name = get_valid_arena(to_name, sender, true)
@@ -811,7 +723,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
     -- ! MAP CMDS ! --
     ------------------
 
-    cmd:sub("pos1 :arena", 
+    cmd:sub("pos1 :arena",
     function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
@@ -821,14 +733,14 @@ ChatCmdBuilder.new("skywars", function(cmd)
         end
 
         arena.min_pos = player:get_pos()
-        arena_lib.change_arena_property(sender, "skywars", arena.name, "min_pos", arena.min_pos) 
+        arena_lib.change_arena_property(sender, "skywars", arena.name, "min_pos", arena.min_pos)
 
-        skywars.print_msg(sender, skywars.T("Position saved!")) 
+        skywars.print_msg(sender, skywars.T("Position saved!"))
     end)
 
 
 
-    cmd:sub("pos2 :arena", 
+    cmd:sub("pos2 :arena",
     function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender, true)
@@ -838,14 +750,14 @@ ChatCmdBuilder.new("skywars", function(cmd)
         end
 
         arena.max_pos = player:get_pos()
-        arena_lib.change_arena_property(sender, "skywars", arena.name, "max_pos", arena.max_pos) 
+        arena_lib.change_arena_property(sender, "skywars", arena.name, "max_pos", arena.max_pos)
 
-        skywars.print_msg(sender, skywars.T("Position saved!")) 
+        skywars.print_msg(sender, skywars.T("Position saved!"))
     end)
 
 
 
-    cmd:sub("reset :arena", 
+    cmd:sub("reset :arena",
     function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender)
@@ -853,10 +765,10 @@ ChatCmdBuilder.new("skywars", function(cmd)
         if not arena then
             return
         end
-        
+
         if arena.enabled then
             skywars.reset_map(arena)
-            skywars.print_msg(sender, skywars.T("@1 reset!", arena.name)) 
+            skywars.print_msg(sender, skywars.T("@1 reset!", arena.name))
         else
             skywars.print_error(sender, skywars.T("@1 must be enabled!", arena_name))
         end
@@ -868,19 +780,19 @@ ChatCmdBuilder.new("skywars", function(cmd)
     -- ! DEBUG CMDS ! --
     --------------------
 
-    cmd:sub("clearchangednodes :arena", 
+    cmd:sub("clearchangednodes :arena",
     function(sender, arena_name)
         local maps = skywars.load_table("maps")
 
         maps[arena_name].changed_nodes = {}
         skywars.overwrite_table("maps", maps)
 
-        skywars.print_msg(sender, arena_name .. " changed nodes table reset!") 
+        skywars.print_msg(sender, arena_name .. " changed nodes table reset!")
     end)
-    
 
 
-    cmd:sub("getpos", 
+
+    cmd:sub("getpos",
     function(sender)
         local pos = minetest.get_player_by_name(sender):get_pos()
         local readable_pos = "[X Y Z] " .. minetest.pos_to_string(pos, 1)
@@ -890,7 +802,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("test reset :arena", 
+    cmd:sub("test reset :arena",
     function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender)
@@ -908,7 +820,7 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
 
 
-    cmd:sub("test asyncspeed :arena", 
+    cmd:sub("test asyncspeed :arena",
     function(sender, arena_name)
         local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender)
@@ -932,16 +844,10 @@ end, {
 
     Arena_lib:
 
-        - create <arena name> [min players] [max players]
-        - edit <arena name>
-        - remove <arena name>
-        - list
-        - enable <arena name>
-        - fast enable <arena name>: 
+        - fast enable <arena name>:
             enables the arena without checking if there are nodes with inventories;
             use this just if after disabling the arena you didn't add nodes with an
             inventory (e.g. a chest or a furnace)
-        - disable <arena name>
 
 
     Skywars:
@@ -950,18 +856,18 @@ end, {
 
 
         MAP:
-        
+
         - pos1 <arena name>
         - pos2 <arena name>
         - reset <arena name>
 
-        
+
         TREASURES:
 
-        - addtreasure <arena name> <item> <count> <preciousness> 
-          <rarity (min 1.0, max 10.0)> 
+        - addtreasure <arena name> <item> <count> <preciousness>
+          <rarity (min 1.0, max 10.0)>
         - addtreasure hand <arena name> <preciousness>
-          <rarity (min 1.0, max 10.0)> 
+          <rarity (min 1.0, max 10.0)>
         - gettreasures <arena name>
         - searchtreasure <arena name> <treasure name>: shows all the treasures with that name
         - filter treasures rarity <arena name> <rarity>
@@ -1007,21 +913,21 @@ end, {
         - test reset <arena name>: tests the reset system, make sure your map is properly reset
           before using it, 'cause it will clear the maps table first
         - test asyncspeed <arena name>: places a 10x10 area full of nodes, useful to test the
-          async reset system speed (read the server logs to know the reset speed) 
+          async reset system speed (read the server logs to know the reset speed)
         ]],
     privs = { skywars_admin = true }
 })
 
 
 
-minetest.register_privilege("skywars_admin", {  
+minetest.register_privilege("skywars_admin", {
     description = "With this you can use /skywars"
 })
 
 
 
 function get_valid_arena(arena_name, sender, property_is_changing)
-    local arena = nil 
+    local arena = nil
 
     if arena_name == "@" then
         local player_pos = minetest.get_player_by_name(sender):get_pos()
@@ -1035,7 +941,7 @@ function get_valid_arena(arena_name, sender, property_is_changing)
     if not arena then
         skywars.print_error(sender, skywars.T("@1 doesn't exist!", arena_name))
         return nil
-    elseif arena_lib.is_arena_in_edit_mode(arena_name) and property_is_changing then 
+    elseif arena_lib.is_arena_in_edit_mode(arena_name) and property_is_changing then
         skywars.print_error(sender, skywars.T("Nobody must be in the editor!"))
         return nil
     elseif arena.enabled and property_is_changing then
@@ -1058,11 +964,11 @@ function get_looking_node_pos(pl_name)
     local look_dir = player:get_look_dir()
     local pos_head = vector.add(player:get_pos(), {x=0, y=1.5, z=0})
     local result, pos = minetest.line_of_sight(
-        vector.add(pos_head, vector.divide(look_dir, 4)), 
+        vector.add(pos_head, vector.divide(look_dir, 4)),
         vector.add(pos_head, vector.multiply(look_dir, 10))
     )
 
-    if result then 
+    if result then
         skywars.print_error(pl_name, skywars.T("You're not looking at anything!"))
         return nil
     end
@@ -1072,7 +978,7 @@ end
 
 
 
-function from_chest_to_string(chest) 
+function from_chest_to_string(chest)
     local chest_pos = minetest.pos_to_string(chest.pos, 0)
     return skywars.T(
         "ID: @1, position: @2, preciousness: @3-@4, treasures amount: @5-@6",
@@ -1083,7 +989,7 @@ end
 
 
 
-function from_treasure_to_string(treasure) 
+function from_treasure_to_string(treasure)
     return skywars.T(
         "ID: @1, name: @2, rarity: @3, preciousness: @4, count: @5",
         treasure.id, treasure.name, treasure.rarity, treasure.preciousness, treasure.count
