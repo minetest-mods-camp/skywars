@@ -14,4 +14,4 @@ end
 
 
 
-dofile(minetest.get_modpath("skywars") .. "/_compatible_mods/3d_armor/auto_equip_armors.lua")
+dofile(minetest.get_modpath("skywars") .. "/src/_compatible_mods/3d_armor/auto_equip_armors.lua")
