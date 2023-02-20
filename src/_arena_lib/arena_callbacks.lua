@@ -135,25 +135,8 @@ arena_lib.on_prequit("skywars", function(arena, pl_name)
 end)
 
 
-arena_lib.on_quit("skywars", function(arena, pl_name)
-  local player = minetest.get_player_by_name(pl_name)
 
-  remove_privs(pl_name)
-  skywars.update_players_counter(arena, false)
-  skywars.remove_HUD(arena, pl_name)
-  skywars.remove_armor(player)
-  skywars.block_enderpearl(player, arena)
-end)
-
-
-
-arena_lib.on_disconnect("skywars", function(arena, pl_name)
-  skywars.update_players_counter(arena, false)
-end)
-
-
-
-arena_lib.on_kick("skywars", function(arena, pl_name) 
+arena_lib.on_quit("skywars", function(arena, pl_name, is_spectator, reason)
   local player = minetest.get_player_by_name(pl_name)
 
   remove_privs(pl_name)
