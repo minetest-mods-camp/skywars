@@ -90,8 +90,11 @@ arena_lib.on_end("skywars", function(arena, players, winners, spectators, is_for
     minetest.close_formspec(pl_name, "")
   end
 
-  for pl_name in pairs(spectators) do  
+  for pl_name in pairs(spectators) do
+    local player = minetest.get_player_by_name(pl_name)
+
     remove_privs(pl_name) 
+    skywars.remove_armor(player)
     skywars.remove_HUD(arena, pl_name)
     minetest.close_formspec(pl_name, "")
   end
