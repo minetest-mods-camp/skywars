@@ -27,6 +27,7 @@ arena_lib.register_minigame("skywars", {
     kits = {},
     is_resetting = false
   },
+  can_build = true,
   time_mode = "decremental",
   disabled_damage_types = disabled_damage_types_
 })
