@@ -1,0 +1,63 @@
+# version 1.1.4
+# author(s): Wuzzy
+# reviewer(s):
+# textdomain: skywars
+# @n means "newline"
+# @<number> (@1, @2, ecc) is a value that the mod will pass at runtime 
+
+
+# In-game messages
+
+Time is out, the match is over!=Zeit ist um, die Spielrunde ist vorbei!
+@1 was killed by @2=@1 wurde von @2 getötet
+@1 killed you with @2 HPs=@1 hat Sie mit @2 HPs getötet
+Nobody=Niemand
+Select a kit using the item in your inventory=Wählen Sie ein Kit mit dem Gegenstand in Ihrem Inventar
+Kit Selector=Kitauswahl
+
+
+# Nodes
+
+Unbreakable without skywars_admin priv transparent node=Unzerstörbarer (außer mit skywars_admin-Priv.) transparenter Block
+
+
+# Arena configuration
+
+Count has to be greater than 0!=Anzahl muss größer als 0 sein!
+Rarity has to be between 1 and 10!=Seltenheit muss zwischen 1 und 10 sein!
+@1 doesn't exist!=@1 existiert nicht!
+Your hand is empty!=Ihre Hand ist leer!
+Treasure not found!=Schatz nicht gefunden!
+Treasures list:=Schatzliste:
+You're not looking at anything!=Sie sehen nichts an!
+The minimum or maximum amount of treasures has to be greater than 0!=Die Minimal- oder Maximalanzahl an Schätzen muss größer als 0 sein!
+@1 treasures have been copied to @2!=@1 Schätze wurden nach @2 kopiert!
+The arenas must be different!=Die Arenen müssen verschieden sein!
+ID: @1, name: @2, rarity: @3, preciousness: @4, count: @5=ID: @1, Name: @2, Seltenheit: @3, Kostbarkeit: @4, Anzahl: @5
+Chest removed!=Truhe entfernt!
+Chest not found!=Truhe nicht gefunden!
+Chest list:=Truhenliste:
+The chest already exists!=Die Truhe existiert bereits!
+ID: @1, position: @2, preciousness: @3-@4, treasures amount: @5-@6=ID: @1, Position: @2, Kostbarkeit: @3-@4, Schatzanzahl: @5-@6
+Position saved!=Position gespeichert!
+You didn't set the treasures!=Sie haben die Schätze nicht gesetzt!
+You didn't set the chests!=Sie haben die Truhen nicht gesetzt!
+You didn't set the map corners!=Sie haben die Kartenecken nicht gesetzt!
+@1 must be disabled!=@1 muss deaktiviert sein!
+@1 must be enabled!=@1 muss aktiviert sein!
+@1 already exists!=@1 existiert schon!
+@1 added to @2!=@1 zu @2 hinzugefügt!
+@1 removed from @2!=@1 von @2 entfernt!
+Kit @1 created!=Kit @1 erstellt!
+@1 texture set to @2!=@1-Textur gesetzt zu @2!
+Kit @1 deleted!=Kit @1 gelöscht!
+Kits list:=Kitliste:
+@1 items:=@1-Gegenstände:
+Kit not found!=Kit nicht gefunden!
+x@1 @2 added to @3!=x@1 @2 zu @3 hinzugefügt!
+@1 reset!=@1 zurückgesetzt!
+@1 kits have been copied to @2!=@1 Kits wurden zu @2 kopiert!
+Nobody must be in the editor!=Niemand darf sich im Editor befinden!
+The enabling process may take a few moments, please wait...=Der Aktivierungsprozess kann einige Momente brauchen, bitte warten …
+@1 is being reset!=@1 wird zurückgesetzt!
+
