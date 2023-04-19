@@ -1,11 +1,9 @@
 local function find_changed_nodes() end
 local function process_mapblock_queue() end
 
-local pos_to_string = minetest.pos_to_string
 local get_position_from_hash = minetest.get_position_from_hash
-local changed_mapblocks_queue = {}
-local hash_node_position = minetest.hash_node_position
-
+local changed_mapblocks_queue = Queue.new()
+local mapblocks_in_the_queue = {}
 
 minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_count)
     for pos, _ in pairs(modified_blocks) do
@@ -13,9 +11,12 @@ minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_
         pos = pos*16
         local arena = skywars.get_arena_by_pos(pos)
         
-        if not arena or not arena.enabled or arena.is_resetting then goto continue end
+        if not arena or not arena.enabled or arena.is_resetting and not mapblocks_in_the_queue[pos] then
+            goto continue 
+        end
 
-        changed_mapblocks_queue[pos] = arena
+        Queue.pushright(changed_mapblocks_queue, {arena, pos})
+        mapblocks_in_the_queue[pos] = true
 
         ::continue::
     end
@@ -23,17 +24,12 @@ end)
 
 
 function process_mapblock_queue()
-    local i = 0
+    for i=1, skywars_settings.max_processed_mapblocks_per_iteration, 1 do
+        local node = Queue.popleft(changed_mapblocks_queue)
+        if not node then break end
 
-    for pos, arena in pairs(changed_mapblocks_queue) do
-        i = i + 1
-
-        if i > skywars_settings.max_processed_mapblocks_per_iteration then
-            break
-        end
-
-        find_changed_nodes(arena, pos)
-        changed_mapblocks_queue[pos] = nil
+        find_changed_nodes(node[1], node[2])
+        mapblocks_in_the_queue[node[2]] = nil
     end
 
     minetest.after(2, process_mapblock_queue)

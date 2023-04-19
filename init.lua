@@ -36,6 +36,8 @@ arena_lib.register_minigame("skywars", {
 
 dofile(minetest.get_modpath("skywars") .. "/src/debug/debug_utils.lua")
 
+dofile(minetest.get_modpath("skywars") .. "/src/queue.lua")
+
 dofile(minetest.get_modpath("skywars") .. "/src/_storage/storage_manager.lua")
 dofile(minetest.get_modpath("skywars") .. "/src/nodes.lua")
 dofile(minetest.get_modpath("skywars") .. "/src/utils.lua")
