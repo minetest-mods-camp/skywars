@@ -815,24 +815,6 @@ ChatCmdBuilder.new("skywars", function(cmd)
             skywars.print_error(sender, skywars.T("@1 must be enabled!", arena_name))
         end
     end)
-
-
-
-    cmd:sub("test asyncspeed :arena",
-    function(sender, arena_name)
-        local player = minetest.get_player_by_name(sender)
-        local arena, arena_name = get_valid_arena(arena_name, sender)
-
-        if not arena then return end
-        skywars.print_msg(sender, "Placing 1000 nodes, the server may lag...")
-
-        if arena.enabled then
-            skywars.test_async_speed(arena)
-            skywars.print_msg(sender, "Nodes placed at " .. minetest.pos_to_string(arena.min_pos, 0) .. "!")
-        else
-            skywars.print_error(sender, skywars.T("@1 must be enabled!", arena_name))
-        end
-    end)
 end, {
 
     description = [[

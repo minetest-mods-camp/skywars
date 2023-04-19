@@ -10,7 +10,8 @@ function skywars.load_table(file_name)
     if table.indexof(minetest.get_dir_list(sw_world_folder, false), file_name) > 0 then
         return serialize_lib.read_table_from_file(sw_world_folder..file_name)
     else
-        return {}
+        -- legacy storage support
+        return minetest.deserialize(storage:get_string(file_name)) or {}
     end
 end
 

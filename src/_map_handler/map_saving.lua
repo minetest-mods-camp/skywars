@@ -32,7 +32,7 @@ function process_mapblock_queue()
         mapblocks_in_the_queue[node[2]] = nil
     end
 
-    minetest.after(2, process_mapblock_queue)
+    minetest.after(0, process_mapblock_queue)
 end
 process_mapblock_queue()
 
