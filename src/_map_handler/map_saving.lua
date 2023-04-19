@@ -39,7 +39,11 @@ function skywars.save_map_nodes(arena)
 
     local maps = skywars.maps
     local manip = minetest.get_voxel_manip()
-	local emerged_pos1, emerged_pos2 = manip:read_from_map(arena.min_pos, arena.max_pos)
+	
+    local emerged_pos1, emerged_pos2 = manip:read_from_map(arena.min_pos, arena.max_pos)
+    arena.min_pos = emerged_pos1
+    arena.max_pos = emerged_pos2
+
     local data = manip:get_data()
     local params2 = manip:get_param2_data()
 
@@ -60,17 +64,16 @@ function skywars.save_map_nodes(arena)
         local param2 = params2[i]
         if param2 == 0 then param2 = nil end
         
-        local string_pos = pos_to_string(p)
         local location = {type = "node", pos = p}
         local node = {node_id, param2}
 
         if original_area:containsp(p) and get_inventory(location) then
-            map.always_to_be_reset_nodes[string_pos] = true
-            map.changed_nodes[string_pos] = node
+            map.always_to_be_reset_nodes[i] = true
+            map.changed_nodes[i] = node
         end
 
         if not (node_id == minetest.CONTENT_AIR) then
-            map.original_nodes[string_pos] = node
+            map.original_nodes[i] = node
         end
 	end
 
@@ -98,6 +101,7 @@ function find_changed_nodes(arena, p1)
     local data = manip:get_data()
 
 	local emerged_area = VoxelArea:new({MinEdge=p1, MaxEdge=p2})
+	local arena_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
 
     local map = maps[arena.name]
 
@@ -105,11 +109,11 @@ function find_changed_nodes(arena, p1)
 	for i in emerged_area:iterp(p1, p2) do
         local p = emerged_area:position(i)
         local node_id = data[i]
-        local string_pos = pos_to_string(p)
-        local original_node = map.original_nodes[string_pos] or {minetest.CONTENT_AIR, 0}
+        local i = arena_area:indexp(p)
+        local original_node = map.original_nodes[i] or {minetest.CONTENT_AIR, 0}
 
         if not (node_id == original_node[1]) then
-            map.changed_nodes[string_pos] = original_node
+            map.changed_nodes[i] = original_node
         end
 	end
 end

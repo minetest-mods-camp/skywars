@@ -63,15 +63,17 @@ function async_reset_map(arena, debug, recursive_data)
     local nodes_per_tick = recursive_data.nodes_per_tick or skywars_settings.nodes_per_tick
     local initial_time = recursive_data.initial_time or minetest.get_us_time()
 
+    local arena_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
+
     -- Resets a node if it hasn't been reset yet and, if it resets more than "nodes_per_tick" 
     -- nodes, invokes this function again after one step.
     arena.is_resetting = true
-    for string_pos, node_data in pairs(nodes_to_reset) do
+    for i, node_data in pairs(nodes_to_reset) do
         local node = get_node_from_data(node_data)
-        local pos = string_to_pos(string_pos)
+        local pos = arena_area:position(i)
 
-        if not maps[arena.name].always_to_be_reset_nodes[string_pos] then
-            nodes_to_reset[string_pos] = nil
+        if not maps[arena.name].always_to_be_reset_nodes[i] then
+            nodes_to_reset[i] = nil
         end
 
         add_node(pos, node)

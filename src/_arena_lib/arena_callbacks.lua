@@ -181,6 +181,7 @@ end)
 
 
 
+
 arena_lib.on_disable("skywars", function(arena, pl_name)
   if arena.is_resetting then 
     skywars.print_error(pl_name, skywars.T("@1 is being reset!", arena.name))
