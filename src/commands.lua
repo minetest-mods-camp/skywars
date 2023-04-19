@@ -782,10 +782,9 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
     cmd:sub("clearchangednodes :arena",
     function(sender, arena_name)
-        local maps = skywars.load_table("maps")
+        local maps = skywars.maps
 
         maps[arena_name].changed_nodes = {}
-        skywars.overwrite_table("maps", maps)
 
         skywars.print_msg(sender, arena_name .. " changed nodes table reset!")
     end)

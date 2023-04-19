@@ -23,6 +23,8 @@ function skywars.get_arena_by_pos(pos)
 
         ::continue::
     end
+   
+    return nil
 end
 
 

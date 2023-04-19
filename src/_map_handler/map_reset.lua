@@ -1,14 +1,17 @@
 local function async_reset_map() end
 local function reset_node_inventory() end
+local function get_node_from_data() end
+
 local on_step = minetest.registered_entities["__builtin:item"].on_step
 minetest.registered_entities["__builtin:item"].match_id = -2
 minetest.registered_entities["__builtin:item"].last_age = 0
-local get_position_from_hash =  minetest.get_position_from_hash
 local hash_node_position = minetest.hash_node_position
-local deserialize = minetest.deserialize
 local add_node = minetest.add_node
 local get_node = minetest.get_node
 local get_inventory = minetest.get_inventory
+local get_name_from_content_id = minetest.get_name_from_content_id
+local string_to_pos = minetest.string_to_pos
+local get_position_from_hash = minetest.get_position_from_hash
 
 
 function skywars.reset_map(arena, debug, debug_data)
@@ -23,7 +26,7 @@ end
 -- Removing drops based on the match_id. 
 minetest.registered_entities["__builtin:item"].on_step = function(self, dtime, moveresult)
     -- Returning if it passed less than 1s from the last check.
-    if self.age - self.last_age < 1 then 
+    if self.age - self.last_age < 1 then
         on_step(self, dtime, moveresult)
         return
     end
@@ -34,7 +37,7 @@ minetest.registered_entities["__builtin:item"].on_step = function(self, dtime, m
 
     if arena and arena.match_id then
         -- If the drop has not been initializated yet.
-        if self.match_id == -2 then 
+        if self.match_id == -2 then
             self.match_id = arena.match_id
         elseif self.match_id ~= arena.match_id then
             self.object:remove()
@@ -54,37 +57,40 @@ function async_reset_map(arena, debug, recursive_data)
     recursive_data = recursive_data or {}
 
     -- When the function gets called again it uses the same maps table.
-    local original_maps = recursive_data.original_maps or skywars.load_table("maps")
-    if not original_maps[arena.name] or not original_maps[arena.name].changed_nodes then
-        return 
+    local maps = skywars.maps
+    if not maps[arena.name] or not maps[arena.name].changed_nodes then
+        return
     end
 
-    debug = debug or false
     -- The indexes are useful to count the reset nodes.
     local current_index = 1
     local last_index = recursive_data.last_index or 0
-    local original_nodes_to_reset = original_maps[arena.name].changed_nodes
+    local nodes_to_reset = maps[arena.name].changed_nodes
     local nodes_per_tick = recursive_data.nodes_per_tick or skywars_settings.nodes_per_tick
     local initial_time = recursive_data.initial_time or minetest.get_us_time()
 
     -- Resets a node if it hasn't been reset yet and, if it resets more than "nodes_per_tick" 
     -- nodes, invokes this function again after one step.
     arena.is_resetting = true
-    for hash_pos, node in pairs(original_nodes_to_reset) do
-        if current_index > last_index then
-            local pos = get_position_from_hash(hash_pos)
-
-            add_node(pos, node)
-            reset_node_inventory(pos)
-        end
+    for string_pos, node_data in pairs(nodes_to_reset) do
+        local node = get_node_from_data(node_data)
         
+        local pos = string_to_pos(string_pos)
+
+        if not maps[arena.name].always_to_be_reset_nodes[string_pos] then
+            nodes_to_reset[string_pos] = nil
+        end
+
+        add_node(pos, node)
+
+        reset_node_inventory(pos)
+
         -- If more than nodes_per_tick nodes have been reset this cycle.
         if current_index - last_index >= nodes_per_tick then
             minetest.after(0, function()
                 async_reset_map(arena, debug, {
-                    last_index = current_index, 
-                    nodes_per_tick = nodes_per_tick, 
-                    original_maps = original_maps, 
+                    last_index = current_index,
+                    nodes_per_tick = nodes_per_tick,
                     initial_time = initial_time
                 })
             end)
@@ -95,44 +101,12 @@ function async_reset_map(arena, debug, recursive_data)
     end
     arena.is_resetting = false
 
-    -- Removing the reset nodes from the current map table to preserve eventual
-    -- changes made to the latter during the reset.
-    local current_maps = skywars.load_table("maps")
-    if not current_maps[arena.name] or not current_maps[arena.name].changed_nodes then
-        return
-    end
-    local current_nodes_to_reset = current_maps[arena.name].changed_nodes
-
-    for hash_pos, node in pairs(current_nodes_to_reset) do
-        local always_to_be_reset = original_maps[arena.name].always_to_be_reset_nodes[hash_pos]
-        
-        -- If in the old map this block hadn't been changed or it always has
-        -- to be reset, continue.
-        if not original_nodes_to_reset[hash_pos] or always_to_be_reset then
-            goto continue
-        end
-        
-        local old_node = original_nodes_to_reset[hash_pos]
-        local pos = get_position_from_hash(hash_pos)
-
-        local current_node = get_node(pos)
-        local is_old_node_still_reset = (current_node.name == old_node.name)
-
-        -- Checking if the node was modified again DURING the reset process but 
-        -- AFTER being reset already.
-        if is_old_node_still_reset then
-            current_nodes_to_reset[hash_pos] = nil
-        end
-
-        ::continue::
-    end
-    
-    skywars.overwrite_table("maps", current_maps)
-
     if debug then
         local duration = minetest.get_us_time() - initial_time
         minetest.log("[Skywars Reset Debug] The reset took " .. duration/1000000 .. " seconds!")
     end
+
+    skywars.save_map(arena.name)
 end
 
 
@@ -140,16 +114,20 @@ end
 function reset_node_inventory(pos)
     local location = {type="node", pos = pos}
     local inv = get_inventory(location)
-    if inv then 
+    if inv then
         for index, list in ipairs(inv:get_lists()) do
-            inv:set_list(list, {}) 
+            inv:set_list(list, {})
         end
     end
 end
 
 
+function get_node_from_data(node_data)
+    return {name=get_name_from_content_id(node_data[1]), param2=node_data[2] or 0}
+end
 
-minetest.register_on_mods_loaded(function() 
+
+minetest.register_on_mods_loaded(function()
     for i, arena in pairs(arena_lib.mods["skywars"].arenas) do
       arena.is_resetting = false
     end
