@@ -15,7 +15,7 @@ minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_
         pos = pos*16
         local arena = skywars.get_arena_by_pos(pos)
         
-        if not arena or not arena.enabled or arena.is_resetting and not mapblocks_in_the_queue[pos] then
+        if not arena or not arena.enabled or arena.is_resetting or mapblocks_in_the_queue[pos] then
             goto continue 
         end
 
