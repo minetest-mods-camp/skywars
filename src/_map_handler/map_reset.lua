@@ -8,7 +8,7 @@ minetest.registered_entities["__builtin:item"].last_age = 0
 local add_node = minetest.add_node
 local get_inventory = minetest.get_inventory
 local get_name_from_content_id = minetest.get_name_from_content_id
-local string_to_pos = minetest.string_to_pos
+
 
 
 function skywars.reset_map(arena, debug, debug_data)

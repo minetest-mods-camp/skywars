@@ -1,9 +1,13 @@
 local function find_changed_nodes() end
 local function process_mapblock_queue() end
+local function initialize_map_data() end
 
 local get_position_from_hash = minetest.get_position_from_hash
 local changed_mapblocks_queue = Queue.new()
 local mapblocks_in_the_queue = {}
+local get_voxel_manip = minetest.get_voxel_manip
+
+
 
 minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_count)
     for pos, _ in pairs(modified_blocks) do
@@ -42,7 +46,7 @@ function skywars.save_map_nodes(arena)
     skywars.load_mapblocks(arena)
 
     local maps = skywars.maps
-    local manip = minetest.get_voxel_manip()
+    local manip = get_voxel_manip()
 	
     local emerged_pos1, emerged_pos2 = manip:read_from_map(arena.min_pos, arena.max_pos)
     arena.min_pos = emerged_pos1
@@ -52,7 +56,6 @@ function skywars.save_map_nodes(arena)
     local params2 = manip:get_param2_data()
 
 	local emerged_area = VoxelArea:new({MinEdge=emerged_pos1, MaxEdge=emerged_pos2})
-    local original_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
     local get_inventory = minetest.get_inventory
 
     initialize_map_data(maps, arena)
@@ -71,7 +74,7 @@ function skywars.save_map_nodes(arena)
         local location = {type = "node", pos = p}
         local node = {node_id, param2}
 
-        if original_area:containsp(p) and get_inventory(location) then
+        if get_inventory(location) then
             map.always_to_be_reset_nodes[i] = true
             map.changed_nodes[i] = node
         end
@@ -82,6 +85,17 @@ function skywars.save_map_nodes(arena)
 	end
 
     skywars.save_map(arena.name, "complete")
+end
+
+
+
+-- this won't be used when performance is needed
+function skywars.get_map_node_at(arena, pos)
+    local area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
+    local original_nodes = skywars.maps[arena.name].original_nodes
+
+    local i = area:indexp(pos)
+    return i, original_nodes[i] or {minetest.CONTENT_AIR}
 end
 
 
@@ -98,7 +112,7 @@ end
 
 function find_changed_nodes(arena, p1)
     local maps = skywars.maps
-    local manip = minetest.get_voxel_manip()
+    local manip = get_voxel_manip()
     local p2 = vector.add(p1, 15)
 	p1, p2 = manip:read_from_map(p1, p2)
 
@@ -120,4 +134,58 @@ function find_changed_nodes(arena, p1)
             map.changed_nodes[i] = original_node
         end
 	end
+end
+
+
+
+minetest.register_on_placenode(function(pos, newnode, player, oldnode)
+    local arena = skywars.get_arena_by_pos(pos)
+    if not arena then return end
+
+    local i, node = skywars.get_map_node_at(arena, pos)
+    skywars.maps[arena.name].changed_nodes[i] = node
+end)
+
+
+
+minetest.register_on_dignode(function(pos, oldnode, player)
+    local arena = skywars.get_arena_by_pos(pos)
+    if not arena then return end
+
+    local i, node = skywars.get_map_node_at(arena, pos)
+    skywars.maps[arena.name].changed_nodes[i] = node
+end)
+
+
+
+-- Minetest functions overrides.
+
+local set_node = minetest.set_node
+function minetest.set_node(pos, node)
+    local arena = skywars.get_arena_by_pos(pos)
+    
+    if arena and arena.enabled and not arena.is_resetting then
+        local i, node = skywars.get_map_node_at(arena, pos)
+        skywars.maps[arena.name].changed_nodes[i] = node
+    end
+
+	return set_node(pos, node)
+end
+function minetest.add_node(pos, node)
+    minetest.set_node(pos, node)
+end
+function minetest.remove_node(pos)
+    minetest.set_node(pos, {name="air"})
+end
+
+local swap_node = minetest.swap_node
+function minetest.swap_node(pos, node)
+    local arena = skywars.get_arena_by_pos(pos)
+    
+    if arena and arena.enabled and not arena.is_resetting then
+        local i, node = skywars.get_map_node_at(arena, pos)
+        skywars.maps[arena.name].changed_nodes[i] = node
+    end
+
+    return swap_node(pos, node)
 end
