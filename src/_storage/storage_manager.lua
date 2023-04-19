@@ -6,21 +6,18 @@ skywars.st = storage
 skywars.maps = {}
 
 
-function skywars.load_table(metadata_name)
-    --local metadata = minetest.parse_json(storage:get_string(metadata_name))
-    
-    --if metadata == "" or metadata == nil then
-    --    metadata = {}
-    --end
-
-    return serialize_lib.read_table_from_file(sw_world_folder..metadata_name)
+function skywars.load_table(file_name)
+    if table.indexof(minetest.get_dir_list(sw_world_folder, false), file_name) > 0 then
+        return serialize_lib.read_table_from_file(sw_world_folder..file_name)
+    else
+        return {}
+    end
 end
 
 
 
-function skywars.overwrite_table(metadata_name, table)
-    --storage:set_string(metadata_name, minetest.write_json(table))
-    serialize_lib.write_table_to_file(table, sw_world_folder..metadata_name)
+function skywars.overwrite_table(file_name, table)
+    serialize_lib.write_table_to_file(table, sw_world_folder..file_name)
 end
 
 
@@ -29,10 +26,10 @@ function skywars.save_map(name, complete)
     local m = skywars.maps[name]
 
     skywars.overwrite_table(name.."_changed_nodes", m.changed_nodes)
-    skywars.overwrite_table(name.."_always_to_be_reset_nodes", m.always_to_be_reset_nodes)
 
     if complete then
         skywars.overwrite_table(name.."_original_nodes", m.original_nodes)
+        skywars.overwrite_table(name.."_always_to_be_reset_nodes", m.always_to_be_reset_nodes)
     end
 end
 

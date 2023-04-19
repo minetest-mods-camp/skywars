@@ -803,7 +803,6 @@ ChatCmdBuilder.new("skywars", function(cmd)
 
     cmd:sub("test reset :arena",
     function(sender, arena_name)
-        local player = minetest.get_player_by_name(sender)
         local arena, arena_name = get_valid_arena(arena_name, sender)
 
         if not arena then return end

@@ -5,13 +5,10 @@ local function get_node_from_data() end
 local on_step = minetest.registered_entities["__builtin:item"].on_step
 minetest.registered_entities["__builtin:item"].match_id = -2
 minetest.registered_entities["__builtin:item"].last_age = 0
-local hash_node_position = minetest.hash_node_position
 local add_node = minetest.add_node
-local get_node = minetest.get_node
 local get_inventory = minetest.get_inventory
 local get_name_from_content_id = minetest.get_name_from_content_id
 local string_to_pos = minetest.string_to_pos
-local get_position_from_hash = minetest.get_position_from_hash
 
 
 function skywars.reset_map(arena, debug, debug_data)
@@ -58,9 +55,6 @@ function async_reset_map(arena, debug, recursive_data)
 
     -- When the function gets called again it uses the same maps table.
     local maps = skywars.maps
-    if not maps[arena.name] or not maps[arena.name].changed_nodes then
-        return
-    end
 
     -- The indexes are useful to count the reset nodes.
     local current_index = 1
@@ -74,7 +68,6 @@ function async_reset_map(arena, debug, recursive_data)
     arena.is_resetting = true
     for string_pos, node_data in pairs(nodes_to_reset) do
         local node = get_node_from_data(node_data)
-        
         local pos = string_to_pos(string_pos)
 
         if not maps[arena.name].always_to_be_reset_nodes[string_pos] then
@@ -101,12 +94,14 @@ function async_reset_map(arena, debug, recursive_data)
     end
     arena.is_resetting = false
 
+    skywars.save_map(arena.name)
+
     if debug then
         local duration = minetest.get_us_time() - initial_time
         minetest.log("[Skywars Reset Debug] The reset took " .. duration/1000000 .. " seconds!")
-    end
 
-    skywars.save_map(arena.name)
+        return duration
+    end
 end
 
 

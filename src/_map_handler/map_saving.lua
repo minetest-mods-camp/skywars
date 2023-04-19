@@ -13,7 +13,7 @@ minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_
         pos = pos*16
         local arena = skywars.get_arena_by_pos(pos)
         
-        if not arena or not arena.enabled then goto continue end
+        if not arena or not arena.enabled or arena.is_resetting then goto continue end
 
         changed_mapblocks_queue[pos] = arena
 
@@ -21,7 +21,7 @@ minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_
     end
 end)
 
--- todo: limite per ciclo
+
 function process_mapblock_queue()
     for pos, arena in pairs(changed_mapblocks_queue) do
         find_changed_nodes(arena, pos)
@@ -46,7 +46,6 @@ function skywars.save_map_nodes(arena)
 	local emerged_area = VoxelArea:new({MinEdge=emerged_pos1, MaxEdge=emerged_pos2})
     local original_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
     local get_inventory = minetest.get_inventory
-    local hash_node_position = minetest.hash_node_position
 
     initialize_map_data(maps, arena)
     local map = maps[arena.name]
@@ -54,7 +53,6 @@ function skywars.save_map_nodes(arena)
     map.changed_nodes = {}
     map.original_nodes = {}
 
-    skywars.start_profiling("a")
     -- Saving every node in the map.
 	for i in emerged_area:iterp(emerged_pos1, emerged_pos2) do
         local p = emerged_area:position(i)
@@ -75,7 +73,6 @@ function skywars.save_map_nodes(arena)
             map.original_nodes[string_pos] = node
         end
 	end
-    skywars.stop_profiling("a")
 
     skywars.save_map(arena.name, "complete")
 end
