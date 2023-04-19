@@ -23,12 +23,20 @@ end)
 
 
 function process_mapblock_queue()
+    local i = 0
+
     for pos, arena in pairs(changed_mapblocks_queue) do
+        i = i + 1
+
+        if i > skywars_settings.max_processed_mapblocks_per_iteration then
+            break
+        end
+
         find_changed_nodes(arena, pos)
         changed_mapblocks_queue[pos] = nil
     end
 
-    minetest.after(4, process_mapblock_queue)
+    minetest.after(2, process_mapblock_queue)
 end
 process_mapblock_queue()
 
@@ -110,7 +118,7 @@ function find_changed_nodes(arena, p1)
         local p = emerged_area:position(i)
         local node_id = data[i]
         local i = arena_area:indexp(p)
-        local original_node = map.original_nodes[i] or {minetest.CONTENT_AIR, 0}
+        local original_node = map.original_nodes[i] or {minetest.CONTENT_AIR}
 
         if not (node_id == original_node[1]) then
             map.changed_nodes[i] = original_node

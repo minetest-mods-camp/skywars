@@ -143,6 +143,11 @@ skywars_settings.items_importances = {
 skywars_settings.nodes_per_tick = 20
 
 
+-- The amount of mapblocks to scan for when searching for modified nodes in
+-- your arenas. The higher you set it the faster it will detect modification
+-- but if you set a value that's too high the server will stutter.
+skywars_settings.max_processed_mapblocks_per_iteration = 25
+
 
 
 -- ARMOR 3D SETTINGS --
