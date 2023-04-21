@@ -6,6 +6,7 @@ local get_position_from_hash = minetest.get_position_from_hash
 local changed_mapblocks_queue = Queue.new()
 local mapblocks_in_the_queue = {}
 local get_voxel_manip = minetest.get_voxel_manip
+local get_name_from_content_id = minetest.get_name_from_content_id
 
 
 
@@ -67,19 +68,19 @@ function skywars.save_map_nodes(arena)
     -- Saving every node in the map.
 	for i in emerged_area:iterp(emerged_pos1, emerged_pos2) do
         local p = emerged_area:position(i)
-        local node_id = data[i]
+        local node_name = get_name_from_content_id(data[i])
         local param2 = params2[i]
         if param2 == 0 then param2 = nil end
         
         local location = {type = "node", pos = p}
-        local node = {node_id, param2}
+        local node = {node_name, param2}
 
         if get_inventory(location) then
             map.always_to_be_reset_nodes[i] = true
             map.changed_nodes[i] = node
         end
 
-        if not (node_id == minetest.CONTENT_AIR) then
+        if node_name ~= "air" and node_name ~= "ignore" and node_name ~= "unknown" then
             map.original_nodes[i] = node
         end
 	end
@@ -95,7 +96,7 @@ function skywars.get_map_node_at(arena, pos)
     local original_nodes = skywars.maps[arena.name].original_nodes
 
     local i = area:indexp(pos)
-    return i, original_nodes[i] or {minetest.CONTENT_AIR}
+    return i, original_nodes[i] or {"air"}
 end
 
 
@@ -126,11 +127,11 @@ function find_changed_nodes(arena, p1)
     -- Checking which nodes changed
 	for i in emerged_area:iterp(p1, p2) do
         local p = emerged_area:position(i)
-        local node_id = data[i]
+        local node_name = get_name_from_content_id(data[i])
         local i = arena_area:indexp(p)
-        local original_node = map.original_nodes[i] or {minetest.CONTENT_AIR}
+        local original_node = map.original_nodes[i] or {"air"}
 
-        if not (node_id == original_node[1]) then
+        if not (node_name == original_node[1]) then
             map.changed_nodes[i] = original_node
         end
 	end

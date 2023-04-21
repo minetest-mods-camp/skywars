@@ -7,7 +7,6 @@ minetest.registered_entities["__builtin:item"].match_id = -2
 minetest.registered_entities["__builtin:item"].last_age = 0
 local add_node = minetest.add_node
 local get_inventory = minetest.get_inventory
-local get_name_from_content_id = minetest.get_name_from_content_id
 
 
 
@@ -120,7 +119,7 @@ end
 
 
 function get_node_from_data(node_data)
-    return {name=get_name_from_content_id(node_data[1]), param2=node_data[2] or 0}
+    return {name=node_data[1], param2=node_data[2] or 0}
 end
 
 
