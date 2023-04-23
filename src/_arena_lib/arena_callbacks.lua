@@ -8,10 +8,23 @@ local kill_players_out_map = skywars.kill_players_out_map
 local add_node = minetest.add_node
 local get_node = minetest.get_node
 local remove_node = minetest.remove_node
+local S = skywars.T
 
 
 minetest.register_on_joinplayer(function(player)
   remove_privs(player:get_player_name())
+end)
+
+
+
+arena_lib.register_on_prejoin_queue(function(mod_ref, arena, pl_name)
+
+  if arena.is_resetting then
+    skywars.print_error(pl_name, S("The map is resetting, please wait."))
+    return
+  end
+
+  return true
 end)
 
 
