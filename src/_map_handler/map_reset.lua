@@ -15,11 +15,6 @@ function skywars.reset_map(arena, debug, debug_data)
     local arena_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
 
     skywars.load_mapblocks(arena)
-    Queue.sort(skywars.maps[arena.name].changed_nodes, function (a, b)
-        if arena_area:position(a[1]).y > arena_area:position(b[1]).y then
-            return true
-        end
-    end)
     async_reset_map(arena, debug, debug_data)
 end
 

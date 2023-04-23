@@ -61,16 +61,3 @@ end
 function Queue.size(queue)
   return queue.last - queue.first
 end
-
--- f needs to return true is elemens have to be swapped
-function Queue.sort(queue, f)
-  if Queue.size(queue) < 2 then return end
-
-  for i = queue.first+1, queue.last do
-    if f(queue[i-1], queue[i]) then
-      local temp = queue[i-1]
-      queue[i-1] = queue[i]
-      queue[i] = temp
-    end
-  end
-end
