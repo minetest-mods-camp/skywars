@@ -72,7 +72,7 @@ function async_reset_map(arena, debug, recursive_data)
 
         local node_data = Queue.popleft(nodes_to_reset)
         local i = node_data[1]
-        nodes_to_reset.track_keys[i] = nil
+        nodes_to_reset.tracked_elems[i] = nil
         local node = get_node_from_data(node_data[2])
         local pos = arena_area:position(i)
 

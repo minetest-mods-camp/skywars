@@ -21,25 +21,3 @@ function skywars.load_mapblocks(arena)
     minetest.load_area(arena.min_pos, arena.max_pos)
     minetest.emerge_area(arena.min_pos, arena.max_pos)
 end
-
-
-
-function skywars.iterate_area_nodes(min_pos, max_pos, func)
-    local get_node = minetest.get_node
-
-    for x = 1, max_pos.x - min_pos.x do
-        for y = 1, max_pos.y - min_pos.y do
-            for z = 1, max_pos.z - min_pos.z do
-                local node_pos = {
-                    x = min_pos.x+x, 
-                    y = min_pos.y+y, 
-                    z = min_pos.z+z
-                }
-                local node = get_node(node_pos)
-                local func_result = func(node, node_pos)
-
-                if func_result then return func_result end
-            end
-        end
-    end
-end

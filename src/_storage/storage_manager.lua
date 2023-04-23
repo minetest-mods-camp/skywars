@@ -42,7 +42,7 @@ function skywars.load_map(name)
     local m = skywars.maps[name]
 
     m.changed_nodes = skywars.load_table(name.."_changed_nodes")
-    if not m.changed_nodes.first then m.changed_nodes = Queue.new() end
+    if not Queue.is_queue(m.changed_nodes) then m.changed_nodes = Queue.new() end
     m.original_nodes = skywars.load_table(name.."_original_nodes")
 end
 

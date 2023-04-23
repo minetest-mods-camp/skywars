@@ -36,7 +36,7 @@ function process_mapblock_queue()
         local node = Queue.popleft(changed_mapblocks_queue)
         if not node then break end
 
-        changed_mapblocks_queue.track_keys[node[1]] = nil
+        changed_mapblocks_queue.tracked_elems[node[1]] = nil
         find_changed_nodes(node[1], node[2])
     end
 

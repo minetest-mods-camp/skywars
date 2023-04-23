@@ -1,7 +1,7 @@
 Queue = {}
 
 function Queue.new ()
-  return {first = 0, last = -1, track_keys = {}}
+  return {first = 0, last = -1, tracked_elems = {}}
 end
 
 
@@ -14,7 +14,7 @@ function Queue.pushleft (queue, value, track_key)
   queue[first] = value
 
   if track_key then 
-    queue.track_keys[track_key] = first
+    queue.tracked_elems[track_key] = first
   end
 end
 
@@ -28,7 +28,7 @@ function Queue.pushright (queue, value, track_key)
   queue[last] = value
 
   if track_key then
-    queue.track_keys[track_key] = last
+    queue.tracked_elems[track_key] = last
   end
 end
 
@@ -60,14 +60,26 @@ end
 
 
 
-function Queue.get_tracked_idx(queue, value)
-  return queue[queue.track_keys[value]]
+function Queue.is_queue(queue)
+  local check_values = {
+    first = true,
+    last = true,
+    tracked_elems = true,
+  }
+
+  for key, _ in pairs(queue) do
+    if not check_values[key] then
+      return false
+    end
+  end
+
+  return true
 end
 
 
 
 function Queue.is_tracked(queue, value)
-  return Queue.get_tracked_idx(queue, value)
+  return queue[queue.tracked_elems[value]]
 end
 
 
