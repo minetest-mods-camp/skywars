@@ -68,7 +68,6 @@ function skywars.save_map_nodes(arena)
 
     -- Saving every node in the map.
 	for i in emerged_area:iterp(emerged_pos1, emerged_pos2) do
-        local p = emerged_area:position(i)
         local node_name = get_name_from_content_id(data[i])
         local param2 = params2[i]
         if param2 == 0 then param2 = nil end
