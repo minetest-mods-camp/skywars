@@ -1,3 +1,5 @@
+local function save_maps_changes() end
+
 local storage = minetest.get_mod_storage()
 local sw_world_folder = minetest.get_worldpath("skywars").."/skywars/"
 minetest.mkdir(sw_world_folder)
@@ -30,7 +32,6 @@ function skywars.save_map(name, complete)
 
     if complete then
         skywars.overwrite_table(name.."_original_nodes", m.original_nodes)
-        skywars.overwrite_table(name.."_always_to_be_reset_nodes", m.always_to_be_reset_nodes)
     end
 end
 
@@ -41,7 +42,7 @@ function skywars.load_map(name)
     local m = skywars.maps[name]
 
     m.changed_nodes = skywars.load_table(name.."_changed_nodes")
-    m.always_to_be_reset_nodes = skywars.load_table(name.."_always_to_be_reset_nodes")
+    if not m.changed_nodes.first then m.changed_nodes = Queue.new() end
     m.original_nodes = skywars.load_table(name.."_original_nodes")
 end
 
@@ -57,4 +58,14 @@ end
 
 minetest.register_on_mods_loaded(function()
     skywars.load_maps()
+    save_maps_changes()
 end)
+
+
+
+function save_maps_changes()
+    for i, props in ipairs(arena_lib.mods["skywars"].arenas) do
+        skywars.save_map(props.name)
+    end
+    minetest.after(10, save_maps_changes)
+end

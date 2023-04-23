@@ -12,8 +12,14 @@ local get_inventory = minetest.get_inventory
 
 function skywars.reset_map(arena, debug, debug_data)
     if not arena.enabled or arena.is_resetting then return end
+    local arena_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
 
     skywars.load_mapblocks(arena)
+    Queue.sort(skywars.maps[arena.name].changed_nodes, function (a, b)
+        if arena_area:position(a[1]).y > arena_area:position(b[1]).y then
+            return true
+        end
+    end)
     async_reset_map(arena, debug, debug_data)
 end
 
@@ -55,9 +61,6 @@ function async_reset_map(arena, debug, recursive_data)
     -- When the function gets called again it uses the same maps table.
     local maps = skywars.maps
 
-    -- The indexes are useful to count the reset nodes.
-    local current_index = 1
-    local last_index = recursive_data.last_index or 0
     local nodes_to_reset = maps[arena.name].changed_nodes
     local nodes_per_tick = recursive_data.nodes_per_tick or skywars_settings.nodes_per_tick
     local initial_time = recursive_data.initial_time or minetest.get_us_time()
@@ -67,31 +70,29 @@ function async_reset_map(arena, debug, recursive_data)
     -- Resets a node if it hasn't been reset yet and, if it resets more than "nodes_per_tick" 
     -- nodes, invokes this function again after one step.
     arena.is_resetting = true
-    for i, node_data in pairs(nodes_to_reset) do
-        local node = get_node_from_data(node_data)
-        local pos = arena_area:position(i)
+    for reset_nodes = 0, nodes_per_tick+1 do
+        if Queue.size(nodes_to_reset) <= 0 then break end
 
-        if not maps[arena.name].always_to_be_reset_nodes[i] then
-            nodes_to_reset[i] = nil
-        end
+        local node_data = Queue.popleft(nodes_to_reset)
+        local i = node_data[1]
+        nodes_to_reset.track_keys[i] = nil
+        local node = get_node_from_data(node_data[2])
+        local pos = arena_area:position(i)
 
         add_node(pos, node)
 
         reset_node_inventory(pos)
 
         -- If more than nodes_per_tick nodes have been reset this cycle.
-        if current_index - last_index >= nodes_per_tick then
+        if reset_nodes == nodes_per_tick then
             minetest.after(0, function()
                 async_reset_map(arena, debug, {
-                    last_index = current_index,
                     nodes_per_tick = nodes_per_tick,
                     initial_time = initial_time
                 })
             end)
             return
         end
-
-        current_index = current_index + 1
     end
     arena.is_resetting = false
 
@@ -103,6 +104,13 @@ function async_reset_map(arena, debug, recursive_data)
 
         return duration
     end
+
+    -- to remove flowing fluids
+    minetest.after(2, function ()
+        if Queue.size(nodes_to_reset) > 0 then
+            skywars.reset_map(arena, debug)
+        end
+    end)
 end
 
 
@@ -111,7 +119,7 @@ function reset_node_inventory(pos)
     local location = {type="node", pos = pos}
     local inv = get_inventory(location)
     if inv then
-        for index, list in ipairs(inv:get_lists()) do
+        for _, list in ipairs(inv:get_lists()) do
             inv:set_list(list, {})
         end
     end

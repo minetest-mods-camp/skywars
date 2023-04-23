@@ -4,7 +4,6 @@ local function initialize_map_data() end
 
 local get_position_from_hash = minetest.get_position_from_hash
 local changed_mapblocks_queue = Queue.new()
-local mapblocks_in_the_queue = {}
 local get_voxel_manip = minetest.get_voxel_manip
 local get_name_from_content_id = minetest.get_name_from_content_id
 
@@ -15,13 +14,17 @@ minetest.register_on_mapblocks_changed(function(modified_blocks, modified_block_
         pos = get_position_from_hash(pos)
         pos = pos*16
         local arena = skywars.get_arena_by_pos(pos)
-        
-        if not arena or not arena.enabled or arena.is_resetting or mapblocks_in_the_queue[pos] then
-            goto continue 
+
+        if not arena then goto continue end
+
+        local arena_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
+        local i = arena_area:indexp(pos)
+
+        if (not arena) or (not arena.enabled) or arena.is_resetting or Queue.is_tracked(changed_mapblocks_queue, i) then
+            goto continue
         end
 
-        Queue.pushright(changed_mapblocks_queue, {arena, pos})
-        mapblocks_in_the_queue[pos] = true
+        Queue.pushright(changed_mapblocks_queue, {arena, pos}, i)
 
         ::continue::
     end
@@ -33,8 +36,8 @@ function process_mapblock_queue()
         local node = Queue.popleft(changed_mapblocks_queue)
         if not node then break end
 
+        changed_mapblocks_queue.track_keys[node[1]] = nil
         find_changed_nodes(node[1], node[2])
-        mapblocks_in_the_queue[node[2]] = nil
     end
 
     minetest.after(0, process_mapblock_queue)
@@ -57,12 +60,10 @@ function skywars.save_map_nodes(arena)
     local params2 = manip:get_param2_data()
 
 	local emerged_area = VoxelArea:new({MinEdge=emerged_pos1, MaxEdge=emerged_pos2})
-    local get_inventory = minetest.get_inventory
 
     initialize_map_data(maps, arena)
     local map = maps[arena.name]
-    map.always_to_be_reset_nodes = {}
-    map.changed_nodes = {}
+    map.changed_nodes = Queue.new()
     map.original_nodes = {}
 
     -- Saving every node in the map.
@@ -72,13 +73,7 @@ function skywars.save_map_nodes(arena)
         local param2 = params2[i]
         if param2 == 0 then param2 = nil end
         
-        local location = {type = "node", pos = p}
         local node = {node_name, param2}
-
-        if get_inventory(location) then
-            map.always_to_be_reset_nodes[i] = true
-            map.changed_nodes[i] = node
-        end
 
         if node_name ~= "air" and node_name ~= "ignore" and node_name ~= "unknown" then
             map.original_nodes[i] = node
@@ -106,7 +101,6 @@ function initialize_map_data(maps, arena)
     if not maps[arena.name] then maps[arena.name] = {} end
     if not maps[arena.name].original_nodes then maps[arena.name].original_nodes = {} end
     if not maps[arena.name].changed_nodes then maps[arena.name].changed_nodes = {} end
-    if not maps[arena.name].always_to_be_reset_nodes then maps[arena.name].always_to_be_reset_nodes = {} end
 end
 
 
@@ -131,8 +125,9 @@ function find_changed_nodes(arena, p1)
         local i = arena_area:indexp(p)
         local original_node = map.original_nodes[i] or {"air"}
 
-        if not (node_name == original_node[1]) then
+        if node_name ~= original_node[1] and not Queue.is_tracked(map.changed_nodes, i) then
             map.changed_nodes[i] = original_node
+            Queue.pushright(map.changed_nodes, {i, original_node}, i)
         end
 	end
 end
@@ -144,7 +139,7 @@ minetest.register_on_placenode(function(pos, newnode, player, oldnode)
     if not arena then return end
 
     local i, node = skywars.get_map_node_at(arena, pos)
-    skywars.maps[arena.name].changed_nodes[i] = node
+    Queue.pushright(skywars.maps[arena.name].changed_nodes, {i, node}, i)
 end)
 
 
@@ -154,7 +149,7 @@ minetest.register_on_dignode(function(pos, oldnode, player)
     if not arena then return end
 
     local i, node = skywars.get_map_node_at(arena, pos)
-    skywars.maps[arena.name].changed_nodes[i] = node
+    Queue.pushright(skywars.maps[arena.name].changed_nodes, {i, node}, i)
 end)
 
 
@@ -167,7 +162,7 @@ function minetest.set_node(pos, node)
     
     if arena and arena.enabled and not arena.is_resetting then
         local i, node = skywars.get_map_node_at(arena, pos)
-        skywars.maps[arena.name].changed_nodes[i] = node
+        Queue.pushright(skywars.maps[arena.name].changed_nodes, {i, node}, i)
     end
 
 	return set_node(pos, node)
@@ -185,7 +180,7 @@ function minetest.swap_node(pos, node)
     
     if arena and arena.enabled and not arena.is_resetting then
         local i, node = skywars.get_map_node_at(arena, pos)
-        skywars.maps[arena.name].changed_nodes[i] = node
+        Queue.pushright(skywars.maps[arena.name].changed_nodes, {i, node}, i)
     end
 
     return swap_node(pos, node)
