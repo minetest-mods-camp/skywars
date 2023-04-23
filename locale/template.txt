@@ -1,4 +1,4 @@
-# version 1.1.4
+# version 2.0
 # author(s):
 # reviewer(s):
 # textdomain: skywars
@@ -23,6 +23,7 @@ Unbreakable without skywars_admin priv transparent node=
 
 # Arena configuration
 
+The map is resetting, please wait.=
 Count has to be greater than 0!=
 Rarity has to be between 1 and 10!=
 @1 doesn't exist!=
