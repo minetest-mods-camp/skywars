@@ -4,6 +4,8 @@ function Queue.new ()
   return {first = 0, last = -1, track_keys = {}}
 end
 
+
+
 function Queue.pushleft (queue, value, track_key)
   track_key = track_key or value
   local first = queue.first - 1
@@ -15,6 +17,8 @@ function Queue.pushleft (queue, value, track_key)
     queue.track_keys[track_key] = first
   end
 end
+
+
 
 function Queue.pushright (queue, value, track_key)
   track_key = track_key or value
@@ -28,7 +32,9 @@ function Queue.pushright (queue, value, track_key)
   end
 end
 
-function Queue.popleft (queue, track_key)
+
+
+function Queue.popleft (queue)
   local first = queue.first
   if first > queue.last then return nil end
   local value = queue[first]
@@ -39,7 +45,9 @@ function Queue.popleft (queue, track_key)
   return value
 end
 
-function Queue.popright (queue, track_key)
+
+
+function Queue.popright (queue)
   local last = queue.last
   if queue.first > last then return nil end
   local value = queue[last]
@@ -50,16 +58,22 @@ function Queue.popright (queue, track_key)
   return value
 end
 
+
+
 function Queue.get_tracked_idx(queue, value)
   return queue[queue.track_keys[value]]
 end
+
+
 
 function Queue.is_tracked(queue, value)
   return Queue.get_tracked_idx(queue, value)
 end
 
+
+
 function Queue.size(queue)
-  return queue.last - queue.first
+  return queue.last - queue.first + 1
 end
 
 

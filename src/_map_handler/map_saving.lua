@@ -125,7 +125,6 @@ function find_changed_nodes(arena, p1)
         local original_node = map.original_nodes[i] or {"air"}
 
         if node_name ~= original_node[1] and not Queue.is_tracked(map.changed_nodes, i) then
-            map.changed_nodes[i] = original_node
             Queue.pushright(map.changed_nodes, {i, original_node}, i)
         end
 	end
