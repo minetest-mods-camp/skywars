@@ -19,7 +19,7 @@ end)
 
 arena_lib.register_on_prejoin_queue(function(mod_ref, arena, pl_name)
 
-  if arena.is_resetting then
+  if mod_ref.name == "Skywars" and not arena.can_enter then
     skywars.print_error(pl_name, S("The map is resetting, please wait."))
     return
   end

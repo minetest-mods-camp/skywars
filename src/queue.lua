@@ -92,26 +92,28 @@ end
 
 local function merge_sort(queue, f)
   local function merge(first, last)
-      if first < last then
-          local middle = math.floor((first + last) / 2)
-          merge(first, middle)
-          merge(middle + 1, last)
-          local left_index = first
-          local right_index = middle + 1
-          local temp = {}
-          for i = first, last do
-              if left_index <= middle and (right_index > last or f(queue[left_index], queue[right_index])) then
-                  temp[i] = queue[left_index]
-                  left_index = left_index + 1
-              else
-                  temp[i] = queue[right_index]
-                  right_index = right_index + 1
-              end
-          end
-          for i = first, last do
-              queue[i] = temp[i]
-          end
+    if first < last then
+      local middle = math.floor((first + last) / 2)
+      merge(first, middle)
+      merge(middle + 1, last)
+      local left_index = first
+      local right_index = middle + 1
+      local temp = {}
+
+      for i = first, last do
+        if left_index <= middle and (right_index > last or f(queue[left_index], queue[right_index])) then
+          temp[i] = queue[left_index]
+            left_index = left_index + 1
+        else
+          temp[i] = queue[right_index]
+          right_index = right_index + 1
+        end
       end
+      
+      for i = first, last do
+        queue[i] = temp[i]
+      end
+    end
   end
 
   merge(queue.first, queue.last)

@@ -11,13 +11,19 @@ local get_inventory = minetest.get_inventory
 
 
 function skywars.reset_map(arena, debug, debug_data)
-    if not arena.enabled or arena.is_resetting then return end
-    local arena_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
+    local nodes_to_reset = skywars.maps[arena.name].changed_nodes
 
-    Queue.sort(skywars.maps[arena.name].changed_nodes, function (a, b)
+    if not arena.enabled or arena.is_resetting or Queue.size(nodes_to_reset) <= 0 then
+        return false
+    end
+
+    local arena_area = VoxelArea:new({MinEdge=arena.min_pos, MaxEdge=arena.max_pos})
+    Queue.sort(nodes_to_reset, function (a, b)
         return arena_area:position(a[1]).y > arena_area:position(b[1]).y
     end)
     async_reset_map(arena, debug, debug_data)
+
+    return true
 end
 
 
@@ -67,6 +73,7 @@ function async_reset_map(arena, debug, recursive_data)
     -- Resets a node if it hasn't been reset yet and, if it resets more than "nodes_per_tick" 
     -- nodes, invokes this function again after one step.
     arena.is_resetting = true
+    arena.can_enter = false
     for reset_nodes = 0, nodes_per_tick+1 do
         if Queue.size(nodes_to_reset) <= 0 then break end
 
@@ -104,8 +111,8 @@ function async_reset_map(arena, debug, recursive_data)
 
     -- to remove flowing fluids
     minetest.after(2, function ()
-        if Queue.size(nodes_to_reset) > 0 then
-            skywars.reset_map(arena, debug)
+        if not skywars.reset_map(arena, debug) then
+            arena.can_enter = true
         end
     end)
 end
