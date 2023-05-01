@@ -1,12 +1,10 @@
 local function async_reset_map() end
-local function reset_node_inventory() end
 local function get_node_from_data() end
 
 local on_step = minetest.registered_entities["__builtin:item"].on_step
 minetest.registered_entities["__builtin:item"].match_id = -2
 minetest.registered_entities["__builtin:item"].last_age = 0
 local add_node = minetest.add_node
-local get_inventory = minetest.get_inventory
 
 
 
