@@ -77,15 +77,13 @@ function async_reset_map(arena, debug, recursive_data)
     for reset_nodes = 0, nodes_per_tick+1 do
         if Queue.size(nodes_to_reset) <= 0 then break end
 
-        local node_data = Queue.popleft(nodes_to_reset)
+        local node_data = Queue.pop(nodes_to_reset)
         local i = node_data[1]
         nodes_to_reset.tracked_elems[i] = nil
         local node = get_node_from_data(node_data[2])
         local pos = arena_area:position(i)
 
         add_node(pos, node)
-
-        reset_node_inventory(pos)
 
         -- If more than nodes_per_tick nodes have been reset this cycle.
         if reset_nodes == nodes_per_tick then
@@ -102,37 +100,27 @@ function async_reset_map(arena, debug, recursive_data)
 
     skywars.save_map(arena.name)
 
-    if debug then
-        local duration = minetest.get_us_time() - initial_time
-        minetest.log("[Skywars Reset Debug] The reset took " .. duration/1000000 .. " seconds!")
-
-        return duration
-    end
-
     -- to remove flowing fluids
     minetest.after(2, function ()
         if not skywars.reset_map(arena, debug) then
             arena.can_enter = true
         end
     end)
-end
 
+    if debug then
+        local duration = minetest.get_us_time() - initial_time
+        minetest.log("[Skywars Reset Debug] The reset took " .. duration/1000000 .. " seconds!")
 
-
-function reset_node_inventory(pos)
-    local location = {type="node", pos = pos}
-    local inv = get_inventory(location)
-    if inv then
-        for _, list in ipairs(inv:get_lists()) do
-            inv:set_list(list, {})
-        end
+        return duration
     end
 end
+
 
 
 function get_node_from_data(node_data)
     return {name=node_data[1], param2=node_data[2] or 0}
 end
+
 
 
 minetest.register_on_mods_loaded(function()
