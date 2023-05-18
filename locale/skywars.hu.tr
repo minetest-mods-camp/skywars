@@ -1,0 +1,63 @@
+# version 2.0
+# author(s): nyomi
+# reviewer(s):
+# textdomain: skywars
+# @n means "newline"
+# @<number> (@1, @2, ecc) is a value that the mod will pass at runtime 
+
+
+# In-game messages
+
+Time is out, the match is over!=Az idő lejárt a menetnek vége!
+@1 was killed by @2=@2 megölte @1-et
+@1 killed you with @2 HPs=@1 megölt @2 HP-val 
+Nobody=Senki
+Select a kit using the item in your inventory=Válaszd ki a készleted az inventorydban lévő item segítségével
+Kit Selector=Készlet választó
+
+
+# Nodes
+
+Unbreakable without skywars_admin priv transparent node=Feltörhetetlen skywars_admin priv átlátszó csomópont nélkül
+
+
+# Arena configuration
+
+Count has to be greater than 0!=A számnak 0-nál nagyobbnak kell lennie!
+Rarity has to be between 1 and 10!=A gyakoriságnak 1-10 között kell lennie
+@1 doesn't exist!=@1 nem létezik!
+Your hand is empty!=A kezed üres!
+Treasure not found!=A kincs nem található!
+Treasures list:=Kincsek listája:
+You're not looking at anything!=Nem nézel semmire!
+The minimum or maximum amount of treasures has to be greater than 0!=A kincsek minimális vagy maximális mennyiségének nagyobbnak kell lennie, mint 0!
+@1 treasures have been copied to @2!=@1 kincsek át lettek másolva a @2-be!
+The arenas must be different!=Az arénának másnak kell lennie!
+ID: @1, name: @2, rarity: @3, preciousness: @4, count: @5=ID: @1, név: @2, gyakoriság: @3, drágaság: @4, menyiség: @5
+Chest removed!=Láda törlődött!
+Chest not found!=A láda nem található!
+Chest list:=Láda lista:
+The chest already exists!=A láda már létezik!
+ID: @1, position: @2, preciousness: @3-@4, treasures amount: @5-@6=ID: @1, pozíció: @2, drágaság: @3-@4, menyiség: @5-@6
+Position saved!=Position gespeichert!
+You didn't set the treasures!=Nem állítottad be a kincseket!
+You didn't set the chests!=Nem állítittál be chestet!
+You didn't set the map corners!=Nem állítotad be a pálya határait!
+@1 must be disabled!=@1 ki kell legyen kapcsolva!
+@1 must be enabled!=@1 be kell lennie kapcsolva!
+@1 already exists!=@1 már létezik!
+@1 added to @2!=@1 hozáadodott @2-höz!
+@1 removed from @2!=@1 törlődött @2 től!
+Kit @1 created!=Készlet @1 megcsinálva!
+@1 texture set to @2!=@1 textúra beállítva @2-re!
+Kit @1 deleted!=Készlet @1 törlődött!
+Kits list:=Készlet lista:
+@1 items:=@1 itemek:
+Kit not found!=A készlet nem található!
+x@1 @2 added to @3!=x@1 @2 hozzálett adva a @3-hoz!
+@1 reset!=@1 újrabeállítva!
+@1 kits have been copied to @2!=@1 készlet @2 névre lett átnevezve!
+Nobody must be in the editor!=Senki nem lehet a szerkesztőben!
+The enabling process may take a few moments, please wait...=Az engedélyezési folyamat elvehet pár pillanatot, kérlek várj …
+@1 is being reset!=@1 visszaállítás alatt áll!
+
