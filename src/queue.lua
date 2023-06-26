@@ -57,6 +57,12 @@ end
 
 
 
+function Queue.untrack(queue, key)
+  queue.tracked_elems[key] = nil
+end
+
+
+
 function Queue.size(queue)
   return queue.last - queue.first + 1
 end

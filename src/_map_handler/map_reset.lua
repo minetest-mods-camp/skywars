@@ -59,7 +59,6 @@ end
 function async_reset_map(arena, debug, recursive_data)
     recursive_data = recursive_data or {}
 
-    -- When the function gets called again it uses the same maps table.
     local maps = skywars.maps
 
     local nodes_to_reset = maps[arena.name].changed_nodes
@@ -77,7 +76,7 @@ function async_reset_map(arena, debug, recursive_data)
 
         local node_data = Queue.pop(nodes_to_reset)
         local i = node_data[1]
-        nodes_to_reset.tracked_elems[i] = nil
+        Queue.untrack(nodes_to_reset, i)
         local node = get_node_from_data(node_data[2])
         local pos = arena_area:position(i)
 
